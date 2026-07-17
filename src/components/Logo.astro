@@ -1,0 +1,62 @@
+---
+interface Props {
+  variant?: "mark" | "wordmark" | "lockup"
+  size?: "sm" | "lg"
+  class?: string
+}
+
+const { variant = "lockup", size = "lg", class: className = "" } = Astro.props
+
+const showMark = variant === "mark" || variant === "lockup"
+const showWordmark = variant === "wordmark" || variant === "lockup"
+---
+
+<span
+  class:list={[
+    "inline-flex shrink-0 items-center",
+    variant === "lockup" &&
+      (size === "lg" ? "gap-5 sm:gap-6 lg:gap-8" : "gap-2.5"),
+    className,
+  ]}
+>
+  {
+    showMark && (
+      <span
+        class:list={[
+          "inline-flex shrink-0 items-center justify-center border border-border bg-gradient-to-b from-background to-muted font-mono font-semibold shadow-[0_2px_0_var(--border)] dark:border-white/10 dark:shadow-[0_3px_0_#000,0_6px_12px_rgba(0,0,0,0.5)]",
+          size === "lg"
+            ? "h-16 w-16 rounded-2xl border-b-4 text-lg sm:h-20 sm:w-20 sm:rounded-[28px] sm:text-xl lg:h-24 lg:w-24 lg:rounded-3xl lg:text-2xl"
+            : "h-8 w-8 rounded-md border-b-2 text-[11px]",
+        ]}
+        aria-hidden="true"
+      >
+        <span class="text-foreground">ox</span>
+        <span class="text-oxabl-green">_</span>
+      </span>
+    )
+  }
+  {
+    showWordmark && (
+      <span class="inline-flex flex-col leading-none">
+        <span
+          class:list={[
+            "font-mono font-bold tracking-tight text-foreground",
+            size === "lg" ? "text-4xl sm:text-5xl lg:text-6xl" : "text-lg",
+          ]}
+        >
+          ox<span class="text-oxabl-green">_</span>abl
+        </span>
+        <span
+          class:list={[
+            "font-medium tracking-[0.28em] text-muted-foreground",
+            size === "lg"
+              ? "mt-2 text-sm sm:mt-2.5 sm:text-base lg:mt-3 lg:text-lg"
+              : "mt-1 text-[10px]",
+          ]}
+        >
+          oxidized abl
+        </span>
+      </span>
+    )
+  }
+</span>

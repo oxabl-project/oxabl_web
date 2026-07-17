@@ -1,0 +1,40 @@
+---
+import "@/styles/global.css"
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = "ox_abl — high-performance tooling for ABL",
+  description = "Blazingly fast developer tools for Progress ABL, written in Rust. Lexer, parser, semantic analysis, lint. Unofficial and unaffiliated.",
+} = Astro.props
+---
+
+<html lang="en" style="scroll-behavior: smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0f1a14" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f7faf8" media="(prefers-color-scheme: light)" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      ;(() => {
+        const t = localStorage.getItem("theme")
+        const dark =
+          t === "dark" ||
+          (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)
+        if (dark) document.documentElement.classList.add("dark")
+      })()
+    </script>
+    <title>{title}</title>
+  </head>
+  <body class="bg-background text-foreground">
+    <slot />
+  </body>
+</html>

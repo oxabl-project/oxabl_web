@@ -1,0 +1,400 @@
+---
+import Layout from "@/layouts/main.astro"
+import Navbar from "@/components/Navbar.astro"
+import Logo from "@/components/Logo.astro"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card"
+import { HoverGlow } from "@/components/HoverGlow"
+
+const features = [
+  {
+    title: "Lexer that actually knows ABL",
+    body: "Case-insensitive keywords with abbreviations. Tilde escapes. Hyphenated identifiers. Preprocessor directives. Include refs. Stack-allocated matching — no to_lowercase() on the hot path.",
+    code: "def → DEFINE\nterm → TERMINAL",
+  },
+  {
+    title: "Parser built for real codebases",
+    body: "OO-ABL, procedures, temp-tables, streams, ON triggers, embedded SQL, preprocessor conditionals. Error recovery on period boundaries so one bad statement doesn't sink the file.",
+    code: "CLASS · METHOD · FOR EACH\n&IF · {include.i}",
+  },
+  {
+    title: "Semantic model, not just AST",
+    body: "Declare, resolve, and check passes over NodeId side tables. Schema-backed field validation. SHARED flags. Built-in registry with abbreviations. Lints that fire on real signal.",
+    code: "LINT0001 undefined-symbol\nLINT0003 unknown-table-or-field",
+  },
+  {
+    title: "Preprocessor that is honest",
+    body: "Expand includes across a PROPATH. Auto-load oxabl.toml include paths. When an include can't be found, PREPROC007 says so loudly — one diagnostic at the cause, not a flood of false undefined-symbols.",
+    code: "PREPROC007\nunresolvable include",
+  },
+  {
+    title: "Schema-aware analysis",
+    body: "Load a .df and Customer.Name just works — bare-table default buffers, typed fields, LINT0003 for the ghosts. Analyze dumps a versioned JSON model of everything it knows.",
+    code: "oxabl analyze app.p\n  --schema sports.df",
+  },
+  {
+    title: "Performance as a product feature",
+    body: "Written in Rust. CodSpeed tracks every regression. Typical ABL files parse in under a millisecond. Fast enough for save-time checks today; built for keystroke-time analysis tomorrow.",
+    code: "parser ≈ 50+ MiB/s\nlookup ≈ 100 ns",
+  },
+]
+
+const pipeline = [
+  { step: "01", name: "preprocess", desc: "&IF, includes, defines" },
+  { step: "02", name: "lex", desc: "tokens, atoms, kinds" },
+  { step: "03", name: "parse", desc: "AST with NodeId" },
+  { step: "04", name: "declare", desc: "scopes + symbols" },
+  { step: "05", name: "resolve", desc: "refs + schema fields" },
+  { step: "06", name: "check / lint", desc: "types + rules" },
+]
+---
+
+<Layout>
+  <Navbar />
+
+  <!-- HERO -->
+  <section
+    id="hero"
+    class="relative flex min-h-[calc(100svh-3.5rem)] items-center overflow-hidden px-6"
+  >
+    <div class="hero-grid absolute inset-0" aria-hidden="true"></div>
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.72_0.12_150_/_0.12),transparent_55%)] dark:bg-[radial-gradient(ellipse_at_top,oklch(0.55_0.14_150_/_0.18),transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div
+      class="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center gap-10 py-20 sm:gap-14"
+    >
+      <div class="flex flex-col items-center gap-6 text-center">
+        <Logo variant="lockup" size="lg" />
+        <p
+          class="max-w-2xl font-heading text-2xl font-semibold tracking-tight text-muted-foreground sm:text-3xl lg:text-4xl"
+        >
+          High-performance tooling for ABL,<br class="hidden sm:block" />
+          <span class="text-foreground">oxidized in Rust.</span>
+        </p>
+        <p class="max-w-xl text-sm text-muted-foreground sm:text-base">
+          Lexer. Parser. Semantic analysis. Lint. Built for the codebases that
+          still ship business logic in
+          <span class="text-foreground">.p</span>,
+          <span class="text-foreground">.w</span>, and
+          <span class="text-foreground">.cls</span> — and deserve tools that keep up.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="https://github.com/oxabl-project/oxabl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex h-10 items-center gap-2 rounded-4xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+        >
+          View on GitHub
+        </a>
+        <a
+          href="#start"
+          class="inline-flex h-10 items-center gap-2 rounded-4xl border border-border bg-background px-5 text-sm font-medium transition-colors hover:bg-muted"
+        >
+          Get started
+          <kbd
+            class="inline-flex h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] text-muted-foreground"
+          >
+            s
+          </kbd>
+        </a>
+      </div>
+
+      <p
+        class="rounded-full border border-border bg-card/60 px-4 py-1.5 text-xs text-muted-foreground backdrop-blur"
+      >
+        Unofficial · no affiliation with Progress Software
+      </p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="px-6 py-24">
+    <div class="mx-auto w-full max-w-6xl">
+      <div class="mb-14 text-center">
+        <p
+          class="mb-3 text-xs font-medium tracking-[0.3em] text-oxabl-green uppercase"
+        >
+          features
+        </p>
+        <h2
+          class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
+        >
+          The cool parts
+        </h2>
+        <p class="mx-auto mt-4 max-w-2xl text-muted-foreground">
+          Not a thin wrapper around the compiler. A ground-up toolkit that
+          understands ABL the way your fingers type it.
+        </p>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {
+          features.map((f) => (
+            <HoverGlow client:visible>
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>{f.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  <CardDescription>{f.body}</CardDescription>
+                  <pre class="overflow-x-auto rounded-2xl border border-border bg-muted/50 px-3 py-2 font-mono text-[11px] leading-relaxed text-oxabl-green-soft">
+                    {f.code}
+                  </pre>
+                </CardContent>
+              </Card>
+            </HoverGlow>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section id="pipeline" class="border-y border-border bg-muted/30 px-6 py-24">
+    <div class="mx-auto w-full max-w-6xl">
+      <div class="mb-14 text-center">
+        <p
+          class="mb-3 text-xs font-medium tracking-[0.3em] text-oxabl-green uppercase"
+        >
+          pipeline
+        </p>
+        <h2
+          class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
+        >
+          Source in. Signal out.
+        </h2>
+        <p class="mx-auto mt-4 max-w-2xl text-muted-foreground">
+          Every layer is a crate. Compose what you need — or run the full
+          <code class="text-foreground">oxabl check</code> /
+          <code class="text-foreground">analyze</code> path end to end.
+        </p>
+      </div>
+
+      <ol
+        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+        aria-label="Analysis pipeline stages"
+      >
+        {
+          pipeline.map((p, i) => (
+            <li class="relative">
+              <div class="flex h-full flex-col gap-2 rounded-3xl border border-border bg-card p-4 [box-shadow:var(--card-shadow)]">
+                <span class="font-mono text-[10px] tracking-widest text-oxabl-green">
+                  {p.step}
+                </span>
+                <span class="font-heading text-base font-medium">{p.name}</span>
+                <span class="text-xs text-muted-foreground">{p.desc}</span>
+              </div>
+              {i < pipeline.length - 1 && (
+                <span
+                  class="pointer-events-none absolute top-1/2 -right-2 z-10 hidden -translate-y-1/2 text-oxabl-green/50 xl:block"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section id="why" class="px-6 py-24">
+    <div class="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
+      <div>
+        <p
+          class="mb-3 text-xs font-medium tracking-[0.3em] text-oxabl-green uppercase"
+        >
+          why ox_abl
+        </p>
+        <h2
+          class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
+        >
+          ABL deserves modern tools.
+        </h2>
+        <p class="mt-5 text-muted-foreground">
+          The language still runs serious systems. The tooling around it
+          shouldn't feel like it's from another decade. Oxabl is the
+          high-performance foundation — parse fast, resolve honestly, lint
+          with signal — so editors, CI, and agents can finally treat ABL
+          as a first-class citizen.
+        </p>
+        <ul class="mt-8 space-y-3 text-sm">
+          <li class="flex gap-3">
+            <span class="text-oxabl-green" aria-hidden="true">▸</span>
+            <span
+              ><strong class="text-foreground">Rust-native speed</strong> —
+              no JVM warm-up, no GIL, no compromise on hot paths.</span
+            >
+          </li>
+          <li class="flex gap-3">
+            <span class="text-oxabl-green" aria-hidden="true">▸</span>
+            <span
+              ><strong class="text-foreground">Loud beats silent</strong> —
+              missing includes and unknown fields surface at the true cause.</span
+            >
+          </li>
+          <li class="flex gap-3">
+            <span class="text-oxabl-green" aria-hidden="true">▸</span>
+            <span
+              ><strong class="text-foreground">Composable crates</strong> —
+              pull in the lexer, the parser, or the full semantic stack.</span
+            >
+          </li>
+          <li class="flex gap-3">
+            <span class="text-oxabl-green" aria-hidden="true">▸</span>
+            <span
+              ><strong class="text-foreground">Open source</strong> —
+              MIT-licensed, Conventional Commits, automated releases.</span
+            >
+          </li>
+        </ul>
+      </div>
+
+      <HoverGlow client:visible>
+        <Card className="h-full">
+          <CardHeader>
+            <CardTitle className="font-mono text-sm tracking-wide text-oxabl-green">
+              $ oxabl check ./src --preprocess
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <pre
+              class="overflow-x-auto font-mono text-[12px] leading-relaxed text-muted-foreground"
+            ><span class="text-oxabl-green">✓</span> 1,284 files parsed
+<span class="text-oxabl-green">✓</span> 0 hard errors
+<span class="text-muted-foreground/70">~</span> 3 PREPROC007 warnings
+  unresolvable include 'sys/legacy.i'
+  — symbols it declares cannot be checked
+
+elapsed <span class="text-foreground">1.8s</span></pre>
+          </CardContent>
+        </Card>
+      </HoverGlow>
+    </div>
+  </section>
+
+  <!-- START -->
+  <section id="start" class="border-t border-border px-6 py-24">
+    <div class="mx-auto w-full max-w-3xl text-center">
+      <p
+        class="mb-3 text-xs font-medium tracking-[0.3em] text-oxabl-green uppercase"
+      >
+        get started
+      </p>
+      <h2
+        class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
+      >
+        Clone it. Build it. Break it.
+      </h2>
+      <p class="mx-auto mt-4 max-w-xl text-muted-foreground">
+        Requires a recent Rust toolchain. Workspace builds with plain cargo —
+        no special sauce.
+      </p>
+
+      <div
+        class="mt-10 overflow-hidden rounded-3xl border border-border bg-card text-left [box-shadow:var(--card-shadow)]"
+      >
+        <div
+          class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground"
+        >
+          <span class="size-2 rounded-full bg-oxabl-green/80"></span>
+          terminal
+        </div>
+        <pre
+          class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"
+        ><span class="text-muted-foreground"># get the source</span>
+git clone https://github.com/oxabl-project/oxabl.git
+cd oxabl
+
+<span class="text-muted-foreground"># build + test the whole suite</span>
+cargo build
+cargo test
+
+<span class="text-muted-foreground"># check a real ABL tree</span>
+cargo run -p oxabl -- check ./path/to/src --preprocess
+
+<span class="text-muted-foreground"># dump the semantic model</span>
+cargo run -p oxabl -- analyze app.p --schema sports.df</pre>
+      </div>
+
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="https://github.com/oxabl-project/oxabl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex h-10 items-center rounded-4xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+        >
+          github.com/oxabl-project/oxabl
+        </a>
+        <a
+          href="https://codspeed.io/oxabl-project/oxabl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex h-10 items-center rounded-4xl border border-border bg-background px-5 text-sm font-medium transition-colors hover:bg-muted"
+        >
+          CodSpeed benchmarks
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer
+    class="flex flex-col items-center gap-4 border-t border-border px-6 py-14 text-center"
+  >
+    <Logo variant="wordmark" size="sm" />
+    <p class="text-sm text-muted-foreground">oxidized abl tooling</p>
+    <p class="max-w-md text-xs text-muted-foreground/70">
+      Oxabl is an unofficial open-source project with
+      <strong class="font-medium text-muted-foreground">no affiliation</strong>
+      with Progress Software Corporation. ABL is used here as a language name
+      only.
+    </p>
+    <p class="text-xs text-muted-foreground/60">
+      A
+      <a
+        href="https://github.com/evanbrobertson"
+        class="underline hover:text-muted-foreground"
+        target="_blank"
+        rel="noopener noreferrer">&lt;kbd&gt; tag</a
+      > project · driving intuition and performance
+    </p>
+  </footer>
+</Layout>
+
+<script>
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.target instanceof HTMLInputElement ||
+      e.target instanceof HTMLTextAreaElement ||
+      e.metaKey ||
+      e.ctrlKey ||
+      e.altKey
+    )
+      return
+    if (e.key === "h") {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+      return
+    }
+    if (e.key === "f")
+      document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
+    if (e.key === "p")
+      document.getElementById("pipeline")?.scrollIntoView({ behavior: "smooth" })
+    if (e.key === "s")
+      document.getElementById("start")?.scrollIntoView({ behavior: "smooth" })
+  })
+</script>
