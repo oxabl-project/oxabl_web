@@ -6,51 +6,95 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
 } from "@/components/ui/card"
 import { HoverGlow } from "@/components/HoverGlow"
+import TokenGraphic from "@/components/features/TokenGraphic.astro"
+import AstGraphic from "@/components/features/AstGraphic.astro"
+import SemanticGraphic from "@/components/features/SemanticGraphic.astro"
+import PreprocGraphic from "@/components/features/PreprocGraphic.astro"
+import SchemaGraphic from "@/components/features/SchemaGraphic.astro"
+import PerfGraphic from "@/components/features/PerfGraphic.astro"
+
+// Counts from `cargo run -p oxabl_codegen -- summary` + Kind enum sections.
+const KEYWORD_COUNT = 563
+const STATEMENT_COUNT = 93
+const FUNCTION_COUNT = 54
 
 const features = [
   {
-    title: "Lexer that actually knows ABL",
-    body: "Case-insensitive keywords with abbreviations. Tilde escapes. Hyphenated identifiers. Preprocessor directives. Include refs. Stack-allocated matching — no to_lowercase() on the hot path.",
-    code: "def → DEFINE\nterm → TERMINAL",
+    title: `A Lexer that knows all ${KEYWORD_COUNT} ABL keywords, functions, and statements. Even OO-ABL.`,
+    body: "Case-insensitive and abbreviation aware of every keyword. Tilde escape sequences. Preprocessor directives.",
+    visual: "token",
   },
   {
-    title: "Parser built for real codebases",
-    body: "OO-ABL, procedures, temp-tables, streams, ON triggers, embedded SQL, preprocessor conditionals. Error recovery on period boundaries so one bad statement doesn't sink the file.",
-    code: "CLASS · METHOD · FOR EACH\n&IF · {include.i}",
+    title: "The Parser that keeps up.",
+    body: "Turn a codebase into a structured AST in seconds. Error recovery on period boundaries so a single bad statement doesn't sink the file.",
+    visual: "ast",
   },
   {
-    title: "Semantic model, not just AST",
-    body: "Declare, resolve, and check passes over NodeId side tables. Schema-backed field validation. SHARED flags. Built-in registry with abbreviations. Lints that fire on real signal.",
-    code: "LINT0001 undefined-symbol\nLINT0003 unknown-table-or-field",
+    title: "Semantic analysis, too.",
+    body: "Schema-backed field validation. SHARED flags. Lints that fire on real issues. Catch syntax, schema, or logic errors before they reach the compiler.",
+    visual: "semantic",
   },
   {
-    title: "Preprocessor that is honest",
-    body: "Expand includes across a PROPATH. Auto-load oxabl.toml include paths. When an include can't be found, PREPROC007 says so loudly — one diagnostic at the cause, not a flood of false undefined-symbols.",
-    code: "PREPROC007\nunresolvable include",
+    title: "A Preprocessor, because we had to.",
+    body: "Expand includes and preprocessor statements to gain real, authoritative insights, not just guesses.",
+    visual: "preproc",
   },
   {
-    title: "Schema-aware analysis",
-    body: "Load a .df and Customer.Name just works — bare-table default buffers, typed fields, LINT0003 for the ghosts. Analyze dumps a versioned JSON model of everything it knows.",
-    code: "oxabl analyze app.p\n  --schema sports.df",
+    title: "Schema-aware.",
+    body: "To give you the real tightly coupled database and code feeling of ABL, load a .df and table.field just works. Buffers, typed fields. The analyze tool tells you everything it knows about your code and the schema it belongs to.",
+    visual: "schema",
   },
   {
-    title: "Performance as a product feature",
-    body: "Written in Rust. CodSpeed tracks every regression. Typical ABL files parse in under a millisecond. Fast enough for save-time checks today; built for keystroke-time analysis tomorrow.",
-    code: "parser ≈ 50+ MiB/s\nlookup ≈ 100 ns",
+    title: "Performance first, always.",
+    body: "Rust, because it's fast and safe, allows us to parse large ABL files in milliseconds, instead of waiting for the compiler to check your work. Benchmarks on every update ensure we catch regressions before they reach users. Check your files on save, why wait.",
+    visual: "perf",
   },
 ]
 
 const pipeline = [
-  { step: "01", name: "preprocess", desc: "&IF, includes, defines" },
-  { step: "02", name: "lex", desc: "tokens, atoms, kinds" },
-  { step: "03", name: "parse", desc: "AST with NodeId" },
-  { step: "04", name: "declare", desc: "scopes + symbols" },
-  { step: "05", name: "resolve", desc: "refs + schema fields" },
-  { step: "06", name: "check / lint", desc: "types + rules" },
+  {
+    crate: "oxabl_preprocessor",
+    desc: "&IF, includes, defines",
+    href: "https://crates.io/crates/oxabl_preprocessor",
+  },
+  {
+    crate: "oxabl_lexer",
+    desc: "tokens, atoms, kinds",
+    href: "https://crates.io/crates/oxabl_lexer",
+  },
+  {
+    crate: "oxabl_ast",
+    desc: "node types + NodeId",
+    href: "https://crates.io/crates/oxabl_ast",
+  },
+  {
+    crate: "oxabl_parser",
+    desc: "source → AST",
+    href: "https://crates.io/crates/oxabl_parser",
+  },
+  {
+    crate: "oxabl_schema",
+    desc: ".df tables + fields",
+    href: "https://crates.io/crates/oxabl_schema",
+  },
+  {
+    crate: "oxabl_semantic",
+    desc: "declare · resolve · check",
+    href: "https://crates.io/crates/oxabl_semantic",
+  },
+  {
+    crate: "oxabl_lint",
+    desc: "rules that fire on signal",
+    href: "https://crates.io/crates/oxabl_lint",
+  },
+  {
+    crate: "oxabl",
+    desc: "CLI: check · analyze",
+    href: "https://crates.io/crates/oxabl",
+  },
 ]
 ---
 
@@ -75,17 +119,11 @@ const pipeline = [
       <div class="flex flex-col items-center gap-6 text-center">
         <Logo variant="lockup" size="lg" />
         <p
-          class="max-w-2xl font-heading text-2xl font-semibold tracking-tight text-muted-foreground sm:text-3xl lg:text-4xl"
+          class="max-w-2xl text-sm text-muted-foreground sm:text-base lg:text-lg"
         >
-          High-performance tooling for ABL,<br class="hidden sm:block" />
-          <span class="text-foreground">oxidized in Rust.</span>
-        </p>
-        <p class="max-w-xl text-sm text-muted-foreground sm:text-base">
-          Lexer. Parser. Semantic analysis. Lint. Built for the codebases that
-          still ship business logic in
-          <span class="text-foreground">.p</span>,
-          <span class="text-foreground">.w</span>, and
-          <span class="text-foreground">.cls</span> — and deserve tools that keep up.
+          High-performance tooling for OpenEdge ABL. A complete, experimental
+          toolchain with a lexer, parser, semantic analysis, and linting. Built
+          for codebases still shipping advanced business logic.
         </p>
       </div>
 
@@ -135,27 +173,52 @@ const pipeline = [
         </h2>
         <p class="mx-auto mt-4 max-w-2xl text-muted-foreground">
           Not a thin wrapper around the compiler. A ground-up toolkit that
-          understands ABL the way your fingers type it.
+          understands ABL.
+        </p>
+        <p class="mx-auto mt-2 text-xs text-muted-foreground/70">
+          {KEYWORD_COUNT} keywords · {STATEMENT_COUNT} statements · {
+            FUNCTION_COUNT
+          } functions
         </p>
       </div>
 
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div class="flex flex-col gap-16 lg:gap-20">
         {
-          features.map((f) => (
-            <HoverGlow client:visible>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>{f.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4">
-                  <CardDescription>{f.body}</CardDescription>
-                  <pre class="overflow-x-auto rounded-2xl border border-border bg-muted/50 px-3 py-2 font-mono text-[11px] leading-relaxed text-oxabl-green-soft">
-                    {f.code}
-                  </pre>
-                </CardContent>
-              </Card>
-            </HoverGlow>
-          ))
+          features.map((f, i) => {
+            const reverse = i % 2 === 1
+            return (
+              <article
+                class:list={[
+                  "grid items-center gap-6 lg:grid-cols-2 lg:gap-12",
+                ]}
+              >
+                <div
+                  class:list={[
+                    "flex flex-col gap-3",
+                    reverse && "lg:order-2",
+                  ]}
+                >
+                  <p class="font-mono text-[10px] tracking-[0.25em] text-oxabl-green">
+                    {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <h3 class="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                    {f.title}
+                  </h3>
+                  <p class="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                    {f.body}
+                  </p>
+                </div>
+                <div class:list={[reverse && "lg:order-1"]}>
+                  {f.visual === "token" && <TokenGraphic />}
+                  {f.visual === "ast" && <AstGraphic />}
+                  {f.visual === "semantic" && <SemanticGraphic />}
+                  {f.visual === "preproc" && <PreprocGraphic />}
+                  {f.visual === "schema" && <SchemaGraphic />}
+                  {f.visual === "perf" && <PerfGraphic />}
+                </div>
+              </article>
+            )
+          })
         }
       </div>
     </div>
@@ -183,27 +246,29 @@ const pipeline = [
       </div>
 
       <ol
-        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
-        aria-label="Analysis pipeline stages"
+        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+        aria-label="Analysis pipeline crates"
       >
         {
           pipeline.map((p, i) => (
             <li class="relative">
-              <div class="flex h-full flex-col gap-2 rounded-3xl border border-border bg-card p-4 [box-shadow:var(--card-shadow)]">
+              <a
+                href={p.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex h-full flex-col gap-2 rounded-3xl border border-border bg-card p-4 transition-colors [box-shadow:var(--card-shadow)] hover:border-oxabl-green/40 hover:bg-accent/40"
+              >
                 <span class="font-mono text-[10px] tracking-widest text-oxabl-green">
-                  {p.step}
+                  {String(i + 1).padStart(2, "0")}
                 </span>
-                <span class="font-heading text-base font-medium">{p.name}</span>
+                <span class="font-heading text-base font-medium font-mono">
+                  {p.crate}
+                </span>
                 <span class="text-xs text-muted-foreground">{p.desc}</span>
-              </div>
-              {i < pipeline.length - 1 && (
-                <span
-                  class="pointer-events-none absolute top-1/2 -right-2 z-10 hidden -translate-y-1/2 text-oxabl-green/50 xl:block"
-                  aria-hidden="true"
-                >
-                  →
+                <span class="mt-auto pt-2 text-[10px] text-muted-foreground/70">
+                  crates.io ↗
                 </span>
-              )}
+              </a>
             </li>
           ))
         }
@@ -215,50 +280,50 @@ const pipeline = [
   <section id="why" class="px-6 py-24">
     <div class="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
       <div>
-        <p
-          class="mb-3 text-xs font-medium tracking-[0.3em] text-oxabl-green uppercase"
-        >
+        <p class="mb-3 text-xs font-medium tracking-wide text-oxabl-green">
           why ox_abl
         </p>
         <h2
           class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
         >
-          ABL deserves modern tools.
+          ABL developers deserve modern toolchains.
         </h2>
         <p class="mt-5 text-muted-foreground">
-          The language still runs serious systems. The tooling around it
-          shouldn't feel like it's from another decade. Oxabl is the
-          high-performance foundation — parse fast, resolve honestly, lint
-          with signal — so editors, CI, and agents can finally treat ABL
-          as a first-class citizen.
+          ox_abl is designed for modern ABL developers and agents. Get instant
+          feedback, resolve preprocessor directives, roll your own lint rules,
+          format code, build programmatic and declarative test suites. Don't
+          take anything for granted. Bring the convenience of JavaScript or Rust
+          to ABL in your terminal or favorite editor. Let agents take the wheel
+          and give them the context they need to work in ABL monoliths.
         </p>
         <ul class="mt-8 space-y-3 text-sm">
           <li class="flex gap-3">
             <span class="text-oxabl-green" aria-hidden="true">▸</span>
             <span
-              ><strong class="text-foreground">Rust-native speed</strong> —
-              no JVM warm-up, no GIL, no compromise on hot paths.</span
+              ><strong class="text-foreground">Native speed</strong> — no
+              reliance on the JVM/AVM, written in Rust for safety and speed.</span
             >
           </li>
           <li class="flex gap-3">
             <span class="text-oxabl-green" aria-hidden="true">▸</span>
             <span
-              ><strong class="text-foreground">Loud beats silent</strong> —
-              missing includes and unknown fields surface at the true cause.</span
+              ><strong class="text-foreground">Real signal</strong> — syntax
+              errors and lint failures surface the real cause.</span
             >
           </li>
           <li class="flex gap-3">
             <span class="text-oxabl-green" aria-hidden="true">▸</span>
             <span
-              ><strong class="text-foreground">Composable crates</strong> —
-              pull in the lexer, the parser, or the full semantic stack.</span
+              ><strong class="text-foreground">A composable library</strong> —
+              only use the features you need for building, or use the CLI for
+              development.</span
             >
           </li>
           <li class="flex gap-3">
             <span class="text-oxabl-green" aria-hidden="true">▸</span>
             <span
-              ><strong class="text-foreground">Open source</strong> —
-              MIT-licensed, Conventional Commits, automated releases.</span
+              ><strong class="text-foreground">Open Source</strong> —
+              MIT-licensed, no affiliation with Progress.</span
             >
           </li>
         </ul>
@@ -267,7 +332,9 @@ const pipeline = [
       <HoverGlow client:visible>
         <Card className="h-full">
           <CardHeader>
-            <CardTitle className="font-mono text-sm tracking-wide text-oxabl-green">
+            <CardTitle
+              className="font-mono text-sm tracking-wide text-oxabl-green"
+            >
               $ oxabl check ./src --preprocess
             </CardTitle>
           </CardHeader>
@@ -287,7 +354,7 @@ elapsed <span class="text-foreground">1.8s</span></pre>
     </div>
   </section>
 
-  <!-- START -->
+  <!-- GET STARTED (users / CLI) -->
   <section id="start" class="border-t border-border px-6 py-24">
     <div class="mx-auto w-full max-w-3xl text-center">
       <p
@@ -298,12 +365,48 @@ elapsed <span class="text-foreground">1.8s</span></pre>
       <h2
         class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
       >
-        Clone it. Build it. Break it.
+        Install the CLI
       </h2>
       <p class="mx-auto mt-4 max-w-xl text-muted-foreground">
-        Requires a recent Rust toolchain. Workspace builds with plain cargo —
-        no special sauce.
+        Installation script and distribution channel coming with 1.0.0.
       </p>
+
+      <div
+        class="mt-10 overflow-hidden rounded-3xl border border-border bg-card text-left [box-shadow:var(--card-shadow)]"
+      >
+        <div
+          class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground"
+        >
+          <span class="size-2 rounded-full bg-oxabl-green/80"></span>
+          terminal
+        </div>
+        <pre
+          class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"
+        ><span class="text-muted-foreground"># install from GitHub (requires Rust)</span>
+cargo install --git https://github.com/oxabl-project/oxabl oxabl
+
+<span class="text-muted-foreground"># check a tree</span>
+oxabl check ./path/to/src --preprocess
+
+<span class="text-muted-foreground"># dump the semantic model</span>
+oxabl analyze app.p --schema sports.df</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTRIBUTE -->
+  <section id="contribute" class="border-t border-border px-6 py-24">
+    <div class="mx-auto w-full max-w-3xl text-center">
+      <p
+        class="mb-3 text-xs font-medium tracking-[0.3em] text-oxabl-green uppercase"
+      >
+        contribute to oxabl
+      </p>
+      <h2
+        class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
+      >
+        Build the toolchain with us
+      </h2>
 
       <div
         class="mt-10 overflow-hidden rounded-3xl border border-border bg-card text-left [box-shadow:var(--card-shadow)]"
@@ -357,7 +460,6 @@ cargo run -p oxabl -- analyze app.p --schema sports.df</pre>
     class="flex flex-col items-center gap-4 border-t border-border px-6 py-14 text-center"
   >
     <Logo variant="wordmark" size="sm" />
-    <p class="text-sm text-muted-foreground">oxidized abl tooling</p>
     <p class="max-w-md text-xs text-muted-foreground/70">
       Oxabl is an unofficial open-source project with
       <strong class="font-medium text-muted-foreground">no affiliation</strong>
@@ -396,5 +498,9 @@ cargo run -p oxabl -- analyze app.p --schema sports.df</pre>
       document.getElementById("pipeline")?.scrollIntoView({ behavior: "smooth" })
     if (e.key === "s")
       document.getElementById("start")?.scrollIntoView({ behavior: "smooth" })
+    if (e.key === "c")
+      document
+        .getElementById("contribute")
+        ?.scrollIntoView({ behavior: "smooth" })
   })
 </script>

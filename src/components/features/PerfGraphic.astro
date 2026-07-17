@@ -1,0 +1,44 @@
+---
+// Bar chart + big number — "big number go up"
+const bars = [28, 36, 42, 55, 48, 62, 71, 68, 84, 92]
+---
+
+<div
+  class="flex h-full min-h-40 flex-col justify-center gap-3 rounded-3xl border border-border bg-card p-5 [box-shadow:var(--card-shadow)]"
+  aria-hidden="true"
+>
+  <div class="flex items-center justify-between text-[10px] tracking-widest text-muted-foreground uppercase">
+    <span>throughput</span>
+    <span class="text-oxabl-green">codspeed</span>
+  </div>
+
+  <div class="flex items-end justify-between gap-4">
+    <div>
+      <div class="font-heading text-4xl font-semibold tracking-tight text-oxabl-green tabular-nums">
+        &lt;1<span class="text-2xl">ms</span>
+      </div>
+      <div class="mt-1 text-[11px] text-muted-foreground">
+        typical file parse
+      </div>
+      <div class="mt-2 font-mono text-[10px] text-muted-foreground/70">
+        ~50+ MiB/s · no JVM
+      </div>
+    </div>
+
+    <div class="flex h-20 items-end gap-1">
+      {
+        bars.map((h, i) => (
+          <div
+            class:list={[
+              "w-2 rounded-sm transition-colors",
+              i === bars.length - 1
+                ? "bg-oxabl-green"
+                : "bg-oxabl-green/30 dark:bg-oxabl-green/40",
+            ]}
+            style={`height: ${h}%`}
+          />
+        ))
+      }
+    </div>
+  </div>
+</div>

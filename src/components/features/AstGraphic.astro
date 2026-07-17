@@ -1,0 +1,41 @@
+---
+// Minimal AST tree for: IF x > 0 THEN DISPLAY x.
+---
+
+<div
+  class="flex h-full min-h-40 flex-col justify-center rounded-3xl border border-border bg-card p-5 font-mono text-[11px] leading-relaxed [box-shadow:var(--card-shadow)]"
+  aria-hidden="true"
+>
+  <div class="mb-3 flex items-center justify-between text-[10px] tracking-widest text-muted-foreground uppercase">
+    <span>ast</span>
+    <span class="text-oxabl-green">NodeId</span>
+  </div>
+  <div class="space-y-0.5 text-muted-foreground">
+    <div>
+      <span class="text-oxabl-green">If</span>
+      <span class="text-muted-foreground/50"> #12</span>
+    </div>
+    <div class="pl-3">
+      <span class="text-muted-foreground/50">├─</span>
+      <span class="text-foreground"> cond</span>
+      <span class="text-muted-foreground/50"> Binary(>)</span>
+    </div>
+    <div class="pl-6">
+      <span class="text-muted-foreground/50">├─</span>
+      <span class="text-sky-600 dark:text-sky-300"> Ident(x)</span>
+    </div>
+    <div class="pl-6">
+      <span class="text-muted-foreground/50">└─</span>
+      <span class="text-amber-600 dark:text-amber-300"> Int(0)</span>
+    </div>
+    <div class="pl-3">
+      <span class="text-muted-foreground/50">└─</span>
+      <span class="text-foreground"> then</span>
+      <span class="text-muted-foreground/50"> Display</span>
+    </div>
+    <div class="pl-6">
+      <span class="text-muted-foreground/50">└─</span>
+      <span class="text-sky-600 dark:text-sky-300"> Ident(x)</span>
+    </div>
+  </div>
+</div>

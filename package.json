@@ -7,9 +7,10 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host 0.0.0.0",
     "build": "astro build",
     "preview": "astro preview",
+    "start": "serve dist -s -l tcp://0.0.0.0:${PORT:-3000}",
     "astro": "astro",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx,astro}\"",
@@ -30,6 +31,7 @@
     "lucide-react": "^1.24.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "serve": "^14.2.5",
     "shadcn": "^4.13.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4",

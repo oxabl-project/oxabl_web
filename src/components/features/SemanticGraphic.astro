@@ -1,0 +1,49 @@
+---
+// Scope tree + resolved symbol reference.
+---
+
+<div
+  class="flex h-full min-h-40 flex-col justify-center gap-3 rounded-3xl border border-border bg-card p-5 [box-shadow:var(--card-shadow)]"
+  aria-hidden="true"
+>
+  <div class="flex items-center justify-between text-[10px] tracking-widest text-muted-foreground uppercase">
+    <span>scopes · symbols</span>
+    <span class="text-oxabl-green">resolved</span>
+  </div>
+
+  <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 font-mono text-[11px]">
+    <div class="space-y-1.5 rounded-2xl border border-border bg-muted/40 p-3">
+      <div class="text-[10px] text-muted-foreground">file scope</div>
+      <div class="flex items-center gap-2">
+        <span class="size-1.5 rounded-full bg-oxabl-green"></span>
+        <span class="text-foreground">x</span>
+        <span class="text-muted-foreground/60">: INTEGER</span>
+      </div>
+      <div class="flex items-center gap-2 pl-3 text-muted-foreground">
+        <span class="text-muted-foreground/40">└</span>
+        <span>proc p</span>
+      </div>
+      <div class="flex items-center gap-2 pl-6">
+        <span class="size-1.5 rounded-full bg-sky-500"></span>
+        <span class="text-foreground">x</span>
+        <span class="text-muted-foreground/60">shadow</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-center gap-1 text-oxabl-green">
+      <span class="text-lg">→</span>
+      <span class="text-[9px] tracking-wide text-muted-foreground">bind</span>
+    </div>
+
+    <div class="space-y-1.5 rounded-2xl border border-oxabl-green/30 bg-oxabl-green/5 p-3">
+      <div class="text-[10px] text-oxabl-green">reference</div>
+      <div class="text-foreground">DISPLAY x</div>
+      <div class="text-[10px] text-muted-foreground">
+        → <span class="text-oxabl-green">SymbolId(7)</span>
+      </div>
+      <div class="text-[10px] text-muted-foreground">
+        reads: <span class="text-foreground">1</span>
+      </div>
+    </div>
+  </div>
+</div>

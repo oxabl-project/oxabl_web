@@ -1,0 +1,38 @@
+---
+---
+
+<div
+  class="flex h-full min-h-40 flex-col justify-center gap-3 rounded-3xl border border-border bg-card p-5 font-mono text-[11px] [box-shadow:var(--card-shadow)]"
+  aria-hidden="true"
+>
+  <div class="flex items-center justify-between text-[10px] tracking-widest text-muted-foreground uppercase">
+    <span>.df ↔ code</span>
+    <span class="text-oxabl-green">linked</span>
+  </div>
+
+  <div class="grid gap-2 sm:grid-cols-2">
+    <div class="rounded-2xl border border-border bg-muted/40 p-3">
+      <div class="mb-2 text-[10px] text-muted-foreground">sports.df</div>
+      <div class="text-muted-foreground">ADD TABLE</div>
+      <div class="text-foreground">&nbsp;&nbsp;"Customer"</div>
+      <div class="mt-1 text-muted-foreground">ADD FIELD</div>
+      <div class="text-foreground">&nbsp;&nbsp;"Name" AS character</div>
+      <div class="text-foreground">&nbsp;&nbsp;"CustNum" AS integer</div>
+    </div>
+
+    <div class="rounded-2xl border border-oxabl-green/30 bg-oxabl-green/5 p-3">
+      <div class="mb-2 text-[10px] text-oxabl-green">app.p</div>
+      <div class="text-foreground">FOR EACH Customer:</div>
+      <div class="pl-2">
+        <span class="text-muted-foreground">DISPLAY</span>
+        <span class="text-oxabl-green"> Customer.Name</span>
+        <span class="text-muted-foreground">.</span>
+      </div>
+      <div class="mt-2 border-t border-oxabl-green/20 pt-2 text-[10px] text-muted-foreground">
+        <span class="text-oxabl-green">✓</span> Name → character
+        <br />
+        <span class="text-oxabl-green">✓</span> buffer ← schema table
+      </div>
+    </div>
+  </div>
+</div>
