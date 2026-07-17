@@ -1,12 +1,13 @@
 ---
 import Logo from "@/components/Logo.astro"
+import { MobileNav } from "@/components/MobileNav"
 ---
 
 <nav
   class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md"
 >
-  <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-    <a href="#" class="flex items-center gap-2" aria-label="ox_abl home">
+  <div class="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-6">
+    <a href="#" class="flex shrink-0 items-center gap-2" aria-label="ox_abl home">
       <Logo variant="mark" size="sm" />
       <kbd
         class="inline-flex h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground"
@@ -15,14 +16,14 @@ import Logo from "@/components/Logo.astro"
       </kbd>
     </a>
 
-    <div class="flex items-center gap-4 text-sm sm:gap-6">
+    <div class="hidden items-center gap-4 text-sm sm:flex sm:gap-6">
       <a
         href="#features"
         class="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
       >
         features
         <kbd
-          class="hidden h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground sm:inline-flex"
+          class="hidden h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground md:inline-flex"
         >
           f
         </kbd>
@@ -33,7 +34,7 @@ import Logo from "@/components/Logo.astro"
       >
         pipeline
         <kbd
-          class="hidden h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground sm:inline-flex"
+          class="hidden h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground md:inline-flex"
         >
           p
         </kbd>
@@ -44,7 +45,7 @@ import Logo from "@/components/Logo.astro"
       >
         start
         <kbd
-          class="hidden h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground sm:inline-flex"
+          class="hidden h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground md:inline-flex"
         >
           s
         </kbd>
@@ -55,7 +56,7 @@ import Logo from "@/components/Logo.astro"
       >
         contribute
         <kbd
-          class="hidden h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground sm:inline-flex"
+          class="hidden h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] font-normal text-muted-foreground md:inline-flex"
         >
           c
         </kbd>
@@ -80,5 +81,7 @@ import Logo from "@/components/Logo.astro"
         </svg>
       </a>
     </div>
+
+    <MobileNav client:load />
   </div>
 </nav>
