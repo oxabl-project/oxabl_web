@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sheet"
 
 const links = [
+  { href: "#try", label: "try" },
   { href: "#features", label: "features" },
   { href: "#pipeline", label: "pipeline" },
   { href: "#start", label: "start" },
