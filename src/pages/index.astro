@@ -2,12 +2,7 @@
 import Layout from "@/layouts/main.astro"
 import Navbar from "@/components/Navbar.astro"
 import Logo from "@/components/Logo.astro"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { HoverGlow } from "@/components/HoverGlow"
 import TokenGraphic from "@/components/features/TokenGraphic.astro"
 import AstGraphic from "@/components/features/AstGraphic.astro"
@@ -15,6 +10,7 @@ import SemanticGraphic from "@/components/features/SemanticGraphic.astro"
 import PreprocGraphic from "@/components/features/PreprocGraphic.astro"
 import SchemaGraphic from "@/components/features/SchemaGraphic.astro"
 import PerfGraphic from "@/components/features/PerfGraphic.astro"
+import { TryOxabl } from "@/components/TryOxabl"
 
 // Counts from `cargo run -p oxabl_codegen -- summary` + Kind enum sections.
 const KEYWORD_COUNT = 563
@@ -137,14 +133,14 @@ const pipeline = [
           View on GitHub
         </a>
         <a
-          href="#start"
+          href="#try"
           class="inline-flex h-10 items-center gap-2 rounded-4xl border border-border bg-background px-5 text-sm font-medium transition-colors hover:bg-muted"
         >
-          Get started
+          Try it out
           <kbd
             class="inline-flex h-5 items-center rounded border border-border bg-muted px-1 font-mono text-[10px] text-muted-foreground"
           >
-            s
+            t
           </kbd>
         </a>
       </div>
@@ -154,6 +150,29 @@ const pipeline = [
       >
         Unofficial · no affiliation with Progress Software
       </p>
+    </div>
+  </section>
+
+  <!-- TRY IT OUT -->
+  <section id="try" class="border-y border-border bg-muted/20 px-6 py-24">
+    <div class="mx-auto w-full max-w-6xl">
+      <div class="mb-10 max-w-2xl">
+        <p
+          class="mb-3 text-xs font-medium tracking-[0.3em] text-oxabl-green uppercase"
+        >
+          WebAssembly demo
+        </p>
+        <h2
+          class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
+        >
+          Paste ABL. Get signal.
+        </h2>
+        <p class="mt-4 text-muted-foreground">
+          The real Oxabl parser, semantic analyzer, linter, and formatter,
+          compiled to WebAssembly. Nothing leaves your browser.
+        </p>
+      </div>
+      <TryOxabl client:visible />
     </div>
   </section>
 
@@ -193,10 +212,7 @@ const pipeline = [
                 ]}
               >
                 <div
-                  class:list={[
-                    "flex flex-col gap-3",
-                    reverse && "lg:order-2",
-                  ]}
+                  class:list={["flex flex-col gap-3", reverse && "lg:order-2"]}
                 >
                   <p class="font-mono text-[10px] tracking-[0.25em] text-oxabl-green">
                     {String(i + 1).padStart(2, "0")}
@@ -256,12 +272,12 @@ const pipeline = [
                 href={p.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex h-full flex-col gap-2 rounded-3xl border border-border bg-card p-4 transition-colors [box-shadow:var(--card-shadow)] hover:border-oxabl-green/40 hover:bg-accent/40"
+                class="flex h-full flex-col gap-2 rounded-3xl border border-border bg-card p-4 [box-shadow:var(--card-shadow)] transition-colors hover:border-oxabl-green/40 hover:bg-accent/40"
               >
                 <span class="font-mono text-[10px] tracking-widest text-oxabl-green">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span class="font-heading text-base font-medium font-mono">
+                <span class="font-heading font-mono text-base font-medium">
                   {p.crate}
                 </span>
                 <span class="text-xs text-muted-foreground">{p.desc}</span>
@@ -278,7 +294,9 @@ const pipeline = [
 
   <!-- WHY -->
   <section id="why" class="px-6 py-24">
-    <div class="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
+    <div
+      class="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-2 lg:items-center"
+    >
       <div>
         <p class="mb-3 text-xs font-medium tracking-wide text-oxabl-green">
           why ox_abl
@@ -300,30 +318,29 @@ const pipeline = [
           <li class="flex gap-3">
             <span class="text-oxabl-green" aria-hidden="true">▸</span>
             <span
-              ><strong class="text-foreground">Native speed</strong> — no
-              reliance on the JVM/AVM, written in Rust for safety and speed.</span
+              ><strong class="text-foreground">Native speed</strong> — no reliance
+              on the JVM/AVM, written in Rust for safety and speed.</span
             >
           </li>
           <li class="flex gap-3">
             <span class="text-oxabl-green" aria-hidden="true">▸</span>
             <span
-              ><strong class="text-foreground">Real signal</strong> — syntax
-              errors and lint failures surface the real cause.</span
+              ><strong class="text-foreground">Real signal</strong> — syntax errors
+              and lint failures surface the real cause.</span
             >
           </li>
           <li class="flex gap-3">
             <span class="text-oxabl-green" aria-hidden="true">▸</span>
             <span
-              ><strong class="text-foreground">A composable library</strong> —
-              only use the features you need for building, or use the CLI for
-              development.</span
+              ><strong class="text-foreground">A composable library</strong> — only
+              use the features you need for building, or use the CLI for development.</span
             >
           </li>
           <li class="flex gap-3">
             <span class="text-oxabl-green" aria-hidden="true">▸</span>
             <span
-              ><strong class="text-foreground">Open Source</strong> —
-              MIT-licensed, no affiliation with Progress.</span
+              ><strong class="text-foreground">Open Source</strong> — MIT-licensed,
+              no affiliation with Progress.</span
             >
           </li>
         </ul>
@@ -340,8 +357,7 @@ const pipeline = [
           </CardHeader>
           <CardContent>
             <pre
-              class="overflow-x-auto font-mono text-[12px] leading-relaxed text-muted-foreground"
-            ><span class="text-oxabl-green">✓</span> 1,284 files parsed
+              class="overflow-x-auto font-mono text-[12px] leading-relaxed text-muted-foreground"><span class="text-oxabl-green">✓</span> 1,284 files parsed
 <span class="text-oxabl-green">✓</span> 0 hard errors
 <span class="text-muted-foreground/70">~</span> 3 PREPROC007 warnings
   unresolvable include 'sys/legacy.i'
@@ -381,8 +397,7 @@ elapsed <span class="text-foreground">1.8s</span></pre>
           terminal
         </div>
         <pre
-          class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"
-        ><span class="text-muted-foreground"># install from GitHub (requires Rust)</span>
+          class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"><span class="text-muted-foreground"># install from GitHub (requires Rust)</span>
 cargo install --git https://github.com/oxabl-project/oxabl oxabl
 
 <span class="text-muted-foreground"># check a tree</span>
@@ -418,8 +433,7 @@ oxabl analyze app.p --schema sports.df</pre>
           terminal
         </div>
         <pre
-          class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"
-        ><span class="text-muted-foreground"># get the source</span>
+          class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"><span class="text-muted-foreground"># get the source</span>
 git clone https://github.com/oxabl-project/oxabl.git
 cd oxabl
 
@@ -463,8 +477,7 @@ cargo run -p oxabl -- analyze app.p --schema sports.df</pre>
     <p class="max-w-md text-xs text-muted-foreground/70">
       Oxabl is an unofficial open-source project with
       <strong class="font-medium text-muted-foreground">no affiliation</strong>
-      with Progress Software Corporation. ABL is used here as a language name
-      only.
+      with Progress Software Corporation. ABL is used here as a language name only.
     </p>
     <p class="text-xs text-muted-foreground/60">
       A
@@ -493,9 +506,15 @@ cargo run -p oxabl -- analyze app.p --schema sports.df</pre>
       return
     }
     if (e.key === "f")
-      document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
+      document
+        .getElementById("features")
+        ?.scrollIntoView({ behavior: "smooth" })
+    if (e.key === "t")
+      document.getElementById("try")?.scrollIntoView({ behavior: "smooth" })
     if (e.key === "p")
-      document.getElementById("pipeline")?.scrollIntoView({ behavior: "smooth" })
+      document
+        .getElementById("pipeline")
+        ?.scrollIntoView({ behavior: "smooth" })
     if (e.key === "s")
       document.getElementById("start")?.scrollIntoView({ behavior: "smooth" })
     if (e.key === "c")
