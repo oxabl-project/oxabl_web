@@ -1,36 +1,12 @@
 import * as React from "react"
-import initOxabl, { analyze_source, format_source } from "@/wasm/oxabl_wasm.js"
-
-type Diagnostic = {
-  source: "parse" | "preproc" | "semantic" | "lint"
-  severity: "error" | "warning" | "info" | "hint"
-  code: string
-  message: string
-  start: Position
-  end: Position
-  help: string | null
-}
-
-type Position = {
-  byte: number
-  line: number
-  column: number
-}
-
-type AnalyzeResponse = {
-  diagnostics: Diagnostic[]
-}
-
-type FormatResponse = {
-  source: string
-  changed: boolean
-  error: string | null
-}
-
-type OxablWasm = {
-  analyze_source: typeof analyze_source
-  format_source: typeof format_source
-}
+import {
+  analyze as analyzeSource,
+  crashReportUrl,
+  format as formatSource,
+  isTerminal,
+  type Diagnostic,
+  type OxablFailure,
+} from "@/lib/oxabl"
 
 const example = `DEFINE VARIABLE customer-name AS CHARACTER NO-UNDO.
 DEFINE VARIABLE unused-count AS INTEGER NO-UNDO.
@@ -39,20 +15,23 @@ customer-name = "Ada".
 IF TRUE THEN
 MESSAGE customer-name.`
 
-let wasmPromise: Promise<OxablWasm> | undefined
-
-function loadOxabl() {
-  if (!wasmPromise) {
-    wasmPromise = initOxabl().then(() => ({
-      analyze_source,
-      format_source,
-    }))
-  }
-  return wasmPromise
+function summarize(count: number, startedAt: number): string {
+  const elapsed = (performance.now() - startedAt).toFixed(1)
+  return `${count} diagnostic${count === 1 ? "" : "s"} · ${elapsed}ms`
 }
 
-function parse<T>(json: string): T {
-  return JSON.parse(json) as T
+/** The short line beside the status dot. Never the full crash message. */
+function failureHeadline(failure: OxablFailure): string {
+  switch (failure.kind) {
+    case "crash":
+      return `Internal error · engine ${failure.version} · recovered`
+    case "unsupported":
+      return "Unsupported browser"
+    case "stale-artifact":
+      return "Engine build mismatch · reload required"
+    case "load":
+      return "Engine failed to load · try again"
+  }
 }
 
 export function TryOxabl() {
@@ -60,46 +39,49 @@ export function TryOxabl() {
   const [diagnostics, setDiagnostics] = React.useState<Diagnostic[]>([])
   const [status, setStatus] = React.useState("Loading Oxabl…")
   const [busy, setBusy] = React.useState(true)
+  // Carried explicitly rather than inferred from an empty `diagnostics` array:
+  // an empty array renders the cheerful "No diagnostics" box, which beside a red
+  // dot would tell the visitor everything is fine.
+  const [failure, setFailure] = React.useState<OxablFailure | null>(null)
+
+  // A terminal failure cannot be retried without a page reload, so the controls
+  // stay disabled rather than re-enabling when the work finishes.
+  const terminal = failure !== null && isTerminal(failure)
+  const disabled = busy || terminal
 
   const analyze = React.useCallback(async (nextSource: string) => {
     setBusy(true)
     const started = performance.now()
-    try {
-      const wasm = await loadOxabl()
-      const result = parse<AnalyzeResponse>(wasm.analyze_source(nextSource))
-      setDiagnostics(result.diagnostics)
-      setStatus(
-        `${result.diagnostics.length} diagnostic${result.diagnostics.length === 1 ? "" : "s"} · ${(performance.now() - started).toFixed(1)}ms`
-      )
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Oxabl failed to load")
-    } finally {
-      setBusy(false)
+    const result = await analyzeSource(nextSource)
+    if (result.ok) {
+      setFailure(null)
+      setDiagnostics(result.value.diagnostics)
+      setStatus(summarize(result.value.diagnostics.length, started))
+    } else {
+      // Drop the previous run's diagnostics: presenting them beside a crash
+      // notice would show stale results as current.
+      setDiagnostics([])
+      setFailure(result.failure)
+      setStatus(failureHeadline(result.failure))
     }
+    setBusy(false)
   }, [])
 
   React.useEffect(() => {
     let cancelled = false
     const started = performance.now()
 
-    void loadOxabl()
-      .then((wasm) => {
-        if (cancelled) return
-        const result = parse<AnalyzeResponse>(wasm.analyze_source(example))
-        setDiagnostics(result.diagnostics)
-        setStatus(
-          `${result.diagnostics.length} diagnostic${result.diagnostics.length === 1 ? "" : "s"} · ${(performance.now() - started).toFixed(1)}ms`
-        )
-      })
-      .catch((error: unknown) => {
-        if (cancelled) return
-        setStatus(
-          error instanceof Error ? error.message : "Oxabl failed to load"
-        )
-      })
-      .finally(() => {
-        if (!cancelled) setBusy(false)
-      })
+    void analyzeSource(example).then((result) => {
+      if (cancelled) return
+      if (result.ok) {
+        setDiagnostics(result.value.diagnostics)
+        setStatus(summarize(result.value.diagnostics.length, started))
+      } else {
+        setFailure(result.failure)
+        setStatus(failureHeadline(result.failure))
+      }
+      setBusy(false)
+    })
 
     return () => {
       cancelled = true
@@ -109,41 +91,59 @@ export function TryOxabl() {
   async function format() {
     setBusy(true)
     const started = performance.now()
-    try {
-      const wasm = await loadOxabl()
-      const result = parse<FormatResponse>(wasm.format_source(source))
-      if (result.error) {
-        setStatus(`Formatter left source unchanged · ${result.error}`)
-        return
-      }
-      setSource(result.source)
-      const analyzed = parse<AnalyzeResponse>(
-        wasm.analyze_source(result.source)
-      )
-      setDiagnostics(analyzed.diagnostics)
-      setStatus(
-        `${result.changed ? "Formatted" : "Already formatted"} · ${(performance.now() - started).toFixed(1)}ms`
-      )
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Oxabl failed to run")
-    } finally {
+    const result = await formatSource(source)
+
+    if (!result.ok) {
+      setDiagnostics([])
+      setFailure(result.failure)
+      setStatus(failureHeadline(result.failure))
       setBusy(false)
+      return
     }
+
+    // A formatter *bail* is a successful call: the formatter declined to rewrite
+    // input it could not reproduce faithfully, and returned the original bytes.
+    // That is a normal outcome, not a crash — keep it visibly distinct.
+    if (result.value.error) {
+      setFailure(null)
+      setStatus(`Formatter left source unchanged · ${result.value.error}`)
+      setBusy(false)
+      return
+    }
+
+    setSource(result.value.source)
+    const analyzed = await analyzeSource(result.value.source)
+    if (analyzed.ok) {
+      setFailure(null)
+      setDiagnostics(analyzed.value.diagnostics)
+      setStatus(
+        `${result.value.changed ? "Formatted" : "Already formatted"} · ${(performance.now() - started).toFixed(1)}ms`
+      )
+    } else {
+      setDiagnostics([])
+      setFailure(analyzed.failure)
+      setStatus(failureHeadline(analyzed.failure))
+    }
+    setBusy(false)
   }
+
+  const dotClass = failure
+    ? "bg-destructive"
+    : busy
+      ? "animate-pulse bg-amber-500"
+      : "bg-oxabl-green"
 
   return (
     <div className="overflow-hidden rounded-3xl border border-border bg-card [box-shadow:var(--card-shadow)]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span
-            className={`size-2 rounded-full ${busy ? "animate-pulse bg-amber-500" : "bg-oxabl-green"}`}
-          />
+          <span className={`size-2 rounded-full ${dotClass}`} />
           <span>{status}</span>
         </div>
         <div className="flex gap-2">
           <button
             type="button"
-            disabled={busy}
+            disabled={disabled}
             onClick={() => void analyze(source)}
             className="inline-flex h-9 items-center rounded-4xl border border-border bg-background px-4 text-xs font-medium transition-colors hover:bg-muted disabled:cursor-wait disabled:opacity-50"
           >
@@ -151,7 +151,7 @@ export function TryOxabl() {
           </button>
           <button
             type="button"
-            disabled={busy}
+            disabled={disabled}
             onClick={() => void format()}
             className="inline-flex h-9 items-center rounded-4xl bg-primary px-4 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-50"
           >
@@ -176,7 +176,37 @@ export function TryOxabl() {
             <span>Diagnostics</span>
             <span>single file</span>
           </div>
-          {diagnostics.length === 0 ? (
+          {failure ? (
+            <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm">
+              <p className="font-medium text-destructive">
+                {failure.kind === "crash"
+                  ? "Oxabl hit an internal error"
+                  : failureHeadline(failure)}
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                {failure.message}
+              </p>
+              {failure.kind === "crash" && (
+                <>
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    Diagnostics are unavailable for this run. The engine has
+                    restarted, so you can edit and try again without reloading.
+                  </p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">
+                    Engine build {failure.version}
+                  </p>
+                  <a
+                    href={crashReportUrl(failure, source)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-flex h-8 items-center rounded-4xl border border-border bg-background px-3 text-[11px] font-medium transition-colors hover:bg-muted"
+                  >
+                    Report this input
+                  </a>
+                </>
+              )}
+            </div>
+          ) : diagnostics.length === 0 ? (
             <div className="rounded-2xl border border-oxabl-green/20 bg-oxabl-green/5 p-4 text-sm text-muted-foreground">
               No diagnostics. Try removing a period or adding an unused
               variable.

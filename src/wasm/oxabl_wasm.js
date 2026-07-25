@@ -1,3 +1,17 @@
+import { __oxabl_stash_panic } from './snippets/oxabl_wasm-c3eca395c8b340b7/inline0.js';
+
+
+export function __wbg_reset_state () {
+    __wbg_instance_id++;
+    cachedUint8ArrayMemory0 = null;
+    if (typeof numBytesDecoded !== 'undefined') numBytesDecoded = 0;
+    if (typeof WASM_VECTOR_LEN !== 'undefined') WASM_VECTOR_LEN = 0;
+    __wbg_reinit_scheduled = false;
+    wasmInstance = new WebAssembly.Instance(wasmModule, __wbg_get_imports());
+    wasm = wasmInstance.exports;
+    wasm.__wbindgen_start();
+}
+
 /**
  * Analyze one in-memory ABL file through the same parse → semantic → lint
  * collector used by the CLI and LSP.
@@ -13,11 +27,14 @@ export function analyze_source(source) {
     try {
         const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.analyze_source(ptr0, len0);
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.analyze_source(ptr0, len0);
         deferred2_0 = ret[0];
         deferred2_1 = ret[1];
         return getStringFromWasm0(ret[0], ret[1]);
     } finally {
+        __wbg_call_guard();
         wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
     }
 }
@@ -34,18 +51,61 @@ export function format_source(source) {
     try {
         const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.format_source(ptr0, len0);
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.format_source(ptr0, len0);
         deferred2_0 = ret[0];
         deferred2_1 = ret[1];
         return getStringFromWasm0(ret[0], ret[1]);
     } finally {
+        __wbg_call_guard();
         wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
     }
 }
 
+/**
+ * Install the panic hook. Runs on instantiation, and — crucially — **re-runs on
+ * every recovery**: `__wbg_reset_state` calls `__wbindgen_start()`
+ * unconditionally as its last step, after creating the fresh instance and
+ * rebinding it. The hook is a static, so it dies with the old instance and this
+ * re-run re-arms it, which is why no `reinstall()` export is needed. (Upstream
+ * removed `set_on_reinit` in 0.2.118 for exactly that reason.)
+ */
+export function start() {
+    __wbg_call_guard();
+    wasm.start();
+}
+
+/**
+ * An identifier for **this artifact**, not just the crate.
+ *
+ * Returns `<crate version>+<build id>`. The build id is a short git SHA baked
+ * in by `build.rs`; see there for why the crate version alone identifies
+ * nothing. The website shows this in a crash report so a stale hand-vendored
+ * copy of `src/wasm/` is distinguishable from a current one.
+ * @returns {string}
+ */
+export function version() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.version();
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+}
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
+        __wbg___oxabl_stash_panic_9e4e178196e42d87: function(arg0, arg1) {
+            __oxabl_stash_panic(getStringFromWasm0(arg0, arg1));
+        },
         __wbindgen_init_externref_table: function() {
             const table = wasm.__wbindgen_externrefs;
             const offset = table.grow(4);
@@ -62,9 +122,18 @@ function __wbg_get_imports() {
     };
 }
 
+function __wbg_call_guard() {
+    if (__wbg_reinit_scheduled) {
+        __wbg_reset_state();
+        return;
+    }
+}
+
+
+let __wbg_instance_id = 0;
+
 function getStringFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return decodeText(ptr, len);
+    return decodeText(ptr >>> 0, len);
 }
 
 let cachedUint8ArrayMemory0 = null;
@@ -112,6 +181,8 @@ function passStringToWasm0(arg, malloc, realloc) {
     return ptr;
 }
 
+let __wbg_reinit_scheduled = false;
+
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 cachedTextDecoder.decode();
 const MAX_SAFARI_DECODE_BYTES = 2146435072;
@@ -141,8 +212,9 @@ if (!('encodeInto' in cachedTextEncoder)) {
 
 let WASM_VECTOR_LEN = 0;
 
-let wasmModule, wasm;
+let wasmModule, wasmInstance, wasm;
 function __wbg_finalize_init(instance, module) {
+    wasmInstance = instance;
     wasm = instance.exports;
     wasmModule = module;
     cachedUint8ArrayMemory0 = null;
