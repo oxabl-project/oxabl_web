@@ -41,9 +41,44 @@ The UI is deliberately a thin client. It calls the shared Oxabl single-file
 analysis and safe formatter pipelines; project includes, schema-backed checks,
 and workspace config are not reimplemented in the website.
 
-The generated JavaScript and `.wasm` file must stay together under `src/wasm`.
-Vite processes the glue module and rewrites its relative WebAssembly URL for
-both development and production builds.
+The generated JavaScript and `.wasm` file must stay together under `src/wasm`,
+along with the `snippets/` directory — the engine's panic hook is compiled in as
+an inline-JS shim, which `wasm-bindgen` emits there and the glue imports by
+relative path. Vite processes the glue module and rewrites its relative
+WebAssembly URL for both development and production builds.
+
+### The engine can crash, and the playground recovers from it
+
+`src/lib/oxabl.ts` wraps the artifact. It exists because the engine is Rust
+compiled to `wasm32-unknown-unknown`, where a Rust panic does not unwind — it
+traps, and arrives here as a `WebAssembly.RuntimeError`. The guard reads the
+panic message the engine stashed on `globalThis.__oxablPanicMessage` before the
+trap, then calls the artifact's `__wbg_reset_state()` to swap in a fresh
+instance, so the next click works without a page reload.
+
+That module, not the component, is where engine failures are classified, because
+the four kinds are not interchangeable:
+
+| Kind | Meaning | Retryable? |
+| --- | --- | --- |
+| `crash` | A Rust panic trapped the module. Already healed by the time you see it. | Yes — the whole point |
+| `load` | Fetch or startup failed, possibly a flaky network on an 828 KB download. | Yes |
+| `unsupported` | The engine cannot compile or instantiate the module. | No — controls stay disabled |
+| `stale-artifact` | The module loaded but lacks the recovery exports, i.e. this `src/wasm/` is older than this code. | No — reload required |
+
+The last one matters because nothing enforces lockstep between the two repos:
+`src/wasm/` is copied in by hand and neither repo's CI checks it. Rather than
+render a confident crash state over glue that can never heal, the guard checks
+for `__wbg_reset_state` and `version()` at load and says so.
+
+The guard lives in `src/lib/` rather than in `TryOxabl.tsx` because
+`react-refresh/only-export-components` is an error here with an allowlist of
+exactly `["buttonVariants"]`, and it must not live in `src/wasm/` because that
+directory is regenerated wholesale by the command above.
+
+**A hang is not covered.** An infinite loop in the engine freezes the main
+thread and looks identical to a crash from the outside; that needs a Web Worker
+with a timeout.
 
 ## Brand notes
 
