@@ -146,13 +146,28 @@
   }
 }
 
-/* Subtle green grid wash behind hero content */
+/* Subtle green grid wash behind hero content. Doubles as the fallback when the
+   WebGL hex backdrop (HexHero) can't run — it fades out once the canvas proves
+   itself, via [data-hex-active] set on <html>. */
 .hero-grid {
   background-image:
     linear-gradient(to right, oklch(0.55 0.15 150 / 0.06) 1px, transparent 1px),
     linear-gradient(to bottom, oklch(0.55 0.15 150 / 0.06) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
+  transition: opacity 300ms ease;
+}
+
+:root[data-hex-active] .hero-grid {
+  opacity: 0;
+}
+
+/* If the canvas is running there's no motion to reduce once it idles, but honor
+   the preference for the static grid regardless. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-grid {
+    transition: none;
+  }
 }
 
 .dark .hero-grid {

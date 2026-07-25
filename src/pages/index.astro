@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar.astro"
 import Logo from "@/components/Logo.astro"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { HoverGlow } from "@/components/HoverGlow"
+import { HexHero } from "@/components/HexHero"
 import TokenGraphic from "@/components/features/TokenGraphic.astro"
 import AstGraphic from "@/components/features/AstGraphic.astro"
 import SemanticGraphic from "@/components/features/SemanticGraphic.astro"
@@ -103,8 +104,9 @@ const pipeline = [
     class="relative flex min-h-[calc(100svh-3.5rem)] items-center overflow-hidden px-6"
   >
     <div class="hero-grid absolute inset-0" aria-hidden="true"></div>
+    <HexHero client:idle />
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.72_0.12_150_/_0.12),transparent_55%)] dark:bg-[radial-gradient(ellipse_at_top,oklch(0.55_0.14_150_/_0.18),transparent_55%)]"
+      class="pointer-events-none absolute inset-0 z-[2] bg-[radial-gradient(ellipse_at_top,oklch(0.72_0.12_150_/_0.12),transparent_55%)] dark:bg-[radial-gradient(ellipse_at_top,oklch(0.55_0.14_150_/_0.18),transparent_55%)]"
       aria-hidden="true"
     >
     </div>
