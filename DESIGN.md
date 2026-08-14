@@ -150,7 +150,11 @@ Light is still the identity: it is where the ink-on-paper language comes from, i
 
 Three states, not two: **Auto · Light · Dark**. A two-state switch cannot express "follow the system", so the first touch would permanently strand the reader on an explicit choice and make the default unreachable. Auto is therefore stored as the _absence_ of a preference rather than as a third value, which is what lets a reader on Auto keep following their system — including when it changes mid-visit, which the control listens for.
 
-It sits at the right end of the navbar as one bordered three-cell control, built from the same parts as everything else on the site: 1px rules, square corners, chrome type, `ink-muted` for the inactive cells, `ink` on `paper-sunk` for the active one. It carries **no icon**. The surface icons in block 4 remain the only pictograms here, and a sun-and-moon pair is the single most framework-default set of glyphs available — the exact look this document exists to prevent.
+It is one bordered three-cell control, built from the same parts as everything else on the site: 1px rules, square corners, chrome type, `ink-muted` for the inactive cells, `ink` on `paper-sunk` for the active one. From 640px up it sits at the right end of the bar, where it has always sat. Below 640px it sits inside the menu panel instead — it is the widest object on the bar and the reason the wordmark and the links no longer fit beside it, so leaving it there would not have fixed anything. The control itself is unchanged in either place.
+
+It carries **no icon**, and that does not change. A sun-and-moon pair is the single most framework-default set of glyphs available — the exact look this document exists to prevent.
+
+**Amended: the surface icons in block 4 are no longer the only pictograms.** The menu control below 640px is a second one — three 1px bars. The objection recorded above is semantic rather than technical: the sun and moon are refused for being the default glyph set, and the hamburger is open to precisely the same charge. Pretending otherwise would be the dishonest version of this amendment. It is admitted anyway, for a reason the sun and moon cannot claim: it is the one affordance a phone reader recognises without a label, where a chrome-type `menu` word would be a novel control every reader has to stop and read. It is drawn from the site's own 1px rules at the site's own scale rather than lifted from an icon set, and it exists only below 640px. It is an exception and it is the last one — a third pictogram needs its own amendment here first.
 
 The theme is resolved by a small inline script in the head, before first paint, because a flash of the wrong material costs the reader more than the script weighs. Nothing about the change is animated: a whole-page colour crossfade is the page moving on its own, which law 4 forbids.
 
@@ -162,16 +166,20 @@ Under the dark theme, page ground (L 0.17) and screen ground (L 0.13) sit 1.05:1
 
 Seven blocks. No two share a shape — that is what gives the page rhythm under a single grid law. Density varies per block: uniform `py-24` is what made the old page read as one long section.
 
-| #   | Block          | Shape                                                                                   | Material       |
-| --- | -------------- | --------------------------------------------------------------------------------------- | -------------- |
-| 1   | **Masthead**   | One bordered instrument panel: separate text and dominant shader cells                  | paper + screen |
-| 2   | **Playground** | Full-width interactive. Not a titled section — it _is_ the second screen                | screen         |
-| 3   | **Vocabulary** | One enormous keyword count, beneath it the real keyword list as a dense monospace field | paper          |
-| 4   | **What it is** | Centered wordmark-face heading, a full-width lead line, one ruled band of three icons   | paper          |
-| 5   | **Pipeline**   | The crates as one bespoke diagram built to the grid, each carrying its own description  | paper          |
-| 6   | **Speed**      | One honest benchmark table — files, lines, bytes, milliseconds                          | paper          |
-| 7   | **Run it**     | Install, CLI invocations, a CI snippet, and the one-output-many-consumers block         | paper + screen |
-| —   | **Footer**     | Contribute line, license, crates links, the no-affiliation disclaimer                   | paper          |
+| #   | Block          | Shape                                                                                                             | Material                         |
+| --- | -------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| 1   | **Masthead**   | One bordered instrument panel: text and dominant shader cells from `md` up, one paper cell below                  | paper + screen; paper below `md` |
+| 2   | **Playground** | Full-width interactive. Not a titled section — it _is_ the second screen                                          | screen                           |
+| 3   | **Vocabulary** | One enormous keyword count, beneath it the real keyword list as a dense monospace field                           | paper                            |
+| 4   | **What it is** | Centered wordmark-face heading, a full-width lead line, one ruled band of three icons                             | paper                            |
+| 5   | **Pipeline**   | The crates as one bespoke diagram built to the grid, each carrying its own description; stacked column below `md` | paper                            |
+| 6   | **Speed**      | One honest benchmark table — files, lines, bytes, milliseconds; stacked blocks below `md`                         | paper                            |
+| 7   | **Run it**     | Install, CLI invocations, a CI snippet, and the one-output-many-consumers block                                   | paper + screen                   |
+| —   | **Footer**     | Contribute line, license, crates links, the no-affiliation disclaimer                                             | paper                            |
+
+Blocks 5 and 6 carry a **second rendering** below `md`, not a restyled one. The diagram becomes a single stacked column of crate boxes; the table becomes one block per fixture. Both sit in a centred column inset from the viewport edges, and neither hides behind a horizontal scroller. Every crate name, caption, crates.io link, group heading and benchmark figure the desktop rendering carries is carried there too — the mobile rendering loses shape, never content.
+
+**The diagram's connectors are a desktop affordance.** Below `md` the spine keeps its documented order through the `01`–`08` sequence numbers already in the data, and Spine, Surfaces and Foundation stay distinguishable as groups, but the branching the SVG connectors draw is not represented at all. A diagram that has to be dragged sideways is not read, so when something has to go at phone width it is the branching that goes — not the crates, not the captions, not the links.
 
 The thesis sentence is **"ABL developers deserve modern toolchains."** It leads the masthead. It was previously buried two-thirds down the page under a green eyebrow label while the hero opened with a feature list.
 
@@ -185,7 +193,7 @@ That line is a **lead**, not prose, and it is the one named exception to the ~68
 
 Beneath it, one bordered box split into three cells by 1px rules, built to the same shape as the install block: CLI, LSP, CI. It is a single short horizontal band — three equal cells at every width, never stacking. Each cell holds a centered line-drawn icon and one `chrome` caption beneath it naming where that surface runs: _for your terminal_, _for your editor_, _for your CI_. Nothing else — no command, no prose. The install block already prints the commands, and repeating them here would make the two boxes the same object twice. The caption says where it runs and the icon says what it is, so the surface acronym itself is needed only as the icon's accessible name.
 
-The icons are the only pictograms on the site, and they follow law 2 without exception: 1px strokes in `--ink-muted`, no fill, no radius, no colour, drawn on the same grid as everything else. A filled or coloured icon set would reintroduce exactly the framework-default look this document exists to prevent.
+These icons, and the menu control that appears below 640px, are the only pictograms on the site, and both follow law 2 without exception: 1px strokes in `--ink-muted`, no fill, no radius, no colour, drawn on the same grid as everything else. A filled or coloured icon set would reintroduce exactly the framework-default look this document exists to prevent. This block once claimed the icons were the only pictograms full stop; the menu control's exception is argued in full under **The theme control**, admitted on the same terms it was once refused, and it buys nothing here — an icon set in this band is still refused.
 
 ### The consumer block
 
@@ -199,11 +207,21 @@ The `agent` tab is how AI capability appears on this site: fourth in a list of o
 
 `HexHero.tsx` + `hex/hexFloat.ts` stay, and every one of their gates stays: WebGL2 detection, `prefers-reduced-motion`, minimum viewport, and the FPS probe that tears the canvas down and reveals the static fallback. `float: 0` keeps the loop idle at zero cost until the cursor enters. This is the most carefully built thing on the site.
 
-The masthead is one large bordered instrument panel spanning the `max-w-7xl` content width. The paper text cell and dominant screen shader cell begin at the panel's top edge and are divided directly by 1px rules. On desktop the cells sit side by side at roughly 40% text / 60% shader, both filling the panel height; the panel has a minimum height of `min(78vh, 760px)` and the shader cell is at least 480px tall. Below `md` the cells stack, the shader sits below the text, and it is at least 360px tall. The static `.hero-grid` fallback lives inside and fills the shader cell.
+The masthead is one large bordered instrument panel spanning the `max-w-7xl` content width. From `md` up, the paper text cell and dominant screen shader cell begin at the panel's top edge and are divided directly by 1px rules. On desktop the cells sit side by side at roughly 40% text / 60% shader, both filling the panel height; the panel has a minimum height of `min(78vh, 760px)` and the shader cell is at least 480px tall. The static `.hero-grid` fallback lives inside and fills the shader cell.
+
+**Below `md` there is no shader cell at all.** Neither the canvas nor the static `.hero-grid` fallback is rendered, and the component's client code is not downloaded or hydrated — the masthead there is a single paper cell. This section used to specify a stacked shader at least 360px tall, and that specification was describing something that never worked: `MIN_VIEWPORT` is 768px, so the gate refused the canvas on every phone and what the cell actually held was an empty dark rectangle with a grid pattern in it. That is a screen under law 3, above the fold, that nothing can be touched on — and the reader downloaded a shader module to render it. Dropping the cell drops the payload with it. Every gate inside the component stays exactly as it is; the viewport gate is now defence in depth behind the load boundary rather than the only thing standing between a phone and the canvas.
 
 A shader too small to get a cursor into loses the whole point of the site's best interactive object. The shader therefore gets the dominant cell, but remains contained: the headline and all masthead copy stay in the separate paper cell, never on top of the canvas. A full-bleed `absolute inset-0` shader background remains forbidden. `iridescence` stays at `0.35`: a sheen across the bevels rather than a rainbow. Holographic iridescence is the signature of the aesthetic this redesign exists to escape.
 
 The static CSS fallback is rebuilt to match the panel — dark and contained, not a hue-tinted full-bleed wash.
+
+### What the mobile page gives up
+
+Below 768px the rules above remove or reduce all three of this site's showpiece objects: the shader cell, the connected pipeline canvas, and the benchmark table. That is not a footnote to hide in a component diff. The middle of the page was given to the Rust/tooling reader who is here to admire an engineering artifact, this document calls the shader the most carefully built thing on the site — and that same reader is the one who shares the link, which means a phone is exactly where the link tends to be opened.
+
+So the mobile page carries the primary audience's job in full — the thesis, the install line, the live playground — and not the secondary audience's admire-the-artifact payload. On a phone the playground becomes what a shared link leads with.
+
+This is accepted rather than solved. The shader has never run below 768px, so nothing is lost there that a phone reader ever actually had; and a diagram that must be dragged sideways is not admired either, so the connected canvas was already failing its own job at that width. A law that removes something should say what it gives up, and this is what these ones give up.
 
 ## Naming
 
@@ -213,11 +231,19 @@ The keycap mark is retired. Wordmark only — one fewer bespoke object to keep c
 
 ## Navigation
 
-A single 1px-ruled bar: wordmark left, `playground` · `github` · `crates` right. Nothing else. A sticky in-page anchor menu on a six-block single-page site is a template reflex, and three links fit on a phone without a sheet.
+From 640px up, a single 1px-ruled bar: wordmark left, `playground` · `github` · `crates` right. Nothing else. A sticky in-page anchor menu on a six-block single-page site is a template reflex.
+
+This section used to close with _"and three links fit on a phone without a sheet."_ That was true when it was written, and it is not true now. The three-cell Auto/Light/Dark control shipped afterwards, it is the widest object on the bar, and with it there the bar wraps into two or three stacked rows on a phone — which buries the only navigation the site has under the wordmark. The reason the rule gave has expired, so the rule is amended here rather than worked around in a component.
+
+**Below 640px the bar collapses.** It carries the wordmark on the left and a three-bar menu control on the right, on one row and one row only. That control opens a panel holding the three links and the theme control — precisely the two things the bar can no longer fit. The pictogram is an exception to a standing rule and is argued under **The theme control**; the panel's own close control is a chrome word rather than a cross glyph, so it needs no exception at all. From 640px up nothing changes: the links and the theme control sit on the bar exactly as they do today, and no menu control is rendered.
+
+The panel is built from the site's own parts, not from a component library: 1px rules, square corners, chrome type, `ink-muted` and `ink` on paper. No radius, no shadow, no backdrop blur, no rounded sheet sliding in from an edge. Its backdrop is a plain tint of the existing `--ink` token at low opacity — an existing neutral rather than a new colour, because a scrim invented for the occasion is the decorative wash law 2 forbids. It opens and closes instantly in both directions, with no transition in either, which satisfies law 4 outright and leaves `prefers-reduced-motion` nothing to strip.
 
 ## Removed components
 
 `HoverGlow.tsx`, `MobileNav.tsx`, `ui/sheet.tsx`, `ui/card.tsx` (a card with no radius and no shadow is a bordered div), and the six feature graphics — `AstGraphic`, `TokenGraphic`, `SemanticGraphic`, `PreprocGraphic`, `SchemaGraphic`, `PerfGraphic` — along with the feature grid that hosted them.
+
+`MobileNav.tsx` and `ui/sheet.tsx` stay removed, and the menu panel under **Navigation** does not restore them. It occupies the same role, which is exactly why the distinction has to be written down rather than assumed. What was deleted was the shadcn sheet as a _construction_ — rounded corners, a drop shadow, a blurred backdrop, a `--radius` token, an off-canvas slide — and every one of those is still forbidden. The replacement is a native `<dialog>` reset to this site's own box: square, ruled, unblurred, instant. The role came back; the component and its defaults did not, and reaching for the library again to fill the role would undo the amendment rather than follow it.
 
 ## Content dependencies
 
