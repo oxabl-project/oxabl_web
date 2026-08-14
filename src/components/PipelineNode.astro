@@ -1,0 +1,29 @@
+---
+interface Props {
+  name: string
+  caption: string
+  published: boolean
+}
+
+const { name, caption, published } = Astro.props
+const cratesIoUrl = `https://crates.io/crates/${name}`
+---
+
+<div class:list={["pipeline-node", { "pipeline-node--internal": !published }]}>
+  {
+    published ? (
+      <a
+        class="pipeline-node__name pipeline-node__link"
+        href={cratesIoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${name} on crates.io`}
+      >
+        {name}
+      </a>
+    ) : (
+      <span class="pipeline-node__name">{name}</span>
+    )
+  }
+  <p class="pipeline-node__caption">{caption}</p>
+</div>

@@ -17,13 +17,13 @@ const HERO_CONFIG: HexFloatOptions = {
   perspective: 0.5,
   float: 0,
   speed: 1,
-  shine: 0.5,
+  shine: 1,
   lift: 0.1,
-  radius: 1200,
+  radius: 300,
   flow: 0,
   swirl: 0,
   trail: 0,
-  iridescence: 1,
+  iridescence: 0.35,
 }
 
 // Balanced perf guard: below this sustained FPS during the warm-up probe we
@@ -67,7 +67,7 @@ export function HexHero() {
   const mount = React.useSyncExternalStore(
     emptySubscribe,
     canAttempt,
-    () => false,
+    () => false
   )
 
   React.useEffect(() => {
@@ -78,7 +78,8 @@ export function HexHero() {
     let instance: HexFloatInstance | null = null
     let cancelled = false
 
-    const activate = () => document.documentElement.setAttribute("data-hex-active", "")
+    const activate = () =>
+      document.documentElement.setAttribute("data-hex-active", "")
     const deactivate = () =>
       document.documentElement.removeAttribute("data-hex-active")
 

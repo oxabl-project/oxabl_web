@@ -1,0 +1,123 @@
+---
+// Three states rather than two: a binary switch cannot express "follow the
+// system", so once it were touched the reader could never hand the choice back.
+const modes = [
+  { value: "system", label: "Auto" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+] as const
+---
+
+<div
+  class="flex border border-rule-strong font-chrome text-chrome uppercase"
+  role="radiogroup"
+  aria-label="Colour theme"
+  data-theme-control
+>
+  {
+    modes.map(({ value, label }) => (
+      <button
+        type="button"
+        role="radio"
+        aria-checked="false"
+        tabindex="-1"
+        data-theme-value={value}
+        class="border-r border-rule px-2 py-1 text-ink-muted last:border-r-0 hover:text-ink aria-checked:bg-paper-sunk aria-checked:text-ink"
+      >
+        {label}
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  const KEY = "theme"
+  const MODES = ["system", "light", "dark"] as const
+  type Mode = (typeof MODES)[number]
+
+  const root = document.documentElement
+  const query = window.matchMedia("(prefers-color-scheme: dark)")
+  const groups = document.querySelectorAll<HTMLElement>("[data-theme-control]")
+
+  /** Absence of a stored value is itself the answer: follow the system. */
+  function readMode(): Mode {
+    try {
+      const stored = localStorage.getItem(KEY)
+      return stored === "light" || stored === "dark" ? stored : "system"
+    } catch {
+      return "system"
+    }
+  }
+
+  function paint(mode: Mode) {
+    const dark = mode === "dark" || (mode === "system" && query.matches)
+
+    root.classList.toggle("dark", dark)
+    root.dataset.themeMode = mode
+    root.style.colorScheme = dark ? "dark" : "light"
+
+    // The media-attribute pair in the head covers the no-script case; an
+    // explicit choice has to override whatever the system reports.
+    const metas = document.querySelectorAll<HTMLMetaElement>(
+      'meta[name="theme-color"]'
+    )
+    for (const meta of metas) {
+      meta.media =
+        (meta.dataset.themeColor === "dark") === dark ? "all" : "not all"
+    }
+
+    for (const group of groups) {
+      const buttons =
+        group.querySelectorAll<HTMLButtonElement>("[data-theme-value]")
+      for (const button of buttons) {
+        const active = button.dataset.themeValue === mode
+        button.setAttribute("aria-checked", String(active))
+        button.tabIndex = active ? 0 : -1
+      }
+    }
+  }
+
+  function select(mode: Mode) {
+    try {
+      if (mode === "system") localStorage.removeItem(KEY)
+      else localStorage.setItem(KEY, mode)
+    } catch {
+      // A storage refusal must not cost the reader the theme change itself.
+    }
+    paint(mode)
+  }
+
+  for (const group of groups) {
+    group.addEventListener("click", (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
+        "[data-theme-value]"
+      )
+      if (button) select(button.dataset.themeValue as Mode)
+    })
+
+    group.addEventListener("keydown", (event) => {
+      const step =
+        event.key === "ArrowRight" || event.key === "ArrowDown"
+          ? 1
+          : event.key === "ArrowLeft" || event.key === "ArrowUp"
+            ? -1
+            : 0
+      if (step === 0) return
+
+      event.preventDefault()
+      const next =
+        MODES[(MODES.indexOf(readMode()) + step + MODES.length) % MODES.length]
+      select(next)
+      group
+        .querySelector<HTMLButtonElement>(`[data-theme-value="${next}"]`)
+        ?.focus()
+    })
+  }
+
+  paint(readMode())
+
+  // Law 4 permits this: the reader changed the system, not the page.
+  query.addEventListener("change", () => {
+    if (readMode() === "system") paint("system")
+  })
+</script>

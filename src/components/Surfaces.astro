@@ -1,0 +1,80 @@
+---
+interface Props {
+  class?: string
+}
+
+const { class: className = "" } = Astro.props
+
+const surfaces = [
+  {
+    label: "CLI",
+    caption: "For your terminal",
+    description: "A terminal window with a command prompt.",
+  },
+  {
+    label: "LSP",
+    caption: "For your editor",
+    description: "An editor pane with a diagnostic underline.",
+  },
+  {
+    label: "CI",
+    caption: "For your CI",
+    description: "A three-stage pipeline ending in a check.",
+  },
+] as const
+---
+
+<div class:list={["grid grid-cols-3 border border-rule-strong", className]}>
+  {
+    surfaces.map(({ label, caption, description }, index) => (
+      <div
+        class:list={[
+          "flex flex-col items-center justify-center px-3 py-6 md:p-8",
+          index < surfaces.length - 1 && "border-r border-rule",
+        ]}
+      >
+        <svg
+          class="w-16 max-w-full text-ink-muted"
+          viewBox="0 0 64 64"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1"
+          role="img"
+          aria-label={`${label}: ${description}`}
+        >
+          {label === "CLI" && (
+            <>
+              <rect x="6.5" y="12.5" width="51" height="39" />
+              <line x1="6.5" y1="22.5" x2="57.5" y2="22.5" />
+              <polyline points="17.5,31.5 23.5,36.5 17.5,41.5" />
+              <line x1="28.5" y1="41.5" x2="40.5" y2="41.5" />
+            </>
+          )}
+          {label === "LSP" && (
+            <>
+              <rect x="6.5" y="12.5" width="51" height="39" />
+              <line x1="19.5" y1="12.5" x2="19.5" y2="51.5" />
+              <line x1="25.5" y1="22.5" x2="48.5" y2="22.5" />
+              <line x1="25.5" y1="30.5" x2="41.5" y2="30.5" />
+              <line x1="25.5" y1="38.5" x2="50.5" y2="38.5" />
+              <polyline points="25.5,46.5 29.5,42.5 33.5,46.5 37.5,42.5 41.5,46.5" />
+            </>
+          )}
+          {label === "CI" && (
+            <>
+              <rect x="6.5" y="27.5" width="10" height="10" />
+              <rect x="27.5" y="27.5" width="10" height="10" />
+              <rect x="47.5" y="27.5" width="10" height="10" />
+              <line x1="16.5" y1="32.5" x2="27.5" y2="32.5" />
+              <line x1="37.5" y1="32.5" x2="47.5" y2="32.5" />
+              <polyline points="50.5,32.5 52.5,35.5 55.5,29.5" />
+            </>
+          )}
+        </svg>
+        <p class="mt-6 text-center font-chrome text-chrome text-ink-muted uppercase">
+          {caption}
+        </p>
+      </div>
+    ))
+  }
+</div>

@@ -7,34 +7,56 @@ interface Props {
 }
 
 const {
-  title = "ox_abl — high-performance tooling for ABL",
+  title = "oxabl — high-performance tooling for ABL",
   description = "Blazingly fast developer tools for Progress ABL, written in Rust. Lexer, parser, semantic analysis, lint. Unofficial and unaffiliated.",
 } = Astro.props
 ---
 
-<html lang="en" style="scroll-behavior: smooth">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0f1a14" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#f7faf8" media="(prefers-color-scheme: light)" />
+    <meta
+      name="theme-color"
+      content="oklch(0.17 0.004 80)"
+      media="(prefers-color-scheme: dark)"
+      data-theme-color="dark"
+    />
+    <meta
+      name="theme-color"
+      content="oklch(0.985 0.002 80)"
+      media="(prefers-color-scheme: light)"
+      data-theme-color="light"
+    />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
+      // Inline and un-bundled on purpose: this has to settle the theme before
+      // the first paint, or the reader sees a flash of the wrong material.
       ;(() => {
-        const t = localStorage.getItem("theme")
+        let mode = "system"
+        try {
+          const stored = localStorage.getItem("theme")
+          if (stored === "light" || stored === "dark") mode = stored
+        } catch (_) {
+          // No storage access; the system preference is a fine answer.
+        }
         const dark =
-          t === "dark" ||
-          (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)
-        if (dark) document.documentElement.classList.add("dark")
+          mode === "dark" ||
+          (mode === "system" &&
+            matchMedia("(prefers-color-scheme: dark)").matches)
+        const root = document.documentElement
+        if (dark) root.classList.add("dark")
+        root.dataset.themeMode = mode
+        root.style.colorScheme = dark ? "dark" : "light"
       })()
     </script>
     <title>{title}</title>
   </head>
-  <body class="bg-background text-foreground">
+  <body>
     <slot />
   </body>
 </html>

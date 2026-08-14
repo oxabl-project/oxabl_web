@@ -1,0 +1,1030 @@
+{
+  "coverage": {
+    "unjudged_symbols": 0
+  },
+  "dependencies": {
+    "edges": [],
+    "index_revision": 1,
+    "unresolved": []
+  },
+  "diagnostics": [
+    {
+      "code": "LINT0001",
+      "message": "undefined symbol `ghost`",
+      "severity": "error",
+      "source": "lint",
+      "span": {
+        "end": 54,
+        "file": 1,
+        "start": 49
+      }
+    }
+  ],
+  "envelope": 1,
+  "preproc": [],
+  "references": [
+    {
+      "name": null,
+      "node": 2,
+      "origin": "declared",
+      "reason": null,
+      "resolution": "resolved",
+      "symbol": 49
+    },
+    {
+      "name": "ghost",
+      "node": 3,
+      "origin": null,
+      "reason": "not_in_scope",
+      "resolution": "unresolved",
+      "symbol": null
+    }
+  ],
+  "schema_revision": 0,
+  "scopes": [
+    {
+      "bindings": [
+        {
+          "name": "file-information",
+          "namespace": "values",
+          "symbol": 17
+        },
+        {
+          "name": "codepage-table",
+          "namespace": "values",
+          "symbol": 48
+        },
+        {
+          "name": "x",
+          "namespace": "values",
+          "symbol": 49
+        },
+        {
+          "name": "font-table",
+          "namespace": "values",
+          "symbol": 34
+        },
+        {
+          "name": "color-table",
+          "namespace": "values",
+          "symbol": 33
+        },
+        {
+          "name": "termi",
+          "namespace": "values",
+          "symbol": 24
+        },
+        {
+          "name": "focus",
+          "namespace": "values",
+          "symbol": 14
+        },
+        {
+          "name": "audit-policy",
+          "namespace": "values",
+          "symbol": 46
+        },
+        {
+          "name": "terminal",
+          "namespace": "values",
+          "symbol": 22
+        },
+        {
+          "name": "source-procedure",
+          "namespace": "values",
+          "symbol": 8
+        },
+        {
+          "name": "file-info",
+          "namespace": "values",
+          "symbol": 16
+        },
+        {
+          "name": "rcode-inform",
+          "namespace": "values",
+          "symbol": 37
+        },
+        {
+          "name": "com-self",
+          "namespace": "values",
+          "symbol": 28
+        },
+        {
+          "name": "codebase-locator",
+          "namespace": "values",
+          "symbol": 32
+        },
+        {
+          "name": "active-window",
+          "namespace": "values",
+          "symbol": 11
+        },
+        {
+          "name": "clipboard",
+          "namespace": "values",
+          "symbol": 15
+        },
+        {
+          "name": "dslog-manager",
+          "namespace": "values",
+          "symbol": 21
+        },
+        {
+          "name": "log-manager",
+          "namespace": "values",
+          "symbol": 20
+        },
+        {
+          "name": "this-procedure",
+          "namespace": "values",
+          "symbol": 7
+        },
+        {
+          "name": "termin",
+          "namespace": "values",
+          "symbol": 25
+        },
+        {
+          "name": "this-object",
+          "namespace": "values",
+          "symbol": 0
+        },
+        {
+          "name": "error-stat",
+          "namespace": "values",
+          "symbol": 5
+        },
+        {
+          "name": "self",
+          "namespace": "values",
+          "symbol": 2
+        },
+        {
+          "name": "target-procedure",
+          "namespace": "values",
+          "symbol": 9
+        },
+        {
+          "name": "default-window",
+          "namespace": "values",
+          "symbol": 12
+        },
+        {
+          "name": "error-status",
+          "namespace": "values",
+          "symbol": 4
+        },
+        {
+          "name": "term",
+          "namespace": "values",
+          "symbol": 23
+        },
+        {
+          "name": "termina",
+          "namespace": "values",
+          "symbol": 26
+        },
+        {
+          "name": "compiler",
+          "namespace": "values",
+          "symbol": 31
+        },
+        {
+          "name": "last-even",
+          "namespace": "values",
+          "symbol": 19
+        },
+        {
+          "name": "rcode-info",
+          "namespace": "values",
+          "symbol": 35
+        },
+        {
+          "name": "rcode-informati",
+          "namespace": "values",
+          "symbol": 40
+        },
+        {
+          "name": "session",
+          "namespace": "values",
+          "symbol": 3
+        },
+        {
+          "name": "rcode-informa",
+          "namespace": "values",
+          "symbol": 38
+        },
+        {
+          "name": "rcode-informatio",
+          "namespace": "values",
+          "symbol": 41
+        },
+        {
+          "name": "audit-control",
+          "namespace": "values",
+          "symbol": 45
+        },
+        {
+          "name": "web-context",
+          "namespace": "values",
+          "symbol": 27
+        },
+        {
+          "name": "rcode-infor",
+          "namespace": "values",
+          "symbol": 36
+        },
+        {
+          "name": "rcode-informat",
+          "namespace": "values",
+          "symbol": 39
+        },
+        {
+          "name": "error-statu",
+          "namespace": "values",
+          "symbol": 6
+        },
+        {
+          "name": "current-window",
+          "namespace": "values",
+          "symbol": 10
+        },
+        {
+          "name": "profiler",
+          "namespace": "values",
+          "symbol": 30
+        },
+        {
+          "name": "first-object",
+          "namespace": "values",
+          "symbol": 43
+        },
+        {
+          "name": "last-event",
+          "namespace": "values",
+          "symbol": 18
+        },
+        {
+          "name": "last-object",
+          "namespace": "values",
+          "symbol": 44
+        },
+        {
+          "name": "security-policy",
+          "namespace": "values",
+          "symbol": 47
+        },
+        {
+          "name": "super",
+          "namespace": "values",
+          "symbol": 1
+        },
+        {
+          "name": "active-form",
+          "namespace": "values",
+          "symbol": 13
+        },
+        {
+          "name": "debugger",
+          "namespace": "values",
+          "symbol": 29
+        },
+        {
+          "name": "rcode-information",
+          "namespace": "values",
+          "symbol": 42
+        }
+      ],
+      "id": 0,
+      "kind": "file",
+      "owner_node": 0,
+      "parent": null
+    }
+  ],
+  "sections": {
+    "coverage": 1,
+    "dependencies": 3,
+    "diagnostics": 1,
+    "preproc": 1,
+    "references": 2,
+    "scopes": 1,
+    "symbols": 4,
+    "types": 1
+  },
+  "symbols": [
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 0,
+      "kind": "builtin",
+      "name": "this-object",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 1,
+      "kind": "builtin",
+      "name": "super",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 2,
+      "kind": "builtin",
+      "name": "self",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 3,
+      "kind": "builtin",
+      "name": "session",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 4,
+      "kind": "builtin",
+      "name": "error-status",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 5,
+      "kind": "builtin",
+      "name": "error-stat",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 6,
+      "kind": "builtin",
+      "name": "error-statu",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 7,
+      "kind": "builtin",
+      "name": "this-procedure",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 8,
+      "kind": "builtin",
+      "name": "source-procedure",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 9,
+      "kind": "builtin",
+      "name": "target-procedure",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 10,
+      "kind": "builtin",
+      "name": "current-window",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 11,
+      "kind": "builtin",
+      "name": "active-window",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 12,
+      "kind": "builtin",
+      "name": "default-window",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 13,
+      "kind": "builtin",
+      "name": "active-form",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 14,
+      "kind": "builtin",
+      "name": "focus",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 15,
+      "kind": "builtin",
+      "name": "clipboard",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 16,
+      "kind": "builtin",
+      "name": "file-info",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 17,
+      "kind": "builtin",
+      "name": "file-information",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 18,
+      "kind": "builtin",
+      "name": "last-event",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 19,
+      "kind": "builtin",
+      "name": "last-even",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 20,
+      "kind": "builtin",
+      "name": "log-manager",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 21,
+      "kind": "builtin",
+      "name": "dslog-manager",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 22,
+      "kind": "builtin",
+      "name": "terminal",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 23,
+      "kind": "builtin",
+      "name": "term",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 24,
+      "kind": "builtin",
+      "name": "termi",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 25,
+      "kind": "builtin",
+      "name": "termin",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 26,
+      "kind": "builtin",
+      "name": "termina",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 27,
+      "kind": "builtin",
+      "name": "web-context",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 28,
+      "kind": "builtin",
+      "name": "com-self",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 29,
+      "kind": "builtin",
+      "name": "debugger",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 30,
+      "kind": "builtin",
+      "name": "profiler",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 31,
+      "kind": "builtin",
+      "name": "compiler",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 32,
+      "kind": "builtin",
+      "name": "codebase-locator",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 33,
+      "kind": "builtin",
+      "name": "color-table",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 34,
+      "kind": "builtin",
+      "name": "font-table",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 35,
+      "kind": "builtin",
+      "name": "rcode-info",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 36,
+      "kind": "builtin",
+      "name": "rcode-infor",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 37,
+      "kind": "builtin",
+      "name": "rcode-inform",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 38,
+      "kind": "builtin",
+      "name": "rcode-informa",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 39,
+      "kind": "builtin",
+      "name": "rcode-informat",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 40,
+      "kind": "builtin",
+      "name": "rcode-informati",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 41,
+      "kind": "builtin",
+      "name": "rcode-informatio",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 42,
+      "kind": "builtin",
+      "name": "rcode-information",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 43,
+      "kind": "builtin",
+      "name": "first-object",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 44,
+      "kind": "builtin",
+      "name": "last-object",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 45,
+      "kind": "builtin",
+      "name": "audit-control",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 46,
+      "kind": "builtin",
+      "name": "audit-policy",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 47,
+      "kind": "builtin",
+      "name": "security-policy",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": null,
+      "data_type_source": null,
+      "declaration": 4294967295,
+      "declared_in": 0,
+      "flags": [],
+      "id": 48,
+      "kind": "builtin",
+      "name": "codepage-table",
+      "namespace": "values",
+      "origin": "builtin",
+      "read_count": 0,
+      "write_count": 0
+    },
+    {
+      "data_type": "integer",
+      "data_type_source": "declared",
+      "declaration": 1,
+      "declared_in": 0,
+      "flags": [],
+      "id": 49,
+      "kind": "variable",
+      "name": "x",
+      "namespace": "values",
+      "origin": "declared",
+      "read_count": 1,
+      "write_count": 0
+    }
+  ],
+  "types": [
+    {
+      "node": 1,
+      "type": "integer"
+    },
+    {
+      "node": 2,
+      "type": "integer"
+    },
+    {
+      "node": 3,
+      "type": "unknown"
+    }
+  ]
+}
