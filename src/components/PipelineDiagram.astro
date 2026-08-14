@@ -1,0 +1,233 @@
+---
+import PipelineNode from "@/components/PipelineNode.astro"
+
+type CrateNode = {
+  name: string
+  caption: string
+  published: boolean
+}
+
+const spine: CrateNode[] = [
+  {
+    name: "oxabl_lexer",
+    caption: "Tokenizer for Progress ABL source code",
+    published: true,
+  },
+  {
+    name: "oxabl_parser",
+    caption: "Parser for Progress ABL source code",
+    published: true,
+  },
+  {
+    name: "oxabl_preprocessor",
+    caption:
+      "Preprocessor for ABL source code: include expansion, &IF evaluation, and preprocessor variable tracking",
+    published: true,
+  },
+  {
+    name: "oxabl_schema",
+    caption: "Progress OpenEdge .df schema parser and model",
+    published: true,
+  },
+  {
+    name: "oxabl_semantic",
+    caption:
+      "Semantic analysis for Progress ABL: symbol table, scope tree, resolution, and types",
+    published: true,
+  },
+  {
+    name: "oxabl_index",
+    caption:
+      "Cross-file fact extraction and the batch workspace index for oxabl",
+    published: false,
+  },
+  {
+    name: "oxabl_lint",
+    caption: "Lint rules for Progress ABL built on the oxabl_semantic model",
+    published: true,
+  },
+  {
+    name: "oxabl_analyze",
+    caption: "JSON dump + analyze CLI wiring for the oxabl semantic model",
+    published: true,
+  },
+]
+
+const surfaces: CrateNode[] = [
+  {
+    name: "oxabl",
+    caption: "High-performance tooling suite for Progress ABL",
+    published: true,
+  },
+  {
+    name: "oxabl_lsp",
+    caption:
+      "stdio LSP server surfacing oxabl parse/lint/preprocessor diagnostics live in an editor",
+    published: false,
+  },
+  {
+    name: "oxabl_wasm",
+    caption:
+      "Thin WebAssembly client for the shared oxabl analysis and formatting pipelines",
+    published: false,
+  },
+  {
+    name: "oxabl_daemon",
+    caption:
+      "Long-lived oxabl session core: one salsa instance per workspace root, serving several clients",
+    published: false,
+  },
+]
+
+const sharedSurfaceLayer: CrateNode[] = [
+  {
+    name: "oxabl_formatter",
+    caption:
+      "Layout-only formatting engine for Progress ABL, built on the oxabl fidelity substrate",
+    published: false,
+  },
+  {
+    name: "oxabl_pipeline",
+    caption:
+      "Shared lint and format pipelines over one resolved oxabl configuration",
+    published: true,
+  },
+  {
+    name: "oxabl_daemon_protocol",
+    caption:
+      "Wire types and contract version for the oxabl daemon's oxabl/* methods",
+    published: false,
+  },
+]
+
+const foundation: CrateNode[] = [
+  {
+    name: "oxabl_ast",
+    caption: "AST node definitions for the oxabl ABL parser",
+    published: true,
+  },
+  {
+    name: "oxabl_common",
+    caption: "Shared utilities for the oxabl ABL tooling suite",
+    published: true,
+  },
+  {
+    name: "oxabl_workspace",
+    caption:
+      "Workspace configuration, file system abstraction, and file discovery for the oxabl ABL tooling suite",
+    published: true,
+  },
+  {
+    name: "oxabl_style",
+    caption:
+      "ABL style guide — typed, configurable formatting and diagnostic rules for the oxabl toolchain",
+    published: false,
+  },
+  {
+    name: "oxabl_codegen",
+    caption: "Code generation tool for oxabl lexer keywords and atoms",
+    published: true,
+  },
+]
+---
+
+<figure
+  aria-labelledby="pipeline-title"
+  aria-describedby="pipeline-description"
+>
+  <p id="pipeline-description" class="sr-only">
+    Eight ordered forward-pass crates form the spine. Four client surfaces
+    consume the shared pipeline, with formatter and daemon protocol beside it.
+    Five foundation crates support the system.
+  </p>
+
+  <div class="overflow-x-auto border border-rule-strong">
+    <div class="pipeline-canvas">
+      <div class="pipeline-spine-heading pipeline-group-heading">
+        <span>Spine</span>
+        <span>Source text in</span>
+      </div>
+
+      <div class="pipeline-spine">
+        {
+          spine.map((crate, index) => (
+            <>
+              {index > 0 && (
+                <svg
+                  class="pipeline-connector pipeline-spine-connector"
+                  viewBox="0 0 768 24"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <line x1="384" y1="0" x2="384" y2="18" />
+                  <polygon points="380,16 388,16 384,24" />
+                </svg>
+              )}
+              <div class="pipeline-spine-row">
+                <span class="pipeline-sequence">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <PipelineNode {...crate} />
+              </div>
+            </>
+          ))
+        }
+      </div>
+
+      <div class="pipeline-analysis-out">
+        <span>Analysis out</span>
+      </div>
+
+      <div class="pipeline-group-heading pipeline-group-heading--ruled">
+        <span>Surfaces</span>
+      </div>
+
+      <div class="pipeline-surface-row">
+        {surfaces.map((crate) => <PipelineNode {...crate} />)}
+      </div>
+
+      <svg
+        class="pipeline-connector pipeline-surface-connectors"
+        viewBox="0 0 1200 72"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M 600 72 V 36 H 150 V 8 M 600 36 H 450 V 8 M 600 36 H 750 V 8 M 600 36 H 1050"
+        ></path>
+        <polygon points="150,0 146,8 154,8"></polygon>
+        <polygon points="450,0 446,8 454,8"></polygon>
+        <polygon points="750,0 746,8 754,8"></polygon>
+        <path d="M 1050 72 V 8"></path>
+        <polygon points="1050,0 1046,8 1054,8"></polygon>
+      </svg>
+
+      <div class="pipeline-shared-row">
+        <PipelineNode {...sharedSurfaceLayer[0]} />
+        <PipelineNode {...sharedSurfaceLayer[1]} />
+        <PipelineNode {...sharedSurfaceLayer[2]} />
+        <svg
+          class="pipeline-connector pipeline-formatter-connector"
+          viewBox="0 0 24 16"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <line x1="0" y1="8" x2="16" y2="8"></line>
+          <polygon points="24,8 16,4 16,12"></polygon>
+        </svg>
+      </div>
+
+      <div class="pipeline-group-heading pipeline-group-heading--ruled">
+        <span>Foundation</span>
+        <span>Shared types / files / style / generation</span>
+      </div>
+
+      <div class="pipeline-foundation-row">
+        {foundation.map((crate) => <PipelineNode {...crate} />)}
+      </div>
+    </div>
+  </div>
+</figure>

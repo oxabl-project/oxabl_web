@@ -1,0 +1,127 @@
+---
+const rows = [
+  {
+    fixture: "resources/bench_preprocessor_pipeline.abl",
+    lines: "50",
+    bytes: "1,538",
+    time: "not measured",
+    benchmark: "parser/pipeline_with_includes",
+    measures: "preprocess + lex + parse",
+  },
+  {
+    fixture: "resources/bench_keywords.abl",
+    lines: "632",
+    bytes: "17,303",
+    time: "not measured",
+    benchmark: "parser/full_program",
+    measures: "lex + parse, full program",
+  },
+  {
+    fixture: "crates/oxabl_schema/fixtures/sp2k.df",
+    lines: "2,654",
+    bytes: "58,198",
+    time: "not measured",
+    benchmark: "schema/load_files:sp2k",
+    measures: ".df schema load",
+  },
+  {
+    fixture: "resources/lsp_bench.p",
+    lines: "3,385",
+    bytes: "129,286",
+    time: "not measured",
+    benchmark: "daemon_cycle/cold_open",
+    measures: "fresh DB, full diagnostics",
+  },
+  {
+    fixture: "generator replay: 90× sp2k with renamed tables",
+    lines: "not recorded",
+    bytes: "5,251,930",
+    time: "not measured",
+    benchmark: "schema/load_files:5mb_merged",
+    measures: "schema parse at scale",
+  },
+]
+
+// TODO(benchmark/parser-pipeline): From /home/evanr/oxabl run:
+// cargo bench -p oxabl_parser --bench parser_bench -- parser/pipeline_with_includes
+// Replace only that row's `not measured` with the reported time.
+// TODO(benchmark/parser-full): From /home/evanr/oxabl run:
+// cargo bench -p oxabl_parser --bench parser_bench -- parser/full_program
+// Replace only that row's `not measured` with the reported time.
+// TODO(benchmark/schema-sp2k): From /home/evanr/oxabl run:
+// cargo bench -p oxabl_schema --bench schema_bench -- load_files:sp2k
+// Replace only that row's `not measured` with the reported time.
+// TODO(benchmark/daemon-cold-open): From /home/evanr/oxabl run:
+// cargo bench -p oxabl_daemon --bench daemon_cycle_bench -- daemon_cycle/cold_open
+// Replace only that row's `not measured` with the reported time.
+// TODO(benchmark/schema-5mb): From /home/evanr/oxabl run:
+// cargo bench -p oxabl_schema --bench schema_bench -- load_files:5mb_merged
+// Replace only that row's `not measured` with the reported time.
+---
+
+<figure>
+  <figcaption
+    class="mb-6 flex flex-wrap justify-between gap-3 font-chrome text-chrome text-ink-muted uppercase"
+  >
+    <span>
+      bench_*.abl: committed synthetic / sp2k.df: vendored public Riverside Software fixture
+    </span>
+    <span>generated row: derived by replaying the benchmark generator / timings not measured</span>
+  </figcaption>
+
+  <div class="overflow-x-auto border border-rule-strong">
+    <table class="w-full min-w-[1024px] border-collapse text-left">
+      <thead>
+        <tr
+          class="border-b border-rule-strong font-chrome text-chrome text-ink-muted uppercase"
+        >
+          <th scope="col" class="px-4 py-6 font-normal">Fixture</th>
+          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
+            >Lines</th
+          >
+          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
+            >Bytes</th
+          >
+          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
+            >Time</th
+          >
+          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
+            >Benchmark id</th
+          >
+          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
+            >Measures</th
+          >
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr class="border-b border-rule last:border-b-0">
+              <th
+                scope="row"
+                class="px-4 py-6 font-code text-code font-normal text-ink"
+              >
+                {row.fixture}
+              </th>
+              <td class="border-l border-rule px-4 py-6 font-chrome text-chrome text-ink">
+                {row.lines}
+              </td>
+              <td class="border-l border-rule px-4 py-6 font-chrome text-chrome text-ink">
+                {row.bytes}
+              </td>
+              <td class="border-l border-rule px-4 py-6 font-code text-code text-ink-muted">
+                {row.time}
+              </td>
+              <td class="border-l border-rule px-4 py-6 font-code text-code text-ink">
+                {row.benchmark}
+              </td>
+              <td class="border-l border-rule px-4 py-6 text-body text-ink-muted">
+                {row.measures}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</figure>

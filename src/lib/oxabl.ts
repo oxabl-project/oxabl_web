@@ -23,9 +23,9 @@
  *    function — which is what re-arms the panic hook for the next crash.
  *
  * This module deliberately lives in `src/lib/` rather than in the component:
- * `react-refresh/only-export-components` is an error with an allowlist of
- * exactly `["buttonVariants"]`, so a non-component export in `TryOxabl.tsx`
- * fails lint. It must not live in `src/wasm/` either — that whole directory is
+ * `react-refresh/only-export-components` is an error, so a non-component
+ * export in `TryOxabl.tsx` fails lint. It must not live in `src/wasm/` either —
+ * that whole directory is
  * generated output, overwritten wholesale by the oxabl repo's
  * `scripts/build-wasm.sh`, with no CI check to catch a lost hand-edit.
  *
@@ -233,7 +233,7 @@ function classify(error: unknown): OxablFailure {
     return {
       kind: "unsupported",
       message:
-        "This browser can't run the Oxabl engine. It needs a WebAssembly runtime a little newer than this one — the CLI and editor extension have no such requirement.",
+        "This browser can't run the oxabl engine. It needs a WebAssembly runtime a little newer than this one — the CLI and editor extension have no such requirement.",
     }
   }
 
@@ -247,7 +247,7 @@ function classify(error: unknown): OxablFailure {
       return {
         kind: "stale-artifact",
         message:
-          "The Oxabl engine hit an internal error and this build cannot restart itself. Reload the page to continue.",
+          "The oxabl engine hit an internal error and this build cannot restart itself. Reload the page to continue.",
       }
     }
     return {
@@ -258,7 +258,7 @@ function classify(error: unknown): OxablFailure {
       // Render a fixed fallback for that, never a previous crash's text.
       message:
         stashed ??
-        "The Oxabl engine hit an internal error with no captured message (a stack overflow or out-of-memory trap, rather than a Rust panic).",
+        "The oxabl engine hit an internal error with no captured message (a stack overflow or out-of-memory trap, rather than a Rust panic).",
     }
   }
 
@@ -267,7 +267,7 @@ function classify(error: unknown): OxablFailure {
     message:
       error instanceof Error
         ? error.message
-        : "The Oxabl engine failed to load. Check your connection and try again.",
+        : "The oxabl engine failed to load. Check your connection and try again.",
   }
 }
 

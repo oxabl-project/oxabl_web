@@ -1,177 +1,405 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
 @import "@fontsource-variable/ibm-plex-sans";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/michroma";
+@import "@fontsource/ibm-plex-mono";
+
+@font-face {
+  font-family: "Martian Mono Chrome";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 500;
+  src: url("../assets/fonts/martian-mono-chrome.woff2")
+    format("woff2-variations");
+  unicode-range: U+0020-0040, U+0041-005A, U+005B-0060, U+007B-007E;
+}
+
+@source "../pages/index.astro";
+@source "../layouts/main.astro";
+@source "../components/Logo.astro";
+@source "../components/Navbar.astro";
+@source "../components/HexHero.tsx";
+@source "../components/TryOxabl.tsx";
+@source "../components/PipelineDiagram.astro";
+@source "../components/PipelineNode.astro";
+@source "../components/RunIt.tsx";
+@source "../components/SpeedTable.astro";
 
 @custom-variant dark (&:is(.dark *));
 
-/* Oxabl palette: kbd-tag neutrals + ABL-adjacent green accent.
-   Not Progress brand colors — just a clean green that fits the language. */
 :root {
-  --background: oklch(0.99 0.005 150);
-  --foreground: oklch(0.16 0.02 150);
-  --card: oklch(1 0.004 150);
-  --card-foreground: oklch(0.16 0.02 150);
-  --popover: oklch(1 0.004 150);
-  --popover-foreground: oklch(0.16 0.02 150);
-  --primary: oklch(0.42 0.12 150);
-  --primary-foreground: oklch(0.98 0.01 150);
-  --secondary: oklch(0.96 0.015 150);
-  --secondary-foreground: oklch(0.22 0.03 150);
-  --muted: oklch(0.96 0.012 150);
-  --muted-foreground: oklch(0.48 0.03 150);
-  --accent: oklch(0.94 0.04 150);
-  --accent-foreground: oklch(0.28 0.06 150);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.02 150);
-  --input: oklch(0.9 0.02 150);
-  --ring: oklch(0.55 0.12 150);
-  --chart-1: oklch(0.65 0.14 150);
-  --chart-2: oklch(0.55 0.1 150);
-  --chart-3: oklch(0.45 0.08 150);
-  --chart-4: oklch(0.38 0.06 150);
-  --chart-5: oklch(0.3 0.04 150);
-  --radius: 0.875rem;
-  --sidebar: oklch(0.985 0.008 150);
-  --sidebar-foreground: oklch(0.16 0.02 150);
-  --sidebar-primary: oklch(0.42 0.12 150);
-  --sidebar-primary-foreground: oklch(0.98 0.01 150);
-  --sidebar-accent: oklch(0.96 0.015 150);
-  --sidebar-accent-foreground: oklch(0.22 0.03 150);
-  --sidebar-border: oklch(0.9 0.02 150);
-  --sidebar-ring: oklch(0.55 0.12 150);
-  --oxabl-green: oklch(0.55 0.15 150);
-  --oxabl-green-soft: oklch(0.72 0.12 150);
-  --card-shadow:
-    inset 0 1px 0 0 rgb(255 255 255 / 0.07), 0 1px 2px 0 rgb(0 0 0 / 0.04),
-    0 3px 6px 0 rgb(0 0 0 / 0.04), 0 8px 20px 0 rgb(0 0 0 / 0.06);
+  /* Paper */
+  --paper: oklch(0.985 0.002 80);
+  --paper-sunk: oklch(0.965 0.003 80);
+  --ink: oklch(0.2 0.006 80);
+  --ink-muted: oklch(0.48 0.006 80);
+  --rule: oklch(0.86 0.004 80);
+  --rule-strong: oklch(0.72 0.005 80);
+
+  /* Screen */
+  --screen: oklch(0.16 0.01 150);
+  --screen-raised: oklch(0.21 0.012 150);
+  --screen-rule: oklch(0.32 0.014 150);
+  --screen-ink: oklch(0.93 0.006 150);
+  --screen-ink-muted: oklch(0.66 0.008 150);
+
+  /* Syntax on screen */
+  --syn-keyword: oklch(0.72 0.1 265);
+  --syn-literal: oklch(0.8 0.055 265);
+  --syn-comment: oklch(0.61 0.008 150);
+  --syn-ident: var(--screen-ink);
+
+  /* Syntax printed on paper */
+  --syn-keyword-print: oklch(0.42 0.11 265);
+  --syn-literal-print: oklch(0.52 0.07 265);
+  --syn-comment-print: oklch(0.58 0.005 80);
+  --syn-ident-print: var(--ink);
+
+  /* Signal on paper */
+  --ok: oklch(0.62 0.14 150);
+  --error: oklch(0.55 0.2 25);
+  --warn: oklch(0.62 0.13 75);
+
+  /* Signal on screen */
+  --ok-screen: oklch(0.78 0.15 150);
+  --error-screen: oklch(0.7 0.18 25);
+  --warn-screen: oklch(0.8 0.12 75);
+
+  --type-display-size: 2.25rem;
+  --type-display-line-height: 2.5rem;
 }
 
 .dark {
-  --background: oklch(0.14 0.018 150);
-  --foreground: oklch(0.96 0.01 150);
-  --card: oklch(0.19 0.022 150);
-  --card-foreground: oklch(0.96 0.01 150);
-  --popover: oklch(0.19 0.022 150);
-  --popover-foreground: oklch(0.96 0.01 150);
-  --primary: oklch(0.78 0.14 150);
-  --primary-foreground: oklch(0.16 0.03 150);
-  --secondary: oklch(0.25 0.03 150);
-  --secondary-foreground: oklch(0.96 0.01 150);
-  --muted: oklch(0.25 0.025 150);
-  --muted-foreground: oklch(0.7 0.03 150);
-  --accent: oklch(0.28 0.05 150);
-  --accent-foreground: oklch(0.96 0.01 150);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.65 0.12 150);
-  --chart-1: oklch(0.78 0.14 150);
-  --chart-2: oklch(0.65 0.1 150);
-  --chart-3: oklch(0.55 0.08 150);
-  --chart-4: oklch(0.45 0.06 150);
-  --chart-5: oklch(0.35 0.04 150);
-  --sidebar: oklch(0.19 0.022 150);
-  --sidebar-foreground: oklch(0.96 0.01 150);
-  --sidebar-primary: oklch(0.78 0.14 150);
-  --sidebar-primary-foreground: oklch(0.16 0.03 150);
-  --sidebar-accent: oklch(0.25 0.03 150);
-  --sidebar-accent-foreground: oklch(0.96 0.01 150);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.65 0.12 150);
-  --oxabl-green: oklch(0.78 0.14 150);
-  --oxabl-green-soft: oklch(0.65 0.1 150);
-  --card-shadow:
-    inset 0 1px 0 0 rgb(255 255 255 / 0.02), 0 1px 2px 0 rgb(0 0 0 / 0.2),
-    0 4px 8px 0 rgb(0 0 0 / 0.18), 0 8px 24px 0 rgb(0 0 0 / 0.22);
+  --paper: oklch(0.17 0.004 80);
+  --paper-sunk: oklch(0.14 0.004 80);
+  --ink: oklch(0.94 0.004 80);
+  --ink-muted: oklch(0.66 0.005 80);
+  --rule: oklch(0.3 0.005 80);
+  --rule-strong: oklch(0.42 0.006 80);
+  --screen: oklch(0.13 0.01 150);
 }
 
 @theme inline {
+  --font-wordmark: "Michroma", sans-serif;
+  --font-chrome: "Martian Mono Chrome", monospace;
   --font-sans: "IBM Plex Sans Variable", sans-serif;
-  --font-heading: "Geist Variable", sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --color-oxabl-green: var(--oxabl-green);
-  --color-oxabl-green-soft: var(--oxabl-green-soft);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-  --font-mono: "JetBrains Mono Variable", monospace;
+  --font-code: "IBM Plex Mono", monospace;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --text-display: var(--type-display-size);
+  --text-display--line-height: var(--type-display-line-height);
+  --text-display--letter-spacing: -0.02em;
+  --text-heading: 1.5rem;
+  --text-heading--line-height: 2rem;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.75rem;
+  --text-chrome: 0.75rem;
+  --text-chrome--line-height: 1rem;
+  --text-chrome--letter-spacing: 0.14em;
+  --text-code: 0.875rem;
+  --text-code--line-height: 1.5rem;
+
+  --color-paper: var(--paper);
+  --color-paper-sunk: var(--paper-sunk);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-screen: var(--screen);
+  --color-screen-raised: var(--screen-raised);
+  --color-screen-rule: var(--screen-rule);
+  --color-screen-ink: var(--screen-ink);
+  --color-screen-ink-muted: var(--screen-ink-muted);
+  --color-syn-keyword: var(--syn-keyword);
+  --color-syn-literal: var(--syn-literal);
+  --color-syn-comment: var(--syn-comment);
+  --color-syn-ident: var(--syn-ident);
+  --color-syn-keyword-print: var(--syn-keyword-print);
+  --color-syn-literal-print: var(--syn-literal-print);
+  --color-syn-comment-print: var(--syn-comment-print);
+  --color-syn-ident-print: var(--syn-ident-print);
+  --color-ok: var(--ok);
+  --color-error: var(--error);
+  --color-warn: var(--warn);
+  --color-ok-screen: var(--ok-screen);
+  --color-error-screen: var(--error-screen);
+  --color-warn-screen: var(--warn-screen);
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --type-display-size: 3.5rem;
+    --type-display-line-height: 3.75rem;
+  }
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+    border-color: var(--rule);
+    outline-color: var(--rule-strong);
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+
   html {
-    @apply font-mono;
+    background: var(--paper);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 20rem;
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans Variable", sans-serif;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button,
+  code {
+    color: inherit;
+    font: inherit;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  textarea:focus-visible {
+    outline: 1px solid var(--ink);
+    outline-offset: 4px;
   }
 }
 
-/* Subtle green grid wash behind hero content. Doubles as the fallback when the
-   WebGL hex backdrop (HexHero) can't run — it fades out once the canvas proves
-   itself, via [data-hex-active] set on <html>. */
+.screen-material :is(a, button, textarea):focus-visible {
+  outline: 2px solid var(--screen-ink);
+  outline-offset: -2px;
+}
+
+.screen-material ::selection {
+  background: var(--screen-ink);
+  color: var(--screen);
+}
+
+.screen-material ::-moz-selection {
+  background: var(--screen-ink);
+  color: var(--screen);
+}
+
+/* Static fallback for the framed shader screen. */
 .hero-grid {
+  background-color: var(--screen);
   background-image:
-    linear-gradient(to right, oklch(0.55 0.15 150 / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(0.55 0.15 150 / 0.06) 1px, transparent 1px);
+    linear-gradient(to right, var(--screen-rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--screen-rule) 1px, transparent 1px);
   background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
-  transition: opacity 300ms ease;
 }
 
 :root[data-hex-active] .hero-grid {
   opacity: 0;
 }
 
-/* If the canvas is running there's no motion to reduce once it idles, but honor
-   the preference for the static grid regardless. */
-@media (prefers-reduced-motion: reduce) {
-  .hero-grid {
-    transition: none;
-  }
+.vocabulary-field {
+  mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
 }
 
-.dark .hero-grid {
-  background-image:
-    linear-gradient(to right, oklch(0.78 0.14 150 / 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(0.78 0.14 150 / 0.08) 1px, transparent 1px);
+.pipeline-canvas {
+  min-width: 1200px;
+  color: var(--ink);
+}
+
+.pipeline-group-heading,
+.pipeline-analysis-out,
+.pipeline-sequence,
+.pipeline-node__name {
+  font-family: "Martian Mono Chrome", monospace;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pipeline-group-heading,
+.pipeline-analysis-out,
+.pipeline-sequence {
+  color: var(--ink-muted);
+}
+
+.pipeline-group-heading {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+}
+
+.pipeline-group-heading--ruled {
+  margin-top: 48px;
+  border-top: 1px solid var(--ink);
+}
+
+.pipeline-spine-heading {
+  display: grid;
+  grid-template-columns: 18% 64% 18%;
+  justify-content: initial;
+}
+
+.pipeline-spine-heading > :first-child {
+  grid-column: 1;
+}
+
+.pipeline-spine-heading > :last-child {
+  grid-column: 2;
+}
+
+.pipeline-spine-row,
+.pipeline-analysis-out {
+  display: grid;
+  grid-template-columns: 18% 64% 18%;
+  align-items: stretch;
+}
+
+.pipeline-spine-row > .pipeline-node {
+  grid-column: 2;
+}
+
+.pipeline-sequence {
+  grid-column: 1;
+  align-self: center;
+  padding-right: 48px;
+  text-align: right;
+}
+
+.pipeline-spine-connector {
+  display: block;
+  width: 64%;
+  height: 24px;
+  margin-left: 18%;
+}
+
+.pipeline-analysis-out {
+  min-height: 48px;
+  align-items: center;
+}
+
+.pipeline-analysis-out span {
+  grid-column: 2;
+  text-align: right;
+}
+
+.pipeline-surface-row,
+.pipeline-shared-row {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.pipeline-surface-row > .pipeline-node {
+  grid-column: span 2;
+  margin-inline: 12px;
+}
+
+.pipeline-surface-connectors {
+  display: block;
+  width: 100%;
+  height: 72px;
+}
+
+.pipeline-shared-row {
+  position: relative;
+}
+
+.pipeline-shared-row > .pipeline-node {
+  margin-inline: 12px;
+}
+
+.pipeline-shared-row > .pipeline-node:nth-of-type(1) {
+  grid-column: 1 / span 2;
+}
+
+.pipeline-shared-row > .pipeline-node:nth-of-type(2) {
+  grid-column: 3 / span 4;
+}
+
+.pipeline-shared-row > .pipeline-node:nth-of-type(3) {
+  grid-column: 7 / span 2;
+}
+
+.pipeline-formatter-connector {
+  position: absolute;
+  top: calc(50% - 8px);
+  left: calc(25% - 12px);
+  width: 24px;
+  height: 16px;
+}
+
+.pipeline-foundation-row {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  align-items: stretch;
+  padding-bottom: 24px;
+}
+
+.pipeline-foundation-row > .pipeline-node {
+  grid-column: span 2;
+  margin-inline: 12px;
+}
+
+.pipeline-node {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid currentColor;
+}
+
+.pipeline-node--internal {
+  border-style: dashed;
+}
+
+.pipeline-node__name {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.pipeline-node__link {
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 4px;
+}
+
+.pipeline-node__caption {
+  margin-top: 24px;
+  font-family: "IBM Plex Sans Variable", sans-serif;
+  font-size: 17px;
+  line-height: 28px;
+}
+
+.pipeline-connector line,
+.pipeline-connector path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.pipeline-connector polygon {
+  fill: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-property: none !important;
+    animation: none !important;
+  }
 }

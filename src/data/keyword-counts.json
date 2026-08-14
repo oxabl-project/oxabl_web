@@ -1,0 +1,13 @@
+{
+  "total": 562,
+  "reserved": 461,
+  "withAbbreviations": 88,
+  "withTypeInfo": 318,
+  "callableFunctions": 54,
+  "provenance": {
+    "reservedKeywords": "resources/abl_reserved_keywords.txt",
+    "keywordIndex": "resources/abl_keyword_index.json",
+    "overrides": "resources/keyword_overrides.toml",
+    "generator": "scripts/generate-keyword-data.mjs; oxabl_codegen-compatible reserved → enrich → remove → override → add pipeline"
+  }
+}
