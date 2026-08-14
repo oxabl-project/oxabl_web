@@ -1,0 +1,300 @@
+---
+import ThemeControl from "@/components/ThemeControl.astro"
+
+interface Props {
+  class?: string
+}
+
+// Only the control takes the caller's class. The panel is never hidden by a
+// media query: `display: none` on an open <dialog> does not close it — the
+// document behind it stays inert and scroll-locked, so the reader would be
+// trapped by an invisible panel. The width backstop is the script below.
+const { class: className = "" } = Astro.props
+
+// Same three destinations as the bar, in the same order. The bar's `·`
+// separators are decoration for a single line; here the rows are separated by
+// the rules themselves, so there is nothing to carry over.
+const links = [
+  { href: "#playground", label: "playground", external: false },
+  {
+    href: "https://github.com/oxabl-project/oxabl",
+    label: "github",
+    external: true,
+  },
+  {
+    href: "https://crates.io/crates/oxabl",
+    label: "crates",
+    external: true,
+  },
+]
+
+// The control is three 1px rules and no `aria-haspopup`: the panel is plain
+// links with no menu role, and claiming one is flagged as an error by audit
+// tooling.
+//
+// The panel's own class list is a reset of what the UA <dialog> sheet still
+// says after this site's `*` rule has taken margin, padding and border off it:
+// the centred `position`/`inset`, the `fit-content` sizing, the `:modal`
+// `max-width`/`max-height` calcs, and `background-color: canvas`. `top-auto`
+// carries real weight there — the UA gives a modal `inset: 0`, and a box with
+// both edges pinned and `height: auto` stretches to the full viewport instead
+// of sitting against the bottom of it.
+//
+// No `display` utility appears there on purpose — `dialog:not([open])` carries
+// the UA's `display: none`, and overriding it would leave the panel on screen
+// while closed. The backdrop is tinted from `--ink` rather than from a scrim
+// colour invented for the occasion, and nothing transitions in either
+// direction: the panel is bottom-anchored, not bottom-sliding.
+//
+// The panel carries no wordmark. The bar behind it already shows one, and a
+// second copy a few pixels off the first reads as the whole site shifting when
+// the menu opens.
+---
+
+<button
+  type="button"
+  class:list={[
+    "flex h-[44px] w-[44px] shrink-0 flex-col items-center justify-center gap-[6px] border border-rule-strong text-ink-muted hover:text-ink",
+    className,
+  ]}
+  aria-label="Open menu"
+  aria-expanded="false"
+  aria-controls="mobile-menu-panel"
+  data-menu-control
+>
+  <span class="block h-px w-[20px] bg-current"></span>
+  <span class="block h-px w-[20px] bg-current"></span>
+  <span class="block h-px w-[20px] bg-current"></span>
+</button>
+
+<noscript>
+  {
+    /* The control opens the panel from a script, so without one it is a dead
+      button and the links behind it are unreachable. Hide it and render the
+      same three destinations as plain anchors. `is:inline` keeps Astro from
+      hoisting this rule out of the <noscript> that scopes it. The theme
+      control is script-driven end to end and has no no-script form, so it is
+      deliberately absent rather than rendered inert. */
+  }
+  <style is:inline>
+    [data-menu-control] {
+      display: none;
+    }
+  </style>
+  <div
+    class="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 font-chrome text-chrome uppercase sm:hidden"
+  >
+    {
+      links.map(({ href, label, external }) => (
+        <a
+          class="text-ink-muted hover:text-ink"
+          href={href}
+          target={external ? "_blank" : undefined}
+          rel={external ? "noopener noreferrer" : undefined}
+        >
+          {label}
+        </a>
+      ))
+    }
+  </div>
+</noscript>
+
+<dialog
+  id="mobile-menu-panel"
+  aria-label="Site menu"
+  class="fixed inset-x-0 top-auto bottom-0 h-auto max-h-full w-full max-w-none overflow-y-auto border-t border-rule-strong bg-paper text-ink backdrop:bg-ink/25"
+  data-menu-panel
+>
+  <div
+    class="mx-auto w-full max-w-7xl px-4 pt-3 pb-[max(24px,env(safe-area-inset-bottom))] sm:px-6"
+  >
+    <div class="flex min-h-[72px] items-center justify-end">
+      <button
+        type="button"
+        class="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center border border-rule-strong px-4 font-chrome text-chrome text-ink-muted uppercase hover:text-ink"
+        data-menu-close
+      >
+        close
+      </button>
+    </div>
+
+    <div class="border-t border-rule">
+      {
+        links.map(({ href, label, external }) => (
+          <a
+            class="flex min-h-[44px] items-center border-b border-rule font-chrome text-chrome text-ink-muted uppercase hover:text-ink"
+            href={href}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noopener noreferrer" : undefined}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="flex pt-6">
+      <ThemeControl />
+    </div>
+  </div>
+</dialog>
+
+<script>
+  // Both are guaranteed by this component's own markup, and Astro only ships
+  // this script when the component renders.
+  const control = document.querySelector<HTMLButtonElement>(
+    "[data-menu-control]"
+  )!
+  const panel = document.querySelector<HTMLDialogElement>("[data-menu-panel]")!
+
+  let lockedScrollY = 0
+
+  // Cleared for the one close path that hands the final scroll position to
+  // something else — see the link branch below.
+  let restoreScrollOnRelease = true
+
+  // Cleared for the close path that hands the reader somewhere else entirely.
+  let returnFocusOnClose = true
+
+  function lockScroll(offset: number) {
+    lockedScrollY = offset
+    const style = document.body.style
+    style.position = "fixed"
+    style.top = `-${lockedScrollY}px`
+    // Not optional: a fixed body with no width shrink-wraps to its content and
+    // the whole page visibly reflows into a narrow column behind the backdrop.
+    // (`overflow: hidden` alone is not enough on iOS Safari, and showModal()
+    // does not cover it either.)
+    style.width = "100%"
+  }
+
+  function releaseScroll(restore: boolean) {
+    const style = document.body.style
+    style.position = ""
+    style.top = ""
+    style.width = ""
+
+    if (!restore) return
+
+    // global.css sets `scroll-behavior: smooth` on <html>, so an unqualified
+    // scroll here animates the page back down instead of putting it back where
+    // the reader left it.
+    const root = document.documentElement
+    const previous = root.style.scrollBehavior
+    root.style.scrollBehavior = "auto"
+    window.scrollTo(0, lockedScrollY)
+    root.style.scrollBehavior = previous
+  }
+
+  function openPanel() {
+    if (panel.open) return
+
+    // Read the offset before opening but do not apply the lock until the panel
+    // is actually up. Every release of the lock hangs off the close event, so a
+    // lock applied first has nothing coming to undo it if showModal() throws —
+    // the page would be left frozen with no panel on screen to dismiss and no
+    // way back short of a reload.
+    const offset = window.scrollY
+    panel.showModal()
+    lockScroll(offset)
+    // showModal() is not a declarative toggle, so nothing syncs this for us.
+    control.setAttribute("aria-expanded", "true")
+  }
+
+  function closePanel() {
+    if (panel.open) panel.close()
+  }
+
+  // Every close path — Escape, the close control, the backdrop, a link, and the
+  // width backstop — ends in a close event, so the teardown lives here once
+  // rather than at each of the five call sites.
+  panel.addEventListener("close", () => {
+    control.setAttribute("aria-expanded", "false")
+    releaseScroll(restoreScrollOnRelease)
+
+    // Safari does not focus a <button> on press, so the element the dialog
+    // restores focus to may never have been the control. preventScroll stops
+    // the restore itself from moving the page.
+    //
+    // Two paths must not take it. A fragment link has just put the reader at a
+    // section, and pulling focus back to the bar would undo that for a keyboard
+    // reader while a pointer reader saw nothing. And the width backstop fires at
+    // the same breakpoint that hides the control, so by the time this runs the
+    // control is display:none and focus() would no-op silently — offsetParent is
+    // how that is detected. Focus falls to <body> there, which is the honest
+    // outcome: at that width the control the reader opened no longer exists.
+    if (returnFocusOnClose && control.offsetParent !== null) {
+      control.focus({ preventScroll: true })
+    }
+
+    restoreScrollOnRelease = true
+    returnFocusOnClose = true
+  })
+
+  // The control is not a toggle: showModal() makes the rest of the document
+  // inert, so it cannot be pressed again while the panel is open.
+  control.addEventListener("click", openPanel)
+
+  panel.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement
+
+    // The panel's own box is exactly its content box, so a click reported
+    // against the dialog element itself cannot have landed on anything inside
+    // it — that is the backdrop. Steadier than a hit test against
+    // getBoundingClientRect(), which has to guess at the sub-pixel edges.
+    if (target === panel) {
+      closePanel()
+      return
+    }
+
+    if (target.closest("[data-menu-close]")) {
+      closePanel()
+      return
+    }
+
+    const link = target.closest("a")
+    if (!link) return
+
+    // A same-document fragment is the one link that moves this page, and it can
+    // only land if the document is scrollable again by the time the default
+    // action runs — the close event is queued, so it arrives too late. Release
+    // the lock here and let the fragment own the final position; restoring the
+    // recorded offset would fight it, and whichever ran last would win. Links
+    // that open in a new tab leave this page exactly where it was, so they keep
+    // the restore.
+    if (link.getAttribute("href")?.startsWith("#")) {
+      restoreScrollOnRelease = false
+      returnFocusOnClose = false
+      releaseScroll(false)
+    }
+
+    closePanel()
+  })
+
+  // Tailwind's `sm` breakpoint, duplicated from the `sm:hidden` the caller puts
+  // on the control above. The pair has to agree: if the class hides the control
+  // at a width this query does not match, a reader who widens the viewport is
+  // stranded behind a panel with no visible way out. Kept as a literal because
+  // `@theme inline` makes `--breakpoint-sm` unreliable to read back through
+  // getComputedStyle.
+  const desktop = window.matchMedia("(min-width: 40rem)")
+
+  function closeIfDesktop() {
+    if (desktop.matches) closePanel()
+  }
+
+  // `change` rather than `resize`: this fires once on the crossing instead of on
+  // every intermediate pixel.
+  desktop.addEventListener("change", closeIfDesktop)
+
+  // And once now, so a panel somehow left open across a reload cannot strand
+  // anyone either.
+  closeIfDesktop()
+
+  // A back/forward-cache restore resumes frozen JS rather than re-running this
+  // module, so the call above cannot cover that case however it reads. pageshow
+  // is the only signal that fires on the way back in.
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) closeIfDesktop()
+  })
+</script>

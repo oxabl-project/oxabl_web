@@ -20,3 +20,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# compound-engineering artifacts that are point-in-time rather than durable.
+# Solutions and residual findings are committed; brainstorms and plans record
+# what was decided on one day and go stale the moment the code moves past them.
+docs/brainstorms/
+docs/plans/
