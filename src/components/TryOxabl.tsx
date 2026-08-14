@@ -164,7 +164,7 @@ export function TryOxabl() {
 
   return (
     <div className="screen-material border border-screen-rule bg-screen text-screen-ink">
-      <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-b border-screen-rule px-4 font-chrome text-chrome uppercase">
+      <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-b border-screen-rule px-4 py-3 font-chrome text-chrome uppercase md:py-0">
         <span className="text-screen-ink">Playground / single file</span>
         <span className="text-screen-ink-muted">oxabl_wasm · runs locally</span>
       </div>
@@ -218,7 +218,7 @@ export function TryOxabl() {
         </label>
 
         <div className="min-h-[336px] p-6">
-          <div className="mb-6 flex items-center justify-between font-chrome text-chrome text-screen-ink-muted uppercase">
+          <div className="mb-6 flex flex-col gap-1 font-chrome text-chrome text-screen-ink-muted uppercase sm:flex-row sm:items-center sm:justify-between sm:gap-0">
             <span>Diagnostics</span>
             <span>live engine output</span>
           </div>
