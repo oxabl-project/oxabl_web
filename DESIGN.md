@@ -211,6 +211,14 @@ The static CSS fallback is rebuilt to match the panel — dark and contained, no
 
 The keycap mark is retired. Wordmark only — one fewer bespoke object to keep consistent.
 
+### The icon
+
+There is exactly one exception to "wordmark only", and it is not a separate mark: the icon is the wordmark's own `o`, in Michroma. It exists **only where a square asset is mandatory** — the favicon and the browser tab. It never appears on the site, never sits beside the wordmark in the navbar, and is never used as a logo. A five-letter wordmark cannot survive a 16px tile, so the icon is the wordmark cropped to one glyph rather than a second object to keep consistent.
+
+The `o` is green as a quiet homage to Progress ABL's long association with the colour. This is a deliberate exception to the site's palette, contained entirely within the browser icon. There is no tile, frame, background, or theme variant: the transparent ground lets the same simple shape read naturally against light and dark browser chrome.
+
+One artwork ships, tuned for 16px, encoded as both `favicon.svg` and `favicon.ico`. The `.ico` is not a second design — it is the same transparent artwork in the raster container Safari will load.
+
 ## Navigation
 
 A single 1px-ruled bar: wordmark left, `playground` · `github` · `crates` right. Nothing else. A sticky in-page anchor menu on a six-block single-page site is a template reflex, and three links fit on a phone without a sheet.

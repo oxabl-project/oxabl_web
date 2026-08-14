@@ -32,6 +32,8 @@ const {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <!-- .ico first: Safari never loads an SVG favicon and needs the raster. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
       // Inline and un-bundled on purpose: this has to settle the theme before
