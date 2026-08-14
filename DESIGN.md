@@ -104,25 +104,37 @@ Four roles, one spot hue. Indigo carries structure; identifiers are plain ink. R
 --syn-comment      oklch(0.61 0.008 150)
 --syn-ident        var(--screen-ink)
 
-/* printed on paper */
+/* printed on light paper */
 --syn-keyword-print oklch(0.42 0.11  265)
 --syn-literal-print oklch(0.52 0.07  265)
 --syn-comment-print oklch(0.58 0.005  80)
 --syn-ident-print   var(--ink)
+
+/* printed on dark paper */
+--syn-keyword-print oklch(0.74 0.10  265)
+--syn-literal-print oklch(0.82 0.055 265)
+--syn-comment-print oklch(0.62 0.005  80)
+--syn-ident-print   var(--ink)
 ```
+
+The paper syntax palette needs its own dark values because it is printed on paper, and paper is the material that moves between themes. The light-paper indigo sits at L 0.42, which measures 2.2:1 against dark paper — it does not survive the theme change, it disappears into it. `--syn-ident-print` needs no dark value: it is declared as `var(--ink)` and follows ink for free.
 
 ### Signal — severity only
 
 These appear in diagnostics and check summaries. Never in chrome, never as a button, never as a label.
 
 ```
-                paper                    screen
---ok            oklch(0.62 0.14 150)     oklch(0.78 0.15 150)
---error         oklch(0.55 0.20  25)     oklch(0.70 0.18  25)
---warn          oklch(0.62 0.13  75)     oklch(0.80 0.12  75)
+                paper (light)            paper (dark)             screen
+--ok            oklch(0.62 0.14 150)     oklch(0.76 0.14 150)     oklch(0.78 0.15 150)
+--error         oklch(0.55 0.20  25)     oklch(0.70 0.18  25)     oklch(0.70 0.18  25)
+--warn          oklch(0.62 0.13  75)     oklch(0.80 0.12  75)     oklch(0.80 0.12  75)
 ```
 
 `--ok` is the payoff of the entire site. It is the only green, and it fires when the reader's code passes.
+
+On dark paper the signal colours converge with their screen counterparts, and `--error` and `--warn` land on exactly the same values. That is a consequence of the definition rather than a shortcut: these values are chosen to sit legibly on a dark ground, and under the dark theme both grounds are dark. The tokens stay separate because the _reason_ to use one or the other is the material, not the colour, and paper will move again if the palette is ever retuned.
+
+**Known gap, light theme.** `--ok` measures 3.28:1 and `--warn` 3.57:1 against light paper — both clear AA for large text but not for body-sized text. Every other paper token clears AA in both themes. This predates the dark palette work and is recorded here rather than quietly fixed, because moving `--ok` is a change to the payoff colour of the site and deserves its own decision.
 
 ### Deleted
 
@@ -130,7 +142,21 @@ These appear in diagnostics and check summaries. Never in chrome, never as a but
 
 ## Theme default
 
-Light is the default. Every serious dev-tool site is dark; ink-on-paper is where this language comes from; and the primary audience is at work in a lit office. Dark mode ships and must be genuinely good, but it is the alternate, not the identity. If both end up equally strong, switch the default to follow the user's system preference.
+**The default follows the reader's system preference.** This section used to read _"light is the default … if both end up equally strong, switch the default to follow the user's system preference"_ — and that condition is now met. Every paper-side token has a dark value, and on dark paper all of them clear AA.
+
+Light is still the identity: it is where the ink-on-paper language comes from, it is what the screenshots show, and it is what a reader whose system expresses no preference receives. Following the system is a courtesy to the reader's own configuration, not a claim that the site is dark-first.
+
+### The theme control
+
+Three states, not two: **Auto · Light · Dark**. A two-state switch cannot express "follow the system", so the first touch would permanently strand the reader on an explicit choice and make the default unreachable. Auto is therefore stored as the _absence_ of a preference rather than as a third value, which is what lets a reader on Auto keep following their system — including when it changes mid-visit, which the control listens for.
+
+It sits at the right end of the navbar as one bordered three-cell control, built from the same parts as everything else on the site: 1px rules, square corners, chrome type, `ink-muted` for the inactive cells, `ink` on `paper-sunk` for the active one. It carries **no icon**. The surface icons in block 4 remain the only pictograms here, and a sun-and-moon pair is the single most framework-default set of glyphs available — the exact look this document exists to prevent.
+
+The theme is resolved by a small inline script in the head, before first paint, because a flash of the wrong material costs the reader more than the script weighs. Nothing about the change is animated: a whole-page colour crossfade is the page moving on its own, which law 4 forbids.
+
+### Where dark mode is weakest
+
+Under the dark theme, page ground (L 0.17) and screen ground (L 0.13) sit 1.05:1 apart. Law 3 asks darkness to mean _interactive_, and when the whole page is dark that signal is carried almost entirely by the 1px `--screen-rule` frame rather than by the ground beneath it. This is inherent to putting a dark theme on a paper-and-screen metaphor, and it is the honest cost of shipping one. If it proves too subtle in use, the lever is to take the dark-theme screen further down — not to lighten the page, which would break the light theme's identity.
 
 ## Page structure
 

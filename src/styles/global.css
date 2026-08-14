@@ -27,6 +27,7 @@
 @source "../components/RunIt.tsx";
 @source "../components/SpeedTable.astro";
 @source "../components/Surfaces.astro";
+@source "../components/ThemeControl.astro";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -80,6 +81,18 @@
   --rule: oklch(0.3 0.005 80);
   --rule-strong: oklch(0.42 0.006 80);
   --screen: oklch(0.13 0.01 150);
+
+  /* Syntax printed on dark paper. The light-paper values are indigo at
+     L 0.42–0.52, which is near-invisible once the paper itself is L 0.17. */
+  --syn-keyword-print: oklch(0.74 0.1 265);
+  --syn-literal-print: oklch(0.82 0.055 265);
+  --syn-comment-print: oklch(0.62 0.005 80);
+
+  /* Signal on dark paper. Same reason: severity has to stay legible against
+     paper, and paper is the thing that moved. */
+  --ok: oklch(0.76 0.14 150);
+  --error: oklch(0.7 0.18 25);
+  --warn: oklch(0.8 0.12 75);
 }
 
 @theme inline {
@@ -149,6 +162,9 @@
   }
 
   html {
+    /* No-script default: let the UA follow the system for scrollbars and form
+       controls. An explicit choice overrides this as an inline style. */
+    color-scheme: light dark;
     background: var(--paper);
     scroll-behavior: smooth;
   }

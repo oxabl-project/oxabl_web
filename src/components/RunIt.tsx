@@ -36,7 +36,7 @@ const consumerOutput: Record<Consumer, React.ReactNode> = {
     <>
       <span className="text-screen-ink-muted">$</span> jq -e '.diagnostics |
       length == 0' /tmp/oxabl-analyze.json{"\n"}
-      <span className="text-error">false</span>
+      <span className="text-error-screen">false</span>
     </>
   ),
   agent: (

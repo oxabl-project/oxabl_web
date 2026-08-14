@@ -1,39 +1,44 @@
 ---
 import Logo from "@/components/Logo.astro"
+import ThemeControl from "@/components/ThemeControl.astro"
 ---
 
 <nav class="border-b border-rule bg-paper" aria-label="Primary navigation">
   <div
-    class="mx-auto flex h-[72px] w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6"
+    class="mx-auto flex min-h-[72px] w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6"
   >
     <a href="/" aria-label="oxabl home">
       <Logo />
     </a>
 
-    <div
-      class="flex items-center gap-2 font-chrome text-chrome uppercase sm:gap-4"
-    >
-      <a class="text-ink-muted hover:text-ink" href="#playground">
-        playground
-      </a>
-      <span class="text-rule-strong" aria-hidden="true">·</span>
-      <a
-        class="text-ink-muted hover:text-ink"
-        href="https://github.com/oxabl-project/oxabl"
-        target="_blank"
-        rel="noopener noreferrer"
+    <div class="flex flex-wrap items-center justify-end gap-x-4 gap-y-3">
+      <div
+        class="flex items-center gap-2 font-chrome text-chrome uppercase sm:gap-4"
       >
-        github
-      </a>
-      <span class="text-rule-strong" aria-hidden="true">·</span>
-      <a
-        class="text-ink-muted hover:text-ink"
-        href="https://crates.io/crates/oxabl"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        crates
-      </a>
+        <a class="text-ink-muted hover:text-ink" href="#playground">
+          playground
+        </a>
+        <span class="text-rule-strong" aria-hidden="true">·</span>
+        <a
+          class="text-ink-muted hover:text-ink"
+          href="https://github.com/oxabl-project/oxabl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          github
+        </a>
+        <span class="text-rule-strong" aria-hidden="true">·</span>
+        <a
+          class="text-ink-muted hover:text-ink"
+          href="https://crates.io/crates/oxabl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          crates
+        </a>
+      </div>
+
+      <ThemeControl />
     </div>
   </div>
 </nav>
