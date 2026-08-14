@@ -7,6 +7,19 @@ type CrateNode = {
   published: boolean
 }
 
+// One definition per heading, consumed by both the canvas and the stacked
+// rendering below `md`. The two are deliberately separate DOM subtrees, so a
+// heading retyped in one and not the other would drift silently -- nothing in
+// the build compares them.
+const headings = {
+  spine: "Spine",
+  sourceIn: "Source text in",
+  analysisOut: "Analysis out",
+  surfaces: "Surfaces",
+  foundation: "Foundation",
+  foundationDetail: "Shared types / files / style / generation",
+} as const
+
 const spine: CrateNode[] = [
   {
     name: "oxabl_lexer",
@@ -144,8 +157,8 @@ const foundation: CrateNode[] = [
   <div class="hidden overflow-x-auto border border-rule-strong md:block">
     <div class="pipeline-canvas">
       <div class="pipeline-spine-heading pipeline-group-heading">
-        <span>Spine</span>
-        <span>Source text in</span>
+        <span>{headings.spine}</span>
+        <span>{headings.sourceIn}</span>
       </div>
 
       <div class="pipeline-spine">
@@ -176,11 +189,11 @@ const foundation: CrateNode[] = [
       </div>
 
       <div class="pipeline-analysis-out">
-        <span>Analysis out</span>
+        <span>{headings.analysisOut}</span>
       </div>
 
       <div class="pipeline-group-heading pipeline-group-heading--ruled">
-        <span>Surfaces</span>
+        <span>{headings.surfaces}</span>
       </div>
 
       <div class="pipeline-surface-row">
@@ -221,8 +234,8 @@ const foundation: CrateNode[] = [
       </div>
 
       <div class="pipeline-group-heading pipeline-group-heading--ruled">
-        <span>Foundation</span>
-        <span>Shared types / files / style / generation</span>
+        <span>{headings.foundation}</span>
+        <span>{headings.foundationDetail}</span>
       </div>
 
       <div class="pipeline-foundation-row">
@@ -236,8 +249,8 @@ const foundation: CrateNode[] = [
       class="pipeline-mobile mx-auto w-full max-w-[420px] border border-rule-strong"
     >
       <div class="pipeline-mobile-heading">
-        <span>Spine</span>
-        <span>Source text in</span>
+        <span>{headings.spine}</span>
+        <span>{headings.sourceIn}</span>
       </div>
 
       <div class="pipeline-mobile-stack">
@@ -259,11 +272,11 @@ const foundation: CrateNode[] = [
       </div>
 
       <div class="pipeline-mobile-out">
-        <span>Analysis out</span>
+        <span>{headings.analysisOut}</span>
       </div>
 
       <div class="pipeline-mobile-heading pipeline-mobile-heading--ruled">
-        <span>Surfaces</span>
+        <span>{headings.surfaces}</span>
       </div>
 
       <div class="pipeline-mobile-group">
@@ -272,8 +285,8 @@ const foundation: CrateNode[] = [
       </div>
 
       <div class="pipeline-mobile-heading pipeline-mobile-heading--ruled">
-        <span>Foundation</span>
-        <span>Shared types / files / style / generation</span>
+        <span>{headings.foundation}</span>
+        <span>{headings.foundationDetail}</span>
       </div>
 
       <div class="pipeline-mobile-group">

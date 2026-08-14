@@ -1,4 +1,32 @@
 ---
+// One definition per column, consumed by both the desktop table and the mobile
+// stack. The two renderings are deliberately separate DOM subtrees, so a label
+// retyped in one and not the other would drift silently -- there is no build
+// error for a heading that disagrees with itself. `face` carries the type
+// treatment each column has always had.
+type Column = {
+  key: "lines" | "bytes" | "time" | "benchmark" | "measures"
+  label: string
+  face: string
+  wrapAnywhere?: boolean
+}
+
+const columns: Column[] = [
+  { key: "lines", label: "Lines", face: "font-chrome text-chrome text-ink" },
+  { key: "bytes", label: "Bytes", face: "font-chrome text-chrome text-ink" },
+  { key: "time", label: "Time", face: "font-code text-code text-ink-muted" },
+  {
+    key: "benchmark",
+    label: "Benchmark id",
+    face: "font-code text-code text-ink",
+    // Only the stacked rendering needs this. The desktop table is 1024px wide
+    // and the id has always fit; the 420px mobile column is where an unbroken
+    // `daemon_cycle/cold_open` would otherwise push the box past the viewport.
+    wrapAnywhere: true,
+  },
+  { key: "measures", label: "Measures", face: "text-body text-ink-muted" },
+]
+
 const rows = [
   {
     fixture: "resources/bench_preprocessor_pipeline.abl",
@@ -61,21 +89,16 @@ const rows = [
           class="border-b border-rule-strong font-chrome text-chrome text-ink-muted uppercase"
         >
           <th scope="col" class="px-4 py-6 font-normal">Fixture</th>
-          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
-            >Lines</th
-          >
-          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
-            >Bytes</th
-          >
-          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
-            >Time</th
-          >
-          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
-            >Benchmark id</th
-          >
-          <th scope="col" class="border-l border-rule px-4 py-6 font-normal"
-            >Measures</th
-          >
+          {
+            columns.map(({ label }) => (
+              <th
+                scope="col"
+                class="border-l border-rule px-4 py-6 font-normal"
+              >
+                {label}
+              </th>
+            ))
+          }
         </tr>
       </thead>
       <tbody>
@@ -88,21 +111,11 @@ const rows = [
               >
                 {row.fixture}
               </th>
-              <td class="border-l border-rule px-4 py-6 font-chrome text-chrome text-ink">
-                {row.lines}
-              </td>
-              <td class="border-l border-rule px-4 py-6 font-chrome text-chrome text-ink">
-                {row.bytes}
-              </td>
-              <td class="border-l border-rule px-4 py-6 font-code text-code text-ink-muted">
-                {row.time}
-              </td>
-              <td class="border-l border-rule px-4 py-6 font-code text-code text-ink">
-                {row.benchmark}
-              </td>
-              <td class="border-l border-rule px-4 py-6 text-body text-ink-muted">
-                {row.measures}
-              </td>
+              {columns.map(({ key, face }) => (
+                <td class={`border-l border-rule px-4 py-6 ${face}`}>
+                  {row[key]}
+                </td>
+              ))}
             </tr>
           ))
         }
@@ -119,38 +132,16 @@ const rows = [
               {row.fixture}
             </p>
             <dl class="mt-6 space-y-6">
-              <div>
-                <dt class="font-chrome text-chrome text-ink-muted uppercase">
-                  Lines
-                </dt>
-                <dd class="font-chrome text-chrome text-ink">{row.lines}</dd>
-              </div>
-              <div>
-                <dt class="font-chrome text-chrome text-ink-muted uppercase">
-                  Bytes
-                </dt>
-                <dd class="font-chrome text-chrome text-ink">{row.bytes}</dd>
-              </div>
-              <div>
-                <dt class="font-chrome text-chrome text-ink-muted uppercase">
-                  Time
-                </dt>
-                <dd class="font-code text-code text-ink-muted">{row.time}</dd>
-              </div>
-              <div>
-                <dt class="font-chrome text-chrome text-ink-muted uppercase">
-                  Benchmark id
-                </dt>
-                <dd class="font-code text-code wrap-anywhere text-ink">
-                  {row.benchmark}
-                </dd>
-              </div>
-              <div>
-                <dt class="font-chrome text-chrome text-ink-muted uppercase">
-                  Measures
-                </dt>
-                <dd class="text-body text-ink-muted">{row.measures}</dd>
-              </div>
+              {columns.map(({ key, label, face, wrapAnywhere }) => (
+                <div>
+                  <dt class="font-chrome text-chrome text-ink-muted uppercase">
+                    {label}
+                  </dt>
+                  <dd class={wrapAnywhere ? `${face} wrap-anywhere` : face}>
+                    {row[key]}
+                  </dd>
+                </div>
+              ))}
             </dl>
           </div>
         ))

@@ -243,6 +243,8 @@ The panel is built from the site's own parts, not from a component library: 1px 
 
 **The panel does not repeat the wordmark.** It holds the three links, the theme control, and its close control — nothing else. A wordmark inside the panel lands a few pixels off the one still showing on the bar behind it, and the mismatch reads as the whole site shifting when the menu opens. The bar is already on screen; the panel does not need to introduce itself.
 
+**The links survive without JavaScript.** Collapsing the bar put the only navigation behind a script: below 640px the links are hidden in CSS and the panel that holds them opens from a `<script>`, so a reader whose JavaScript never arrives would get a wordmark and a control that does nothing. Below 640px, therefore, a `<noscript>` row renders the same three links as plain wrapped anchors and hides the menu control. It is drawn from the same link list as the panel, so the two cannot drift. The theme control has no no-script form and does not get one — it is script-driven end to end, and a reader without JavaScript keeps whatever the system asks for, which is the default the control exists to hand back.
+
 ## Removed components
 
 `HoverGlow.tsx`, `MobileNav.tsx`, `ui/sheet.tsx`, `ui/card.tsx` (a card with no radius and no shadow is a bordered div), and the six feature graphics — `AstGraphic`, `TokenGraphic`, `SemanticGraphic`, `PreprocGraphic`, `SchemaGraphic`, `PerfGraphic` — along with the feature grid that hosted them.
