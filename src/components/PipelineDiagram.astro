@@ -141,7 +141,7 @@ const foundation: CrateNode[] = [
     Five foundation crates support the system.
   </p>
 
-  <div class="overflow-x-auto border border-rule-strong">
+  <div class="hidden overflow-x-auto border border-rule-strong md:block">
     <div class="pipeline-canvas">
       <div class="pipeline-spine-heading pipeline-group-heading">
         <span>Spine</span>
@@ -226,6 +226,57 @@ const foundation: CrateNode[] = [
       </div>
 
       <div class="pipeline-foundation-row">
+        {foundation.map((crate) => <PipelineNode {...crate} />)}
+      </div>
+    </div>
+  </div>
+
+  <div class="px-6 md:hidden">
+    <div
+      class="pipeline-mobile mx-auto w-full max-w-[420px] border border-rule-strong"
+    >
+      <div class="pipeline-mobile-heading">
+        <span>Spine</span>
+        <span>Source text in</span>
+      </div>
+
+      <div class="pipeline-mobile-stack">
+        {
+          spine.map((crate, index) => (
+            <>
+              {index > 0 && (
+                <div class="pipeline-mobile-connector" aria-hidden="true" />
+              )}
+              <div class="pipeline-mobile-step">
+                <span class="pipeline-mobile-sequence">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <PipelineNode {...crate} />
+              </div>
+            </>
+          ))
+        }
+      </div>
+
+      <div class="pipeline-mobile-out">
+        <span>Analysis out</span>
+      </div>
+
+      <div class="pipeline-mobile-heading pipeline-mobile-heading--ruled">
+        <span>Surfaces</span>
+      </div>
+
+      <div class="pipeline-mobile-group">
+        {surfaces.map((crate) => <PipelineNode {...crate} />)}
+        {sharedSurfaceLayer.map((crate) => <PipelineNode {...crate} />)}
+      </div>
+
+      <div class="pipeline-mobile-heading pipeline-mobile-heading--ruled">
+        <span>Foundation</span>
+        <span>Shared types / files / style / generation</span>
+      </div>
+
+      <div class="pipeline-mobile-group">
         {foundation.map((crate) => <PipelineNode {...crate} />)}
       </div>
     </div>

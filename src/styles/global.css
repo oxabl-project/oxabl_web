@@ -412,6 +412,75 @@
   fill: var(--ink);
 }
 
+/* The stacked rendering of the crate graph. It is a sibling subtree of the
+   canvas above, not a restyling of it, and it only ever renders below `md`
+   because `md:hidden` on its wrapper is what scopes it — so none of these
+   rules carries a media query and none of them touches a `.pipeline-canvas`
+   descendant. The branching the canvas draws with SVG is deliberately absent
+   here; the `01`–`08` sequence numbers and a 24px connector rule carry the
+   order instead. */
+.pipeline-mobile {
+  color: var(--ink);
+}
+
+.pipeline-mobile-heading,
+.pipeline-mobile-sequence,
+.pipeline-mobile-out {
+  color: var(--ink-muted);
+  font-family: "Martian Mono Chrome", monospace;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pipeline-mobile-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.pipeline-mobile-heading--ruled {
+  border-top: 1px solid var(--ink);
+}
+
+.pipeline-mobile-stack {
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px;
+}
+
+.pipeline-mobile-step {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 16px of line plus 8px of lead: one baseline unit above the box it numbers. */
+.pipeline-mobile-sequence {
+  display: block;
+  padding-bottom: 8px;
+}
+
+.pipeline-mobile-connector {
+  width: 1px;
+  height: 24px;
+  margin: 0 auto;
+  background: currentColor;
+}
+
+.pipeline-mobile-out {
+  padding: 24px;
+  text-align: right;
+}
+
+.pipeline-mobile-group {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 24px 24px;
+}
+
 /* The menu panel reuses the bar's theme control unmodified, so its cells arrive
    carrying the pointer-sized padding they wear on the bar. Sizing them for a
    thumb therefore has to happen from outside that component, and the selector
