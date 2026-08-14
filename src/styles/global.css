@@ -26,6 +26,7 @@
 @source "../components/PipelineNode.astro";
 @source "../components/RunIt.tsx";
 @source "../components/SpeedTable.astro";
+@source "../components/Surfaces.astro";
 
 @custom-variant dark (&:is(.dark *));
 

@@ -28,12 +28,12 @@ No block on the site tries to serve two audiences at once.
 
 Four faces, each with one job. Geist and JetBrains Mono are removed.
 
-| Role              | Face                   | Usage                                                                                                                                                 |
-| ----------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Wordmark          | **Michroma** (OFL)     | The single word `oxabl`, lowercase. A loaded webfont is acceptable for this version; optically corrected SVG outlines are a deferred refinement.      |
-| Structural chrome | **Martian Mono** (OFL) | Section labels, crate names, table headers, figure captions, numeric readouts. Small, uppercase, tracked. Subset to uppercase + digits + punctuation. |
-| Display and prose | **IBM Plex Sans**      | Headlines and body text. Quiet and confident.                                                                                                         |
-| Real oxabl output | **IBM Plex Mono**      | Code, token streams, diagnostics, AST, shell transcripts.                                                                                             |
+| Role              | Face                   | Usage                                                                                                                                                                                                                                                                                                                             |
+| ----------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wordmark          | **Michroma** (OFL)     | The single word `oxabl`, lowercase. A loaded webfont is acceptable for this version; optically corrected SVG outlines are a deferred refinement. One named exception: the **"what is oxabl"** heading, set lowercase at `heading` size — never larger — because that block's job is to name the thing, so the name sets the line. |
+| Structural chrome | **Martian Mono** (OFL) | Section labels, crate names, table headers, figure captions, numeric readouts. Small, uppercase, tracked. Subset to uppercase + digits + punctuation.                                                                                                                                                                             |
+| Display and prose | **IBM Plex Sans**      | Headlines and body text. Quiet and confident.                                                                                                                                                                                                                                                                                     |
+| Real oxabl output | **IBM Plex Mono**      | Code, token streams, diagnostics, AST, shell transcripts.                                                                                                                                                                                                                                                                         |
 
 **Hard rule: Martian Mono never appears in prose or in code.** It is chrome only. The moment it lands in a paragraph or a code block, the whole thing tips into costume.
 
@@ -134,21 +134,32 @@ Light is the default. Every serious dev-tool site is dark; ink-on-paper is where
 
 ## Page structure
 
-Six blocks. No two share a shape — that is what gives the page rhythm under a single grid law. Density varies per block: uniform `py-24` is what made the old page read as one long section.
+Seven blocks. No two share a shape — that is what gives the page rhythm under a single grid law. Density varies per block: uniform `py-24` is what made the old page read as one long section.
 
 | #   | Block          | Shape                                                                                   | Material       |
 | --- | -------------- | --------------------------------------------------------------------------------------- | -------------- |
 | 1   | **Masthead**   | One bordered instrument panel: separate text and dominant shader cells                  | paper + screen |
 | 2   | **Playground** | Full-width interactive. Not a titled section — it _is_ the second screen                | screen         |
 | 3   | **Vocabulary** | One enormous keyword count, beneath it the real keyword list as a dense monospace field | paper          |
-| 4   | **Pipeline**   | The crates as one bespoke diagram built to the grid, each carrying its own description  | paper          |
-| 5   | **Speed**      | One honest benchmark table — files, lines, bytes, milliseconds                          | paper          |
-| 6   | **Run it**     | Install, CLI invocations, a CI snippet, and the one-output-many-consumers block         | paper + screen |
+| 4   | **What it is** | Centered wordmark-face heading, a full-width lead line, one ruled band of three icons   | paper          |
+| 5   | **Pipeline**   | The crates as one bespoke diagram built to the grid, each carrying its own description  | paper          |
+| 6   | **Speed**      | One honest benchmark table — files, lines, bytes, milliseconds                          | paper          |
+| 7   | **Run it**     | Install, CLI invocations, a CI snippet, and the one-output-many-consumers block         | paper + screen |
 | —   | **Footer**     | Contribute line, license, crates links, the no-affiliation disclaimer                   | paper          |
 
 The thesis sentence is **"ABL developers deserve modern toolchains."** It leads the masthead. It was previously buried two-thirds down the page under a green eyebrow label while the hero opened with a feature list.
 
 Features and pipeline were previously the same six things told twice, in two visual treatments, across ~350 lines. The crates _are_ the features; block 4 absorbs both.
+
+### The what-it-is block
+
+It sits between the vocabulary and pipeline blocks and answers the plainest question on the page. Only the heading is centered — it is the one place where the page states its reason rather than demonstrating it — and it is set in Michroma at `heading` size. The line below it is left-aligned; centered prose is never correct on this site.
+
+That line is a **lead**, not prose, and it is the one named exception to the ~68ch measure: one or two short sentences set at `heading` size in weight 400, spanning the full grid width so the line runs left-to-right across the block. It is sized to be read at a glance and measured to the box beneath it, so it reads as that box's caption rather than as a column of text someone has to settle into. The exception is narrow on purpose — it holds for the sentences that state what oxabl is, and it must land in two lines; a third line means the copy is too long, not that the measure should grow. Any paragraph the reader is expected to actually read stays at `body` and ~68ch.
+
+Beneath it, one bordered box split into three cells by 1px rules, built to the same shape as the install block: CLI, LSP, CI. It is a single short horizontal band — three equal cells at every width, never stacking. Each cell holds a centered line-drawn icon and one `chrome` caption beneath it naming where that surface runs: _for your terminal_, _for your editor_, _for your CI_. Nothing else — no command, no prose. The install block already prints the commands, and repeating them here would make the two boxes the same object twice. The caption says where it runs and the icon says what it is, so the surface acronym itself is needed only as the icon's accessible name.
+
+The icons are the only pictograms on the site, and they follow law 2 without exception: 1px strokes in `--ink-muted`, no fill, no radius, no colour, drawn on the same grid as everything else. A filled or coloured icon set would reintroduce exactly the framework-default look this document exists to prevent.
 
 ### The consumer block
 

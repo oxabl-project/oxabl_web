@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar.astro"
 import PipelineDiagram from "@/components/PipelineDiagram.astro"
 import { RunIt } from "@/components/RunIt"
 import SpeedTable from "@/components/SpeedTable.astro"
+import Surfaces from "@/components/Surfaces.astro"
 import { TryOxabl } from "@/components/TryOxabl"
 import keywordCounts from "@/data/keyword-counts.json"
 import keywords from "@/data/keywords.json"
@@ -106,6 +107,25 @@ import Layout from "@/layouts/main.astro"
             </p>
           </div>
         </figure>
+      </div>
+    </section>
+
+    <section
+      aria-labelledby="what-title"
+      class="border-t border-rule px-4 sm:px-6"
+    >
+      <div class="mx-auto w-full max-w-7xl py-[72px]">
+        <h2
+          id="what-title"
+          class="text-center font-wordmark text-heading text-ink lowercase"
+        >
+          what is oxabl
+        </h2>
+        <p class="mt-6 text-heading text-ink-muted">
+          The answer to performant, native ABL tooling. Starting with formatting
+          and linting, for the CLI, an LSP, or your CI workflows.
+        </p>
+        <Surfaces class="mt-12" />
       </div>
     </section>
 
