@@ -1,4 +1,5 @@
 import * as React from "react"
+import analyzeOutput from "@/data/analyze-output.json"
 
 const consumers = ["jq", "grep", "ci", "agent"] as const
 type Consumer = (typeof consumers)[number]
@@ -8,21 +9,22 @@ const consumerOutput: Record<Consumer, React.ReactNode> = {
     <>
       <span className="text-screen-ink-muted">$</span> jq '.diagnostics'
       /tmp/oxabl-analyze.json{"\n"}
-      <span className="text-screen-ink-muted">[output not yet published]</span>
+      []
     </>
   ),
   grep: (
     <>
       <span className="text-screen-ink-muted">$</span> grep -n '"diagnostics"'
       /tmp/oxabl-analyze.json{"\n"}
-      <span className="text-screen-ink-muted">[output not yet published]</span>
+      {`10:  "diagnostics": [],
+316:    "diagnostics": 1,`}
     </>
   ),
   ci: (
     <>
       <span className="text-screen-ink-muted">$</span> jq -e '.diagnostics |
       length == 0' /tmp/oxabl-analyze.json{"\n"}
-      <span className="text-screen-ink-muted">[output not yet published]</span>
+      <span className="text-ok">true</span>
     </>
   ),
   agent: (
@@ -31,7 +33,7 @@ const consumerOutput: Record<Consumer, React.ReactNode> = {
       oxabl analysis JSON. Report only actionable source issues.'
       {" \\"}
       {"\n"} &lt; /tmp/oxabl-analyze.json{"\n"}
-      <span className="text-screen-ink-muted">[output not yet published]</span>
+      No actionable source issues found.
     </>
   ),
 }
@@ -86,21 +88,19 @@ oxabl lsp`}</code>
 
       <div className="screen-material mt-6 border border-screen-rule bg-screen text-screen-ink">
         <div className="grid min-h-[408px] lg:grid-cols-2">
-          <div className="border-b border-screen-rule lg:border-r lg:border-b-0">
+          <div className="min-w-0 border-b border-screen-rule lg:border-r lg:border-b-0">
             <div className="flex min-h-12 items-center justify-between gap-3 border-b border-screen-rule px-4 font-chrome text-chrome uppercase">
               <span>Fixed output / analyze JSON</span>
               <span className="text-screen-ink-muted">producer</span>
             </div>
-            <pre className="overflow-x-auto p-6 font-code text-code text-screen-ink">
+            <pre className="max-h-[360px] overflow-auto p-6 font-code text-code text-screen-ink">
               <code>
                 <span className="text-screen-ink-muted">$</span> cargo run -q -p
                 oxabl -- analyze{" \\"}
                 {"\n"} crates/oxabl_analyze/tests/fixtures/simple_variable.p
                 {" \\"}
                 {"\n"} --format json &gt; /tmp/oxabl-analyze.json{"\n\n"}
-                <span className="text-screen-ink-muted">
-                  [payload not yet published]
-                </span>
+                {JSON.stringify(analyzeOutput, null, 2)}
               </code>
             </pre>
           </div>
@@ -177,11 +177,3 @@ oxabl lsp`}</code>
     </>
   )
 }
-
-// TODO(output): From /home/evanr/oxabl, create the fixed payload with:
-// cargo run -q -p oxabl -- analyze crates/oxabl_analyze/tests/fixtures/simple_variable.p --format json > /tmp/oxabl-analyze.json
-// Replace the left-hand publication notice with the exact contents of /tmp/oxabl-analyze.json.
-// TODO(output/jq): Run `jq '.diagnostics' /tmp/oxabl-analyze.json` and replace only the jq publication notice.
-// TODO(output/grep): Run `grep -n '"diagnostics"' /tmp/oxabl-analyze.json` and replace only the grep publication notice.
-// TODO(output/ci): Run `jq -e '.diagnostics | length == 0' /tmp/oxabl-analyze.json` and replace only the ci publication notice.
-// TODO(output/agent): Run `codex exec 'Review this oxabl analysis JSON. Report only actionable source issues.' < /tmp/oxabl-analyze.json` and replace only the agent publication notice.

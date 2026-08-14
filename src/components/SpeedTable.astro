@@ -4,7 +4,7 @@ const rows = [
     fixture: "resources/bench_preprocessor_pipeline.abl",
     lines: "50",
     bytes: "1,538",
-    time: "not measured",
+    time: "0.05249 ms",
     benchmark: "parser/pipeline_with_includes",
     measures: "preprocess + lex + parse",
   },
@@ -12,7 +12,7 @@ const rows = [
     fixture: "resources/bench_keywords.abl",
     lines: "632",
     bytes: "17,303",
-    time: "not measured",
+    time: "0.23587 ms",
     benchmark: "parser/full_program",
     measures: "lex + parse, full program",
   },
@@ -20,7 +20,7 @@ const rows = [
     fixture: "crates/oxabl_schema/fixtures/sp2k.df",
     lines: "2,654",
     bytes: "58,198",
-    time: "not measured",
+    time: "0.32278 ms",
     benchmark: "schema/load_files:sp2k",
     measures: ".df schema load",
   },
@@ -28,7 +28,7 @@ const rows = [
     fixture: "resources/lsp_bench.p",
     lines: "3,385",
     bytes: "129,286",
-    time: "not measured",
+    time: "2.9132 ms",
     benchmark: "daemon_cycle/cold_open",
     measures: "fresh DB, full diagnostics",
   },
@@ -36,27 +36,11 @@ const rows = [
     fixture: "generator replay: 90× sp2k with renamed tables",
     lines: "not recorded",
     bytes: "5,251,930",
-    time: "not measured",
+    time: "5.5024 ms",
     benchmark: "schema/load_files:5mb_merged",
     measures: "schema parse at scale",
   },
 ]
-
-// TODO(benchmark/parser-pipeline): From /home/evanr/oxabl run:
-// cargo bench -p oxabl_parser --bench parser_bench -- parser/pipeline_with_includes
-// Replace only that row's `not measured` with the reported time.
-// TODO(benchmark/parser-full): From /home/evanr/oxabl run:
-// cargo bench -p oxabl_parser --bench parser_bench -- parser/full_program
-// Replace only that row's `not measured` with the reported time.
-// TODO(benchmark/schema-sp2k): From /home/evanr/oxabl run:
-// cargo bench -p oxabl_schema --bench schema_bench -- load_files:sp2k
-// Replace only that row's `not measured` with the reported time.
-// TODO(benchmark/daemon-cold-open): From /home/evanr/oxabl run:
-// cargo bench -p oxabl_daemon --bench daemon_cycle_bench -- daemon_cycle/cold_open
-// Replace only that row's `not measured` with the reported time.
-// TODO(benchmark/schema-5mb): From /home/evanr/oxabl run:
-// cargo bench -p oxabl_schema --bench schema_bench -- load_files:5mb_merged
-// Replace only that row's `not measured` with the reported time.
 ---
 
 <figure>
@@ -64,9 +48,10 @@ const rows = [
     class="mb-6 flex flex-wrap justify-between gap-3 font-chrome text-chrome text-ink-muted uppercase"
   >
     <span>
-      bench_*.abl: committed synthetic / sp2k.df: vendored public Riverside Software fixture
+      bench_*.abl: committed synthetic / sp2k.df: vendored public Riverside
+      Software fixture
     </span>
-    <span>generated row: derived by replaying the benchmark generator / timings not measured</span>
+    <span>generated row: derived by replaying the benchmark generator</span>
   </figcaption>
 
   <div class="overflow-x-auto border border-rule-strong">
@@ -124,4 +109,8 @@ const rows = [
       </tbody>
     </table>
   </div>
+  <p class="mt-6 font-chrome text-chrome text-ink-muted uppercase">
+    Measured 2026-08-14 · oxabl 9a668c9 · Intel Core i7-11700 · 8 cores / 16
+    threads · 32 GiB RAM · Fedora Linux · Rust 1.97.1 · performance governor
+  </p>
 </figure>
