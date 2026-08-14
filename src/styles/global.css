@@ -19,6 +19,7 @@
 @source "../pages/index.astro";
 @source "../layouts/main.astro";
 @source "../components/Logo.astro";
+@source "../components/MobileMenu.astro";
 @source "../components/Navbar.astro";
 @source "../components/HexHero.tsx";
 @source "../components/TryOxabl.tsx";
@@ -409,6 +410,20 @@
 
 .pipeline-connector polygon {
   fill: var(--ink);
+}
+
+/* The menu panel reuses the bar's theme control unmodified, so its cells arrive
+   carrying the pointer-sized padding they wear on the bar. Sizing them for a
+   thumb therefore has to happen from outside that component, and the selector
+   is anchored to the panel so the bar's own instance keeps its metrics exactly.
+   Unlayered, so it outranks the utilities the component itself declares. */
+[data-menu-panel] [data-theme-control] > button {
+  display: flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 16px;
 }
 
 @media (prefers-reduced-motion: reduce) {
