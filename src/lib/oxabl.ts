@@ -120,8 +120,7 @@ export type OxablFailure =
   | { kind: "load"; message: string }
 
 export type OxablResult<T> =
-  | { ok: true; value: T }
-  | { ok: false; failure: OxablFailure }
+  { ok: true; value: T } | { ok: false; failure: OxablFailure }
 
 /** Terminal failures leave the playground unusable until a page reload. */
 export function isTerminal(failure: OxablFailure): boolean {

@@ -10,33 +10,33 @@
 // the cursor ripple. Real hero DOM sits on top as normal, accessible markup.
 
 export interface HexFloatOptions {
-  size?: number;
-  gap?: number;
-  bevel?: number;
-  tilt?: number;
-  perspective?: number;
-  float?: number;
-  speed?: number;
-  shine?: number;
-  lift?: number;
-  radius?: number;
-  flow?: number;
-  swirl?: number;
-  trail?: number;
-  iridescence?: number;
+  size?: number
+  gap?: number
+  bevel?: number
+  tilt?: number
+  perspective?: number
+  float?: number
+  speed?: number
+  shine?: number
+  lift?: number
+  radius?: number
+  flow?: number
+  swirl?: number
+  trail?: number
+  iridescence?: number
 }
 
 export interface HexFloatHooks {
   /** Reports the sustained FPS measured during the warm-up probe, once. */
-  onProbe?: (fps: number) => void;
+  onProbe?: (fps: number) => void
   /** How long to measure FPS for, in ms. */
-  probeMs?: number;
+  probeMs?: number
 }
 
 export interface HexFloatInstance {
-  setOptions: (options: HexFloatOptions) => void;
-  resize: () => void;
-  destroy: () => void;
+  setOptions: (options: HexFloatOptions) => void
+  resize: () => void
+  destroy: () => void
 }
 
 const DEFAULTS: Required<HexFloatOptions> = {
@@ -54,7 +54,7 @@ const DEFAULTS: Required<HexFloatOptions> = {
   swirl: 0,
   trail: 0,
   iridescence: 1,
-};
+}
 
 const VERT = `#version 300 es
 precision highp float;
@@ -63,7 +63,7 @@ out vec2 vUv;
 void main () {
   vUv = aPos * 0.5 + 0.5;
   gl_Position = vec4(aPos, 0.0, 1.0);
-}`;
+}`
 
 const FRAG = `#version 300 es
 precision highp float;
@@ -320,7 +320,7 @@ void main () {
   } else {
     outColor = c * 0.5;
   }
-}`;
+}`
 
 const SIM_VERT = `#version 300 es
 precision highp float;
@@ -338,7 +338,7 @@ void main () {
   vT = vUv + vec2(0.0, texelSize.y);
   vB = vUv - vec2(0.0, texelSize.y);
   gl_Position = vec4(aPos, 0.0, 1.0);
-}`;
+}`
 
 const FRAG_SPLAT = `#version 300 es
 precision highp float;
@@ -355,7 +355,7 @@ void main () {
   vec3 splat = exp(-dot(p, p) / uRadius) * uColor;
   vec3 base = texture(uTarget, vUv).xyz;
   outColor = vec4(base + splat, 1.0);
-}`;
+}`
 
 const FRAG_ADVECT = `#version 300 es
 precision highp float;
@@ -370,7 +370,7 @@ void main () {
   vec2 coord = vUv - uDt * texture(uVelocity, vUv).xy * texelSize;
   outColor = uDissipation * texture(uSource, coord);
   outColor.a = 1.0;
-}`;
+}`
 
 const FRAG_CLEAR = `#version 300 es
 precision highp float;
@@ -380,7 +380,7 @@ uniform sampler2D uTexture;
 uniform float uValue;
 void main () {
   outColor = uValue * texture(uTexture, vUv);
-}`;
+}`
 
 const FRAG_DIVERGENCE = `#version 300 es
 precision highp float;
@@ -403,7 +403,7 @@ void main () {
   if (vB.y < 0.0) { B = -C.y; }
   float div = 0.5 * (R - L + T - B);
   outColor = vec4(div, 0.0, 0.0, 1.0);
-}`;
+}`
 
 const FRAG_CURL = `#version 300 es
 precision highp float;
@@ -421,7 +421,7 @@ void main () {
   float B = texture(uVelocity, vB).x;
   float vorticity = R - L - T + B;
   outColor = vec4(vorticity, 0.0, 0.0, 1.0);
-}`;
+}`
 
 const FRAG_VORTICITY = `#version 300 es
 precision highp float;
@@ -447,7 +447,7 @@ void main () {
   force.y *= -1.0;
   vec2 velocity = texture(uVelocity, vUv).xy;
   outColor = vec4(velocity + force * uDt, 0.0, 1.0);
-}`;
+}`
 
 const FRAG_PRESSURE = `#version 300 es
 precision highp float;
@@ -467,7 +467,7 @@ void main () {
   float divergence = texture(uDivergence, vUv).x;
   float pressure = (L + R + B + T - divergence) * 0.25;
   outColor = vec4(pressure, 0.0, 0.0, 1.0);
-}`;
+}`
 
 const FRAG_GRADIENT = `#version 300 es
 precision highp float;
@@ -487,44 +487,44 @@ void main () {
   vec2 velocity = texture(uVelocity, vUv).xy;
   velocity.xy -= vec2(R - L, T - B);
   outColor = vec4(velocity, 0.0, 1.0);
-}`;
+}`
 
 interface Target {
-  fbo: WebGLFramebuffer;
-  texture: WebGLTexture;
-  width: number;
-  height: number;
+  fbo: WebGLFramebuffer
+  texture: WebGLTexture
+  width: number
+  height: number
 }
 
 interface DoubleTarget {
-  read: Target;
-  write: Target;
-  swap: () => void;
+  read: Target
+  write: Target
+  swap: () => void
 }
 
-const SIM_RES = 96;
-const FLOW_RES = 256;
-const SIM_DT = 1 / 60;
-const VELOCITY_DISSIPATION = 0.985;
-const PRESSURE_DECAY = 0.8;
-const PRESSURE_ITERATIONS = 4;
+const SIM_RES = 96
+const FLOW_RES = 256
+const SIM_DT = 1 / 60
+const VELOCITY_DISSIPATION = 0.985
+const PRESSURE_DECAY = 0.8
+const PRESSURE_ITERATIONS = 4
 
 export function supportsWebGL2(): boolean {
-  if (typeof document === "undefined") return false;
+  if (typeof document === "undefined") return false
   try {
-    const probe = document.createElement("canvas");
-    return Boolean(probe.getContext("webgl2"));
+    const probe = document.createElement("canvas")
+    return Boolean(probe.getContext("webgl2"))
   } catch {
-    return false;
+    return false
   }
 }
 
 export function createHexFloat(
   output: HTMLCanvasElement,
   options: HexFloatOptions = {},
-  hooks: HexFloatHooks = {},
+  hooks: HexFloatHooks = {}
 ): HexFloatInstance | null {
-  const config = { ...DEFAULTS, ...options };
+  const config = { ...DEFAULTS, ...options }
 
   const gl = output.getContext("webgl2", {
     alpha: true,
@@ -532,104 +532,104 @@ export function createHexFloat(
     stencil: false,
     antialias: false,
     premultipliedAlpha: true,
-  });
-  if (!gl || gl.isContextLost()) return null;
+  })
+  if (!gl || gl.isContextLost()) return null
 
   function compile(type: number, text: string): WebGLShader {
-    const shader = gl!.createShader(type)!;
-    gl!.shaderSource(shader, text);
-    gl!.compileShader(shader);
+    const shader = gl!.createShader(type)!
+    gl!.shaderSource(shader, text)
+    gl!.compileShader(shader)
     if (!gl!.getShaderParameter(shader, gl!.COMPILE_STATUS)) {
-      console.error("HexFloat shader error:", gl!.getShaderInfoLog(shader));
+      console.error("HexFloat shader error:", gl!.getShaderInfoLog(shader))
     }
-    return shader;
+    return shader
   }
 
-  const vertexShader = compile(gl.VERTEX_SHADER, VERT);
-  const fragmentShader = compile(gl.FRAGMENT_SHADER, FRAG);
-  const program = gl.createProgram()!;
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
+  const vertexShader = compile(gl.VERTEX_SHADER, VERT)
+  const fragmentShader = compile(gl.FRAGMENT_SHADER, FRAG)
+  const program = gl.createProgram()!
+  gl.attachShader(program, vertexShader)
+  gl.attachShader(program, fragmentShader)
+  gl.linkProgram(program)
 
-  const uniforms: Record<string, WebGLUniformLocation> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i)!;
+    const info = gl.getActiveUniform(program, i)!
     uniforms[info.name.replace("[0]", "")] = gl.getUniformLocation(
       program,
-      info.name,
-    )!;
+      info.name
+    )!
   }
 
-  const quad = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+  const quad = gl.createBuffer()
+  gl.bindBuffer(gl.ARRAY_BUFFER, quad)
   gl.bufferData(
     gl.ARRAY_BUFFER,
     new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-    gl.STATIC_DRAW,
-  );
-  gl.enableVertexAttribArray(0);
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    gl.STATIC_DRAW
+  )
+  gl.enableVertexAttribArray(0)
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
   // The cursor ripple needs float render targets. Without them the floor still
   // draws fine — it just loses the interactive flatten window.
-  const hasFloatRT = Boolean(gl.getExtension("EXT_color_buffer_float"));
-  const supportsLinear = Boolean(gl.getExtension("OES_texture_float_linear"));
-  const filtering = supportsLinear ? gl.LINEAR : gl.NEAREST;
+  const hasFloatRT = Boolean(gl.getExtension("EXT_color_buffer_float"))
+  const supportsLinear = Boolean(gl.getExtension("OES_texture_float_linear"))
+  const filtering = supportsLinear ? gl.LINEAR : gl.NEAREST
 
-  const simShaders: WebGLShader[] = [];
-  const simPrograms: WebGLProgram[] = [];
+  const simShaders: WebGLShader[] = []
+  const simPrograms: WebGLProgram[] = []
 
   function compileSim(type: number, text: string): WebGLShader {
-    const shader = compile(type, text);
-    simShaders.push(shader);
-    return shader;
+    const shader = compile(type, text)
+    simShaders.push(shader)
+    return shader
   }
 
-  const simVertexShader = compileSim(gl.VERTEX_SHADER, SIM_VERT);
+  const simVertexShader = compileSim(gl.VERTEX_SHADER, SIM_VERT)
 
   interface SimProgram {
-    program: WebGLProgram;
-    uniforms: Record<string, WebGLUniformLocation>;
+    program: WebGLProgram
+    uniforms: Record<string, WebGLUniformLocation>
   }
 
   function createSimProgram(fragSource: string): SimProgram {
-    const prog = gl!.createProgram()!;
-    gl!.attachShader(prog, simVertexShader);
-    gl!.attachShader(prog, compileSim(gl!.FRAGMENT_SHADER, fragSource));
-    gl!.linkProgram(prog);
-    simPrograms.push(prog);
-    const u: Record<string, WebGLUniformLocation> = {};
-    const n = gl!.getProgramParameter(prog, gl!.ACTIVE_UNIFORMS);
+    const prog = gl!.createProgram()!
+    gl!.attachShader(prog, simVertexShader)
+    gl!.attachShader(prog, compileSim(gl!.FRAGMENT_SHADER, fragSource))
+    gl!.linkProgram(prog)
+    simPrograms.push(prog)
+    const u: Record<string, WebGLUniformLocation> = {}
+    const n = gl!.getProgramParameter(prog, gl!.ACTIVE_UNIFORMS)
     for (let i = 0; i < n; i++) {
-      const info = gl!.getActiveUniform(prog, i)!;
-      u[info.name] = gl!.getUniformLocation(prog, info.name)!;
+      const info = gl!.getActiveUniform(prog, i)!
+      u[info.name] = gl!.getUniformLocation(prog, info.name)!
     }
-    return { program: prog, uniforms: u };
+    return { program: prog, uniforms: u }
   }
 
-  const splatProgram = createSimProgram(FRAG_SPLAT);
-  const advectProgram = createSimProgram(FRAG_ADVECT);
-  const clearProgram = createSimProgram(FRAG_CLEAR);
-  const divergenceProgram = createSimProgram(FRAG_DIVERGENCE);
-  const curlProgram = createSimProgram(FRAG_CURL);
-  const vorticityProgram = createSimProgram(FRAG_VORTICITY);
-  const pressureProgram = createSimProgram(FRAG_PRESSURE);
-  const gradientProgram = createSimProgram(FRAG_GRADIENT);
+  const splatProgram = createSimProgram(FRAG_SPLAT)
+  const advectProgram = createSimProgram(FRAG_ADVECT)
+  const clearProgram = createSimProgram(FRAG_CLEAR)
+  const divergenceProgram = createSimProgram(FRAG_DIVERGENCE)
+  const curlProgram = createSimProgram(FRAG_CURL)
+  const vorticityProgram = createSimProgram(FRAG_VORTICITY)
+  const pressureProgram = createSimProgram(FRAG_PRESSURE)
+  const gradientProgram = createSimProgram(FRAG_GRADIENT)
 
   function createTarget(
     size: number,
     internalFormat: number,
     format: number,
-    filter: number,
+    filter: number
   ): Target {
-    const texture = gl!.createTexture()!;
-    gl!.bindTexture(gl!.TEXTURE_2D, texture);
-    gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MIN_FILTER, filter);
-    gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MAG_FILTER, filter);
-    gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_S, gl!.CLAMP_TO_EDGE);
-    gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_T, gl!.CLAMP_TO_EDGE);
+    const texture = gl!.createTexture()!
+    gl!.bindTexture(gl!.TEXTURE_2D, texture)
+    gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MIN_FILTER, filter)
+    gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MAG_FILTER, filter)
+    gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_S, gl!.CLAMP_TO_EDGE)
+    gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_T, gl!.CLAMP_TO_EDGE)
     gl!.texImage2D(
       gl!.TEXTURE_2D,
       0,
@@ -639,65 +639,65 @@ export function createHexFloat(
       0,
       format,
       gl!.HALF_FLOAT,
-      null,
-    );
-    const fbo = gl!.createFramebuffer()!;
-    gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
+      null
+    )
+    const fbo = gl!.createFramebuffer()!
+    gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo)
     gl!.framebufferTexture2D(
       gl!.FRAMEBUFFER,
       gl!.COLOR_ATTACHMENT0,
       gl!.TEXTURE_2D,
       texture,
-      0,
-    );
-    gl!.viewport(0, 0, size, size);
-    gl!.clearColor(0, 0, 0, 1);
-    gl!.clear(gl!.COLOR_BUFFER_BIT);
-    return { fbo, texture, width: size, height: size };
+      0
+    )
+    gl!.viewport(0, 0, size, size)
+    gl!.clearColor(0, 0, 0, 1)
+    gl!.clear(gl!.COLOR_BUFFER_BIT)
+    return { fbo, texture, width: size, height: size }
   }
 
   function createDoubleTarget(
     size: number,
     internalFormat: number,
     format: number,
-    filter: number,
+    filter: number
   ): DoubleTarget {
-    let read = createTarget(size, internalFormat, format, filter);
-    let write = createTarget(size, internalFormat, format, filter);
+    let read = createTarget(size, internalFormat, format, filter)
+    let write = createTarget(size, internalFormat, format, filter)
     return {
       get read() {
-        return read;
+        return read
       },
       get write() {
-        return write;
+        return write
       },
       swap() {
-        const t = read;
-        read = write;
-        write = t;
+        const t = read
+        read = write
+        write = t
       },
-    };
+    }
   }
 
   // Only stand up the fluid sim when float render targets are available and
   // actually renderable. Otherwise `simEnabled` stays false and the cursor
   // ripple is skipped — the static floor still renders.
-  let simEnabled = hasFloatRT;
-  let velocity: DoubleTarget | null = null;
-  let flow: DoubleTarget | null = null;
-  let divergence: Target | null = null;
-  let curl: Target | null = null;
-  let pressure: DoubleTarget | null = null;
-  const simTexel = 1 / SIM_RES;
+  let simEnabled = hasFloatRT
+  let velocity: DoubleTarget | null = null
+  let flow: DoubleTarget | null = null
+  let divergence: Target | null = null
+  let curl: Target | null = null
+  let pressure: DoubleTarget | null = null
+  const simTexel = 1 / SIM_RES
 
   // A 1x1 zero texture stands in for the flow field when the sim is disabled,
   // so the main shader's uFlow sampler always has something valid bound.
-  const zeroFlow = gl.createTexture()!;
-  gl.bindTexture(gl.TEXTURE_2D, zeroFlow);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const zeroFlow = gl.createTexture()!
+  gl.bindTexture(gl.TEXTURE_2D, zeroFlow)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
   gl.texImage2D(
     gl.TEXTURE_2D,
     0,
@@ -707,25 +707,23 @@ export function createHexFloat(
     0,
     gl.RED,
     gl.HALF_FLOAT,
-    new Uint16Array([0]),
-  );
+    new Uint16Array([0])
+  )
 
   if (simEnabled) {
-    velocity = createDoubleTarget(SIM_RES, gl.RG16F, gl.RG, filtering);
-    flow = createDoubleTarget(FLOW_RES, gl.R16F, gl.RED, filtering);
-    divergence = createTarget(SIM_RES, gl.R16F, gl.RED, gl.NEAREST);
-    curl = createTarget(SIM_RES, gl.R16F, gl.RED, gl.NEAREST);
-    pressure = createDoubleTarget(SIM_RES, gl.R16F, gl.RED, gl.NEAREST);
-    if (
-      gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE
-    ) {
-      simEnabled = false;
+    velocity = createDoubleTarget(SIM_RES, gl.RG16F, gl.RG, filtering)
+    flow = createDoubleTarget(FLOW_RES, gl.R16F, gl.RED, filtering)
+    divergence = createTarget(SIM_RES, gl.R16F, gl.RED, gl.NEAREST)
+    curl = createTarget(SIM_RES, gl.R16F, gl.RED, gl.NEAREST)
+    pressure = createDoubleTarget(SIM_RES, gl.R16F, gl.RED, gl.NEAREST)
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+      simEnabled = false
     }
   }
 
   function releaseSim() {
-    if (!velocity || !flow || !pressure || !divergence || !curl) return;
-    [
+    if (!velocity || !flow || !pressure || !divergence || !curl) return
+    ;[
       velocity.read,
       velocity.write,
       flow.read,
@@ -735,21 +733,21 @@ export function createHexFloat(
       divergence,
       curl,
     ].forEach((t) => {
-      gl!.deleteFramebuffer(t.fbo);
-      gl!.deleteTexture(t.texture);
-    });
+      gl!.deleteFramebuffer(t.fbo)
+      gl!.deleteTexture(t.texture)
+    })
   }
 
   function blit(target: Target) {
-    gl!.bindFramebuffer(gl!.FRAMEBUFFER, target.fbo);
-    gl!.viewport(0, 0, target.width, target.height);
-    gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
+    gl!.bindFramebuffer(gl!.FRAMEBUFFER, target.fbo)
+    gl!.viewport(0, 0, target.width, target.height)
+    gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4)
   }
 
   function bindSimTexture(texture: WebGLTexture, unit: number): number {
-    gl!.activeTexture(gl!.TEXTURE0 + unit);
-    gl!.bindTexture(gl!.TEXTURE_2D, texture);
-    return unit;
+    gl!.activeTexture(gl!.TEXTURE0 + unit)
+    gl!.bindTexture(gl!.TEXTURE_2D, texture)
+    return unit
   }
 
   function applySplat(
@@ -757,155 +755,155 @@ export function createHexFloat(
     y: number,
     dx: number,
     dy: number,
-    dye: number,
+    dye: number
   ) {
-    if (!simEnabled || !velocity || !flow) return;
-    const aspect = output.clientWidth / Math.max(output.clientHeight, 1);
-    const rUv = Math.max(config.radius, 40) / Math.max(output.clientHeight, 1);
-    const radius = rUv * rUv * 0.28;
+    if (!simEnabled || !velocity || !flow) return
+    const aspect = output.clientWidth / Math.max(output.clientHeight, 1)
+    const rUv = Math.max(config.radius, 40) / Math.max(output.clientHeight, 1)
+    const radius = rUv * rUv * 0.28
 
-    gl!.useProgram(splatProgram.program);
-    gl!.uniform1f(splatProgram.uniforms.uAspect, aspect);
-    gl!.uniform2f(splatProgram.uniforms.uPoint, x, y);
-    gl!.uniform1f(splatProgram.uniforms.uRadius, radius);
+    gl!.useProgram(splatProgram.program)
+    gl!.uniform1f(splatProgram.uniforms.uAspect, aspect)
+    gl!.uniform2f(splatProgram.uniforms.uPoint, x, y)
+    gl!.uniform1f(splatProgram.uniforms.uRadius, radius)
     gl!.uniform1i(
       splatProgram.uniforms.uTarget,
-      bindSimTexture(velocity.read.texture, 0),
-    );
-    gl!.uniform3f(splatProgram.uniforms.uColor, dx, dy, 0);
-    blit(velocity.write);
-    velocity.swap();
+      bindSimTexture(velocity.read.texture, 0)
+    )
+    gl!.uniform3f(splatProgram.uniforms.uColor, dx, dy, 0)
+    blit(velocity.write)
+    velocity.swap()
 
     gl!.uniform1i(
       splatProgram.uniforms.uTarget,
-      bindSimTexture(flow.read.texture, 0),
-    );
-    gl!.uniform3f(splatProgram.uniforms.uColor, dye, 0, 0);
-    blit(flow.write);
-    flow.swap();
+      bindSimTexture(flow.read.texture, 0)
+    )
+    gl!.uniform3f(splatProgram.uniforms.uColor, dye, 0, 0)
+    blit(flow.write)
+    flow.swap()
   }
 
   function stepSim(delta: number) {
     if (!simEnabled || !velocity || !flow || !pressure || !divergence || !curl)
-      return;
-    gl!.disable(gl!.BLEND);
+      return
+    gl!.disable(gl!.BLEND)
 
-    gl!.useProgram(curlProgram.program);
-    gl!.uniform2f(curlProgram.uniforms.texelSize, simTexel, simTexel);
+    gl!.useProgram(curlProgram.program)
+    gl!.uniform2f(curlProgram.uniforms.texelSize, simTexel, simTexel)
     gl!.uniform1i(
       curlProgram.uniforms.uVelocity,
-      bindSimTexture(velocity.read.texture, 0),
-    );
-    blit(curl);
+      bindSimTexture(velocity.read.texture, 0)
+    )
+    blit(curl)
 
-    gl!.useProgram(vorticityProgram.program);
-    gl!.uniform2f(vorticityProgram.uniforms.texelSize, simTexel, simTexel);
+    gl!.useProgram(vorticityProgram.program)
+    gl!.uniform2f(vorticityProgram.uniforms.texelSize, simTexel, simTexel)
     gl!.uniform1i(
       vorticityProgram.uniforms.uVelocity,
-      bindSimTexture(velocity.read.texture, 0),
-    );
+      bindSimTexture(velocity.read.texture, 0)
+    )
     gl!.uniform1i(
       vorticityProgram.uniforms.uCurl,
-      bindSimTexture(curl.texture, 1),
-    );
+      bindSimTexture(curl.texture, 1)
+    )
     gl!.uniform1f(
       vorticityProgram.uniforms.uCurlStrength,
-      Math.max(config.swirl, 0),
-    );
-    gl!.uniform1f(vorticityProgram.uniforms.uDt, SIM_DT);
-    blit(velocity.write);
-    velocity.swap();
+      Math.max(config.swirl, 0)
+    )
+    gl!.uniform1f(vorticityProgram.uniforms.uDt, SIM_DT)
+    blit(velocity.write)
+    velocity.swap()
 
-    gl!.useProgram(divergenceProgram.program);
-    gl!.uniform2f(divergenceProgram.uniforms.texelSize, simTexel, simTexel);
+    gl!.useProgram(divergenceProgram.program)
+    gl!.uniform2f(divergenceProgram.uniforms.texelSize, simTexel, simTexel)
     gl!.uniform1i(
       divergenceProgram.uniforms.uVelocity,
-      bindSimTexture(velocity.read.texture, 0),
-    );
-    blit(divergence);
+      bindSimTexture(velocity.read.texture, 0)
+    )
+    blit(divergence)
 
-    gl!.useProgram(clearProgram.program);
+    gl!.useProgram(clearProgram.program)
     gl!.uniform1i(
       clearProgram.uniforms.uTexture,
-      bindSimTexture(pressure.read.texture, 0),
-    );
+      bindSimTexture(pressure.read.texture, 0)
+    )
     gl!.uniform1f(
       clearProgram.uniforms.uValue,
-      Math.pow(PRESSURE_DECAY, delta * 60),
-    );
-    blit(pressure.write);
-    pressure.swap();
+      Math.pow(PRESSURE_DECAY, delta * 60)
+    )
+    blit(pressure.write)
+    pressure.swap()
 
-    gl!.useProgram(pressureProgram.program);
-    gl!.uniform2f(pressureProgram.uniforms.texelSize, simTexel, simTexel);
+    gl!.useProgram(pressureProgram.program)
+    gl!.uniform2f(pressureProgram.uniforms.texelSize, simTexel, simTexel)
     gl!.uniform1i(
       pressureProgram.uniforms.uDivergence,
-      bindSimTexture(divergence.texture, 0),
-    );
+      bindSimTexture(divergence.texture, 0)
+    )
     for (let i = 0; i < PRESSURE_ITERATIONS; i++) {
       gl!.uniform1i(
         pressureProgram.uniforms.uPressure,
-        bindSimTexture(pressure.read.texture, 1),
-      );
-      blit(pressure.write);
-      pressure.swap();
+        bindSimTexture(pressure.read.texture, 1)
+      )
+      blit(pressure.write)
+      pressure.swap()
     }
 
-    gl!.useProgram(gradientProgram.program);
-    gl!.uniform2f(gradientProgram.uniforms.texelSize, simTexel, simTexel);
+    gl!.useProgram(gradientProgram.program)
+    gl!.uniform2f(gradientProgram.uniforms.texelSize, simTexel, simTexel)
     gl!.uniform1i(
       gradientProgram.uniforms.uPressure,
-      bindSimTexture(pressure.read.texture, 0),
-    );
+      bindSimTexture(pressure.read.texture, 0)
+    )
     gl!.uniform1i(
       gradientProgram.uniforms.uVelocity,
-      bindSimTexture(velocity.read.texture, 1),
-    );
-    blit(velocity.write);
-    velocity.swap();
+      bindSimTexture(velocity.read.texture, 1)
+    )
+    blit(velocity.write)
+    velocity.swap()
 
-    gl!.useProgram(advectProgram.program);
-    gl!.uniform2f(advectProgram.uniforms.texelSize, simTexel, simTexel);
+    gl!.useProgram(advectProgram.program)
+    gl!.uniform2f(advectProgram.uniforms.texelSize, simTexel, simTexel)
     gl!.uniform1i(
       advectProgram.uniforms.uVelocity,
-      bindSimTexture(velocity.read.texture, 0),
-    );
+      bindSimTexture(velocity.read.texture, 0)
+    )
     gl!.uniform1i(
       advectProgram.uniforms.uSource,
-      bindSimTexture(velocity.read.texture, 0),
-    );
-    gl!.uniform1f(advectProgram.uniforms.uDt, SIM_DT);
+      bindSimTexture(velocity.read.texture, 0)
+    )
+    gl!.uniform1f(advectProgram.uniforms.uDt, SIM_DT)
     gl!.uniform1f(
       advectProgram.uniforms.uDissipation,
-      Math.pow(VELOCITY_DISSIPATION, delta * 60),
-    );
-    blit(velocity.write);
-    velocity.swap();
+      Math.pow(VELOCITY_DISSIPATION, delta * 60)
+    )
+    blit(velocity.write)
+    velocity.swap()
 
     gl!.uniform1i(
       advectProgram.uniforms.uVelocity,
-      bindSimTexture(velocity.read.texture, 0),
-    );
+      bindSimTexture(velocity.read.texture, 0)
+    )
     gl!.uniform1i(
       advectProgram.uniforms.uSource,
-      bindSimTexture(flow.read.texture, 1),
-    );
-    const flowDissipation = 0.9 + Math.min(Math.max(config.trail, 0), 1) * 0.08;
+      bindSimTexture(flow.read.texture, 1)
+    )
+    const flowDissipation = 0.9 + Math.min(Math.max(config.trail, 0), 1) * 0.08
     gl!.uniform1f(
       advectProgram.uniforms.uDissipation,
-      Math.pow(flowDissipation, delta * 60),
-    );
-    blit(flow.write);
-    flow.swap();
+      Math.pow(flowDissipation, delta * 60)
+    )
+    blit(flow.write)
+    flow.swap()
   }
 
   // A 1x1 transparent texture for the (unused, decorative-mode) content sampler.
-  const contentTexture = gl.createTexture()!;
-  gl.bindTexture(gl.TEXTURE_2D, contentTexture);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const contentTexture = gl.createTexture()!
+  gl.bindTexture(gl.TEXTURE_2D, contentTexture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
   gl.texImage2D(
     gl.TEXTURE_2D,
     0,
@@ -915,205 +913,205 @@ export function createHexFloat(
     0,
     gl.RGBA,
     gl.UNSIGNED_BYTE,
-    new Uint8Array([0, 0, 0, 0]),
-  );
+    new Uint8Array([0, 0, 0, 0])
+  )
 
   function syncCanvasSize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const width = Math.max(1, Math.round(output.clientWidth * dpr));
-    const height = Math.max(1, Math.round(output.clientHeight * dpr));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const width = Math.max(1, Math.round(output.clientWidth * dpr))
+    const height = Math.max(1, Math.round(output.clientHeight * dpr))
     if (output.width !== width || output.height !== height) {
-      output.width = width;
-      output.height = height;
+      output.width = width
+      output.height = height
     }
   }
 
-  syncCanvasSize();
+  syncCanvasSize()
 
-  let time = 0;
-  let pointerOn = false;
-  let pointerClientX = 0;
-  let pointerClientY = 0;
-  let prevFlowX = 0;
-  let prevFlowY = 0;
-  let hasPrevFlow = false;
-  let simActiveUntil = 0;
+  let time = 0
+  let pointerOn = false
+  let pointerClientX = 0
+  let pointerClientY = 0
+  let prevFlowX = 0
+  let prevFlowY = 0
+  let hasPrevFlow = false
+  let simActiveUntil = 0
 
   function flowTexture(): WebGLTexture {
-    return simEnabled && flow ? flow.read.texture : zeroFlow;
+    return simEnabled && flow ? flow.read.texture : zeroFlow
   }
 
   function render() {
-    const dpr = output.width / Math.max(output.clientWidth, 1);
-    gl!.useProgram(program);
-    gl!.activeTexture(gl!.TEXTURE0);
-    gl!.bindTexture(gl!.TEXTURE_2D, contentTexture);
-    gl!.uniform1i(uniforms.uContent, 0);
-    gl!.uniform2f(uniforms.uRes, output.width, output.height);
-    gl!.uniform1f(uniforms.uSize, Math.max(config.size, 8) * dpr);
-    gl!.uniform1f(uniforms.uGap, Math.max(config.gap, 0) * dpr);
-    gl!.uniform1f(uniforms.uBevel, Math.max(config.bevel, 0) * dpr);
+    const dpr = output.width / Math.max(output.clientWidth, 1)
+    gl!.useProgram(program)
+    gl!.activeTexture(gl!.TEXTURE0)
+    gl!.bindTexture(gl!.TEXTURE_2D, contentTexture)
+    gl!.uniform1i(uniforms.uContent, 0)
+    gl!.uniform2f(uniforms.uRes, output.width, output.height)
+    gl!.uniform1f(uniforms.uSize, Math.max(config.size, 8) * dpr)
+    gl!.uniform1f(uniforms.uGap, Math.max(config.gap, 0) * dpr)
+    gl!.uniform1f(uniforms.uBevel, Math.max(config.bevel, 0) * dpr)
     gl!.uniform1f(
       uniforms.uTilt,
-      (Math.min(Math.max(config.tilt, -30), 30) * Math.PI) / 180,
-    );
+      (Math.min(Math.max(config.tilt, -30), 30) * Math.PI) / 180
+    )
     gl!.uniform1f(
       uniforms.uDist,
-      2.6 - Math.min(Math.max(config.perspective, 0), 1) * 2.2,
-    );
-    gl!.uniform1f(uniforms.uFloat, Math.max(config.float, 0));
-    gl!.uniform1f(uniforms.uShine, Math.max(config.shine, 0));
-    gl!.uniform1f(uniforms.uLift, Math.max(config.lift, 0));
-    gl!.uniform1f(uniforms.uIrid, Math.max(config.iridescence, 0));
-    gl!.activeTexture(gl!.TEXTURE1);
-    gl!.bindTexture(gl!.TEXTURE_2D, flowTexture());
-    gl!.uniform1i(uniforms.uFlow, 1);
-    gl!.uniform2f(uniforms.uScroll, 0, 0);
-    gl!.uniform1f(uniforms.uTime, time);
-    gl!.uniform1f(uniforms.uHasContent, 0);
-    gl!.uniform1f(uniforms.uMaxX, 0);
-    gl!.uniform3f(uniforms.uBg, 0, 0, 0);
-    gl!.uniform3f(uniforms.uGapColor, 0, 0, 0);
+      2.6 - Math.min(Math.max(config.perspective, 0), 1) * 2.2
+    )
+    gl!.uniform1f(uniforms.uFloat, Math.max(config.float, 0))
+    gl!.uniform1f(uniforms.uShine, Math.max(config.shine, 0))
+    gl!.uniform1f(uniforms.uLift, Math.max(config.lift, 0))
+    gl!.uniform1f(uniforms.uIrid, Math.max(config.iridescence, 0))
+    gl!.activeTexture(gl!.TEXTURE1)
+    gl!.bindTexture(gl!.TEXTURE_2D, flowTexture())
+    gl!.uniform1i(uniforms.uFlow, 1)
+    gl!.uniform2f(uniforms.uScroll, 0, 0)
+    gl!.uniform1f(uniforms.uTime, time)
+    gl!.uniform1f(uniforms.uHasContent, 0)
+    gl!.uniform1f(uniforms.uMaxX, 0)
+    gl!.uniform3f(uniforms.uBg, 0, 0, 0)
+    gl!.uniform3f(uniforms.uGapColor, 0, 0, 0)
 
-    gl!.bindFramebuffer(gl!.FRAMEBUFFER, null);
-    gl!.viewport(0, 0, output.width, output.height);
-    gl!.enable(gl!.BLEND);
-    gl!.blendFunc(gl!.ONE, gl!.ONE_MINUS_SRC_ALPHA);
-    gl!.clearColor(0, 0, 0, 0);
-    gl!.clear(gl!.COLOR_BUFFER_BIT);
-    gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
+    gl!.bindFramebuffer(gl!.FRAMEBUFFER, null)
+    gl!.viewport(0, 0, output.width, output.height)
+    gl!.enable(gl!.BLEND)
+    gl!.blendFunc(gl!.ONE, gl!.ONE_MINUS_SRC_ALPHA)
+    gl!.clearColor(0, 0, 0, 0)
+    gl!.clear(gl!.COLOR_BUFFER_BIT)
+    gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4)
   }
 
-  let raf = 0;
-  let lastTime = performance.now();
-  let destroyed = false;
-  let running = false;
-  let visible = true;
+  let raf = 0
+  let lastTime = performance.now()
+  let destroyed = false
+  let running = false
+  let visible = true
 
-  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let reducedMotion = motionQuery.matches;
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+  let reducedMotion = motionQuery.matches
 
   // Warm-up probe: force continuous rendering for `probeMs` after a short
   // settle (to skip shader-compile/first-paint cost), then report sustained
   // FPS once so the host can decide whether the device can keep up.
-  const probeMs = hooks.probeMs ?? 1000;
-  const SETTLE_MS = 150;
-  let probing = true;
-  let probeStart = 0;
-  let probeFrames = 0;
-  let probeElapsed = 0;
+  const probeMs = hooks.probeMs ?? 1000
+  const SETTLE_MS = 150
+  let probing = true
+  let probeStart = 0
+  let probeFrames = 0
+  let probeElapsed = 0
 
   function animating(): boolean {
-    if (probing) return true;
-    if (reducedMotion) return false;
-    if (config.float > 0) return true;
-    if (pointerOn) return true;
-    if (performance.now() < simActiveUntil) return true;
-    return false;
+    if (probing) return true
+    if (reducedMotion) return false
+    if (config.float > 0) return true
+    if (pointerOn) return true
+    if (performance.now() < simActiveUntil) return true
+    return false
   }
 
   function contentPoint(
     clientX: number,
-    clientY: number,
+    clientY: number
   ): { x: number; y: number } | null {
-    const rect = output.getBoundingClientRect();
-    const dpr = output.width / Math.max(output.clientWidth, 1);
-    const w = output.width;
-    const hPx = output.height;
-    if (w < 1 || hPx < 1) return null;
-    const sx = (clientX - rect.left) * dpr;
-    const sy = (clientY - rect.top) * dpr;
-    const aspect = w / hPx;
-    const ndcX = ((sx / w) * 2 - 1) * aspect;
-    const ndcY = (sy / hPx) * 2 - 1;
-    const tilt = (Math.min(Math.max(config.tilt, -30), 30) * Math.PI) / 180;
-    const sa = Math.sin(tilt);
-    const ca = Math.cos(tilt);
-    const cell = Math.max(config.size, 8) * dpr;
-    const h = hPx / cell;
-    const dist = 2.6 - Math.min(Math.max(config.perspective, 0), 1) * 2.2;
-    const d = h * dist;
-    const focal = (d + Math.sqrt(d * d + h * h * sa * sa)) / (h * ca);
+    const rect = output.getBoundingClientRect()
+    const dpr = output.width / Math.max(output.clientWidth, 1)
+    const w = output.width
+    const hPx = output.height
+    if (w < 1 || hPx < 1) return null
+    const sx = (clientX - rect.left) * dpr
+    const sy = (clientY - rect.top) * dpr
+    const aspect = w / hPx
+    const ndcX = ((sx / w) * 2 - 1) * aspect
+    const ndcY = (sy / hPx) * 2 - 1
+    const tilt = (Math.min(Math.max(config.tilt, -30), 30) * Math.PI) / 180
+    const sa = Math.sin(tilt)
+    const ca = Math.cos(tilt)
+    const cell = Math.max(config.size, 8) * dpr
+    const h = hPx / cell
+    const dist = 2.6 - Math.min(Math.max(config.perspective, 0), 1) * 2.2
+    const d = h * dist
+    const focal = (d + Math.sqrt(d * d + h * h * sa * sa)) / (h * ca)
     const dy =
-      0.5 * h - sa * d - (ca * d * (ca - focal * sa)) / (sa + focal * ca);
-    const roX = (0.5 * w) / cell;
-    const roY = 0.5 * h + dy + sa * d;
-    const roZ = -ca * d;
-    const rdX = ndcX;
-    const rdY = ndcY * ca - focal * sa;
-    const rdZ = ndcY * sa + focal * ca;
-    if (rdZ < 1e-6) return null;
-    const t = -roZ / rdZ;
-    const px = (roX + rdX * t) * cell;
-    const py = (roY + rdY * t) * cell;
-    return { x: px / dpr, y: py / dpr };
+      0.5 * h - sa * d - (ca * d * (ca - focal * sa)) / (sa + focal * ca)
+    const roX = (0.5 * w) / cell
+    const roY = 0.5 * h + dy + sa * d
+    const roZ = -ca * d
+    const rdX = ndcX
+    const rdY = ndcY * ca - focal * sa
+    const rdZ = ndcY * sa + focal * ca
+    if (rdZ < 1e-6) return null
+    const t = -roZ / rdZ
+    const px = (roX + rdX * t) * cell
+    const py = (roY + rdY * t) * cell
+    return { x: px / dpr, y: py / dpr }
   }
 
   function frame(now: number) {
-    if (destroyed) return;
+    if (destroyed) return
     if (!visible) {
-      running = false;
-      return;
+      running = false
+      return
     }
-    const delta = Math.min(Math.max((now - lastTime) / 1000, 0), 1 / 30);
-    lastTime = now;
+    const delta = Math.min(Math.max((now - lastTime) / 1000, 0), 1 / 30)
+    lastTime = now
     if (!reducedMotion) {
-      time += delta * Math.max(config.speed, 0);
+      time += delta * Math.max(config.speed, 0)
       if (pointerOn && simEnabled) {
-        const p = contentPoint(pointerClientX, pointerClientY);
+        const p = contentPoint(pointerClientX, pointerClientY)
         if (p) {
-          const w = Math.max(output.clientWidth, 1);
-          const h = Math.max(output.clientHeight, 1);
-          const fx = p.x / w;
-          const fy = p.y / h;
-          const dx = hasPrevFlow ? (fx - prevFlowX) * w : 0;
-          const dy = hasPrevFlow ? (fy - prevFlowY) * h : 0;
-          const push = 1.6 * Math.max(config.flow, 0);
-          applySplat(fx, fy, dx * push, dy * push, 10 * delta);
-          prevFlowX = fx;
-          prevFlowY = fy;
-          hasPrevFlow = true;
-          simActiveUntil = now + 4000;
+          const w = Math.max(output.clientWidth, 1)
+          const h = Math.max(output.clientHeight, 1)
+          const fx = p.x / w
+          const fy = p.y / h
+          const dx = hasPrevFlow ? (fx - prevFlowX) * w : 0
+          const dy = hasPrevFlow ? (fy - prevFlowY) * h : 0
+          const push = 1.6 * Math.max(config.flow, 0)
+          applySplat(fx, fy, dx * push, dy * push, 10 * delta)
+          prevFlowX = fx
+          prevFlowY = fy
+          hasPrevFlow = true
+          simActiveUntil = now + 4000
         }
       }
-      if (now < simActiveUntil || pointerOn || probing) stepSim(delta);
+      if (now < simActiveUntil || pointerOn || probing) stepSim(delta)
     }
-    render();
+    render()
 
     if (probing) {
-      if (probeStart === 0) probeStart = now;
-      const sinceStart = now - probeStart;
+      if (probeStart === 0) probeStart = now
+      const sinceStart = now - probeStart
       if (sinceStart >= SETTLE_MS) {
-        probeFrames++;
-        probeElapsed = sinceStart - SETTLE_MS;
+        probeFrames++
+        probeElapsed = sinceStart - SETTLE_MS
         if (probeElapsed >= probeMs) {
-          const fps = probeFrames / (probeElapsed / 1000);
-          probing = false;
-          hooks.onProbe?.(fps);
+          const fps = probeFrames / (probeElapsed / 1000)
+          probing = false
+          hooks.onProbe?.(fps)
         }
       }
-      raf = requestAnimationFrame(frame);
-      return;
+      raf = requestAnimationFrame(frame)
+      return
     }
 
     if (!animating()) {
-      running = false;
-      return;
+      running = false
+      return
     }
-    raf = requestAnimationFrame(frame);
+    raf = requestAnimationFrame(frame)
   }
 
   function start() {
-    if (destroyed || running || !visible) return;
-    running = true;
-    lastTime = performance.now();
-    raf = requestAnimationFrame(frame);
+    if (destroyed || running || !visible) return
+    running = true
+    lastTime = performance.now()
+    raf = requestAnimationFrame(frame)
   }
 
-  start();
+  start()
 
   function onPointerMove(event: PointerEvent) {
-    const rect = output.getBoundingClientRect();
+    const rect = output.getBoundingClientRect()
     // Only react while the cursor is actually over the hero backdrop.
     if (
       event.clientX < rect.left ||
@@ -1122,68 +1120,68 @@ export function createHexFloat(
       event.clientY > rect.bottom
     ) {
       if (pointerOn) {
-        pointerOn = false;
-        hasPrevFlow = false;
+        pointerOn = false
+        hasPrevFlow = false
       }
-      return;
+      return
     }
-    pointerClientX = event.clientX;
-    pointerClientY = event.clientY;
-    pointerOn = true;
-    simActiveUntil = performance.now() + 4000;
-    start();
+    pointerClientX = event.clientX
+    pointerClientY = event.clientY
+    pointerOn = true
+    simActiveUntil = performance.now() + 4000
+    start()
   }
 
-  window.addEventListener("pointermove", onPointerMove, { passive: true });
+  window.addEventListener("pointermove", onPointerMove, { passive: true })
 
   function onMotionChange() {
-    reducedMotion = motionQuery.matches;
+    reducedMotion = motionQuery.matches
     if (reducedMotion) {
-      pointerOn = false;
-      hasPrevFlow = false;
-      simActiveUntil = 0;
+      pointerOn = false
+      hasPrevFlow = false
+      simActiveUntil = 0
     }
-    start();
+    start()
   }
-  motionQuery.addEventListener("change", onMotionChange);
+  motionQuery.addEventListener("change", onMotionChange)
 
   const observer = new ResizeObserver(() => {
-    syncCanvasSize();
-    start();
-  });
-  observer.observe(output);
+    syncCanvasSize()
+    start()
+  })
+  observer.observe(output)
 
   const intersection = new IntersectionObserver((entries) => {
-    visible = entries[entries.length - 1]?.isIntersecting ?? true;
-    if (visible) start();
-  });
-  intersection.observe(output);
+    visible = entries[entries.length - 1]?.isIntersecting ?? true
+    if (visible) start()
+  })
+  intersection.observe(output)
 
   return {
     setOptions(next) {
-      Object.assign(config, next);
-      start();
+      Object.assign(config, next)
+      start()
     },
     resize() {
-      syncCanvasSize();
-      start();
+      syncCanvasSize()
+      start()
     },
     destroy() {
-      destroyed = true;
-      cancelAnimationFrame(raf);
-      window.removeEventListener("pointermove", onPointerMove);
-      observer.disconnect();
-      intersection.disconnect();
-      motionQuery.removeEventListener("change", onMotionChange);
-      gl!.deleteTexture(contentTexture);
-      gl!.deleteTexture(zeroFlow);
-      releaseSim();
-      simPrograms.forEach((p) => gl!.deleteProgram(p));
-      simShaders.forEach((s) => gl!.deleteShader(s));
-      gl!.deleteProgram(program);
-      gl!.deleteShader(vertexShader);
-      gl!.deleteShader(fragmentShader);
-      gl!.deleteBuffer(quad);
+      destroyed = true
+      cancelAnimationFrame(raf)
+      window.removeEventListener("pointermove", onPointerMove)
+      observer.disconnect()
+      intersection.disconnect()
+      motionQuery.removeEventListener("change", onMotionChange)
+      gl!.deleteTexture(contentTexture)
+      gl!.deleteTexture(zeroFlow)
+      releaseSim()
+      simPrograms.forEach((p) => gl!.deleteProgram(p))
+      simShaders.forEach((s) => gl!.deleteShader(s))
+      gl!.deleteProgram(program)
+      gl!.deleteShader(vertexShader)
+      gl!.deleteShader(fragmentShader)
+      gl!.deleteBuffer(quad)
     },
-  };
+  }
 }
