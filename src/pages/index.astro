@@ -51,7 +51,13 @@ import Layout from "@/layouts/main.astro"
             class="relative hidden min-h-[360px] overflow-hidden bg-screen md:block md:min-h-[480px]"
           >
             <div class="hero-grid absolute inset-0" aria-hidden="true"></div>
-            <HexHero client:media="(min-width: 768px)" />
+            <!-- 48rem, not 768px: this query has to resolve identically to the
+                 md: variant hiding the cell above, and Tailwind's md compiles
+                 to a rem breakpoint. With a px literal the two decouple as soon
+                 as the reader's default font size is not 16px, which either
+                 hydrates WebGL into a display:none box or leaves the cell
+                 visible with no shader in it. -->
+            <HexHero client:media="(min-width: 48rem)" />
           </div>
         </div>
       </div>

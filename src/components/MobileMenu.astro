@@ -121,8 +121,11 @@ const links = [
   // something else — see the link branch below.
   let restoreScrollOnRelease = true
 
-  function lockScroll() {
-    lockedScrollY = window.scrollY
+  // Cleared for the close path that hands the reader somewhere else entirely.
+  let returnFocusOnClose = true
+
+  function lockScroll(offset: number) {
+    lockedScrollY = offset
     const style = document.body.style
     style.position = "fixed"
     style.top = `-${lockedScrollY}px`
@@ -154,8 +157,14 @@ const links = [
   function openPanel() {
     if (panel.open) return
 
-    lockScroll()
+    // Read the offset before opening but do not apply the lock until the panel
+    // is actually up. Every release of the lock hangs off the close event, so a
+    // lock applied first has nothing coming to undo it if showModal() throws —
+    // the page would be left frozen with no panel on screen to dismiss and no
+    // way back short of a reload.
+    const offset = window.scrollY
     panel.showModal()
+    lockScroll(offset)
     // showModal() is not a declarative toggle, so nothing syncs this for us.
     control.setAttribute("aria-expanded", "true")
   }
@@ -170,13 +179,24 @@ const links = [
   panel.addEventListener("close", () => {
     control.setAttribute("aria-expanded", "false")
     releaseScroll(restoreScrollOnRelease)
-    restoreScrollOnRelease = true
 
     // Safari does not focus a <button> on press, so the element the dialog
-    // restores focus to may never have been the control. preventScroll keeps
-    // this from dragging a reader who just followed a fragment back up to the
-    // bar.
-    control.focus({ preventScroll: true })
+    // restores focus to may never have been the control. preventScroll stops
+    // the restore itself from moving the page.
+    //
+    // Two paths must not take it. A fragment link has just put the reader at a
+    // section, and pulling focus back to the bar would undo that for a keyboard
+    // reader while a pointer reader saw nothing. And the width backstop fires at
+    // the same breakpoint that hides the control, so by the time this runs the
+    // control is display:none and focus() would no-op silently — offsetParent is
+    // how that is detected. Focus falls to <body> there, which is the honest
+    // outcome: at that width the control the reader opened no longer exists.
+    if (returnFocusOnClose && control.offsetParent !== null) {
+      control.focus({ preventScroll: true })
+    }
+
+    restoreScrollOnRelease = true
+    returnFocusOnClose = true
   })
 
   // The control is not a toggle: showModal() makes the rest of the document
@@ -212,6 +232,7 @@ const links = [
     // the restore.
     if (link.getAttribute("href")?.startsWith("#")) {
       restoreScrollOnRelease = false
+      returnFocusOnClose = false
       releaseScroll(false)
     }
 
@@ -234,7 +255,14 @@ const links = [
   // every intermediate pixel.
   desktop.addEventListener("change", closeIfDesktop)
 
-  // And once now, so a panel somehow left open across a reload or a restore
-  // from the back/forward cache cannot strand anyone either.
+  // And once now, so a panel somehow left open across a reload cannot strand
+  // anyone either.
   closeIfDesktop()
+
+  // A back/forward-cache restore resumes frozen JS rather than re-running this
+  // module, so the call above cannot cover that case however it reads. pageshow
+  // is the only signal that fires on the way back in.
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) closeIfDesktop()
+  })
 </script>
