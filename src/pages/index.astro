@@ -22,7 +22,7 @@ import Layout from "@/layouts/main.astro"
       >
         <div class="grid flex-1 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
           <div
-            class="flex flex-col items-start justify-center gap-6 border-b border-rule bg-paper p-6 sm:p-12 md:border-r md:border-b-0 md:p-6 lg:p-12 xl:p-[72px]"
+            class="flex flex-col items-start justify-center gap-6 border-rule bg-paper p-6 sm:p-12 md:border-r md:p-6 lg:p-12 xl:p-[72px]"
           >
             <Logo size="lg" />
             <h1
@@ -48,10 +48,10 @@ import Layout from "@/layouts/main.astro"
           </div>
 
           <div
-            class="relative min-h-[360px] overflow-hidden bg-screen md:min-h-[480px]"
+            class="relative hidden min-h-[360px] overflow-hidden bg-screen md:block md:min-h-[480px]"
           >
             <div class="hero-grid absolute inset-0" aria-hidden="true"></div>
-            <HexHero client:idle />
+            <HexHero client:media="(min-width: 768px)" />
           </div>
         </div>
       </div>
