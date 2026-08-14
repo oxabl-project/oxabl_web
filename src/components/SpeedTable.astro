@@ -54,7 +54,7 @@ const rows = [
     <span>generated row: derived by replaying the benchmark generator</span>
   </figcaption>
 
-  <div class="overflow-x-auto border border-rule-strong">
+  <div class="hidden overflow-x-auto border border-rule-strong md:block">
     <table class="w-full min-w-[1024px] border-collapse text-left">
       <thead>
         <tr
@@ -109,6 +109,55 @@ const rows = [
       </tbody>
     </table>
   </div>
+
+  <div class="px-6 md:hidden">
+    <div class="mx-auto w-full max-w-[420px] border border-rule-strong">
+      {
+        rows.map((row) => (
+          <div class="border-b border-rule px-4 py-6 last:border-b-0">
+            <p class="font-code text-code wrap-anywhere text-ink">
+              {row.fixture}
+            </p>
+            <dl class="mt-6 space-y-6">
+              <div>
+                <dt class="font-chrome text-chrome text-ink-muted uppercase">
+                  Lines
+                </dt>
+                <dd class="font-chrome text-chrome text-ink">{row.lines}</dd>
+              </div>
+              <div>
+                <dt class="font-chrome text-chrome text-ink-muted uppercase">
+                  Bytes
+                </dt>
+                <dd class="font-chrome text-chrome text-ink">{row.bytes}</dd>
+              </div>
+              <div>
+                <dt class="font-chrome text-chrome text-ink-muted uppercase">
+                  Time
+                </dt>
+                <dd class="font-code text-code text-ink-muted">{row.time}</dd>
+              </div>
+              <div>
+                <dt class="font-chrome text-chrome text-ink-muted uppercase">
+                  Benchmark id
+                </dt>
+                <dd class="font-code text-code wrap-anywhere text-ink">
+                  {row.benchmark}
+                </dd>
+              </div>
+              <div>
+                <dt class="font-chrome text-chrome text-ink-muted uppercase">
+                  Measures
+                </dt>
+                <dd class="text-body text-ink-muted">{row.measures}</dd>
+              </div>
+            </dl>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
   <p class="mt-6 font-chrome text-chrome text-ink-muted uppercase">
     Measured 2026-08-14 · <a
       href="https://github.com/oxabl-project/oxabl/commit/9a668c90427d9ddd4caa7ce1df52f6a8003adfd6"
