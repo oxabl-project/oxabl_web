@@ -9,22 +9,34 @@ const consumerOutput: Record<Consumer, React.ReactNode> = {
     <>
       <span className="text-screen-ink-muted">$</span> jq '.diagnostics'
       /tmp/oxabl-analyze.json{"\n"}
-      []
+      {`[
+  {
+    "code": "LINT0001",
+    "message": "undefined symbol \`ghost\`",
+    "severity": "error",
+    "source": "lint",
+    "span": {
+      "end": 54,
+      "file": 1,
+      "start": 49
+    }
+  }
+]`}
     </>
   ),
   grep: (
     <>
       <span className="text-screen-ink-muted">$</span> grep -n '"diagnostics"'
       /tmp/oxabl-analyze.json{"\n"}
-      {`10:  "diagnostics": [],
-316:    "diagnostics": 1,`}
+      {`10:  "diagnostics": [
+307:    "diagnostics": 1,`}
     </>
   ),
   ci: (
     <>
       <span className="text-screen-ink-muted">$</span> jq -e '.diagnostics |
       length == 0' /tmp/oxabl-analyze.json{"\n"}
-      <span className="text-ok">true</span>
+      <span className="text-error">false</span>
     </>
   ),
   agent: (
@@ -33,7 +45,7 @@ const consumerOutput: Record<Consumer, React.ReactNode> = {
       oxabl analysis JSON. Report only actionable source issues.'
       {" \\"}
       {"\n"} &lt; /tmp/oxabl-analyze.json{"\n"}
-      No actionable source issues found.
+      {`- Error \`LINT0001\`, bytes 49–54: \`ghost\` is not declared in the current scope. Declare it before use, or replace it with the intended symbol.`}
     </>
   ),
 }
@@ -97,7 +109,7 @@ oxabl lsp`}</code>
               <code>
                 <span className="text-screen-ink-muted">$</span> cargo run -q -p
                 oxabl -- analyze{" \\"}
-                {"\n"} crates/oxabl_analyze/tests/fixtures/simple_variable.p
+                {"\n"} crates/oxabl_analyze/tests/fixtures/undefined_symbol.p
                 {" \\"}
                 {"\n"} --format json &gt; /tmp/oxabl-analyze.json{"\n\n"}
                 {JSON.stringify(analyzeOutput, null, 2)}

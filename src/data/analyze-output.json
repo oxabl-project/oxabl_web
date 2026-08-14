@@ -7,41 +7,37 @@
     "index_revision": 1,
     "unresolved": []
   },
-  "diagnostics": [],
+  "diagnostics": [
+    {
+      "code": "LINT0001",
+      "message": "undefined symbol `ghost`",
+      "severity": "error",
+      "source": "lint",
+      "span": {
+        "end": 54,
+        "file": 1,
+        "start": 49
+      }
+    }
+  ],
   "envelope": 1,
   "preproc": [],
   "references": [
     {
       "name": null,
+      "node": 2,
+      "origin": "declared",
+      "reason": null,
+      "resolution": "resolved",
+      "symbol": 49
+    },
+    {
+      "name": "ghost",
       "node": 3,
-      "origin": "declared",
-      "reason": null,
-      "resolution": "resolved",
-      "symbol": 49
-    },
-    {
-      "name": null,
-      "node": 5,
-      "origin": "declared",
-      "reason": null,
-      "resolution": "resolved",
-      "symbol": 50
-    },
-    {
-      "name": null,
-      "node": 8,
-      "origin": "declared",
-      "reason": null,
-      "resolution": "resolved",
-      "symbol": 49
-    },
-    {
-      "name": null,
-      "node": 9,
-      "origin": "declared",
-      "reason": null,
-      "resolution": "resolved",
-      "symbol": 50
+      "origin": null,
+      "reason": "not_in_scope",
+      "resolution": "unresolved",
+      "symbol": null
     }
   ],
   "schema_revision": 0,
@@ -62,11 +58,6 @@
           "name": "x",
           "namespace": "values",
           "symbol": 49
-        },
-        {
-          "name": "y",
-          "namespace": "values",
-          "symbol": 50
         },
         {
           "name": "font-table",
@@ -1019,21 +1010,7 @@
       "namespace": "values",
       "origin": "declared",
       "read_count": 1,
-      "write_count": 1
-    },
-    {
-      "data_type": "character",
-      "data_type_source": "declared",
-      "declaration": 2,
-      "declared_in": 0,
-      "flags": [],
-      "id": 50,
-      "kind": "variable",
-      "name": "y",
-      "namespace": "values",
-      "origin": "declared",
-      "read_count": 1,
-      "write_count": 1
+      "write_count": 0
     }
   ],
   "types": [
@@ -1043,31 +1020,11 @@
     },
     {
       "node": 2,
-      "type": "character"
+      "type": "integer"
     },
     {
       "node": 3,
-      "type": "integer"
-    },
-    {
-      "node": 4,
-      "type": "integer"
-    },
-    {
-      "node": 5,
-      "type": "character"
-    },
-    {
-      "node": 6,
-      "type": "character"
-    },
-    {
-      "node": 8,
-      "type": "integer"
-    },
-    {
-      "node": 9,
-      "type": "character"
+      "type": "unknown"
     }
   ]
 }
