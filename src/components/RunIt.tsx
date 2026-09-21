@@ -45,7 +45,7 @@ const consumerOutput: Record<Consumer, React.ReactNode> = {
       oxabl analysis JSON. Report only actionable source issues.'
       {" \\"}
       {"\n"} &lt; /tmp/oxabl-analyze.json{"\n"}
-      {`- Error \`LINT0001\`, bytes 49–54: \`ghost\` is not declared in the current scope. Declare it before use, or replace it with the intended symbol.`}
+      {`- \`ghost\` is referenced but not declared or in scope (file 1, character offsets 49–54). Define it or replace it with the intended symbol.`}
     </>
   ),
 }
@@ -110,11 +110,9 @@ oxabl lsp`}</code>
             </div>
             <pre className="max-h-[360px] overflow-auto p-6 font-code text-code text-screen-ink">
               <code>
-                <span className="text-screen-ink-muted">$</span> cargo run -q -p
-                oxabl -- analyze{" \\"}
-                {"\n"} crates/oxabl_analyze/tests/fixtures/undefined_symbol.p
-                {" \\"}
-                {"\n"} --format json &gt; /tmp/oxabl-analyze.json{"\n\n"}
+                <span className="text-screen-ink-muted">$</span> oxabl analyze
+                src/undefined_symbol.p --format json{" \\"}
+                {"\n"} &gt; /tmp/oxabl-analyze.json{"\n\n"}
                 {JSON.stringify(analyzeOutput, null, 2)}
               </code>
             </pre>

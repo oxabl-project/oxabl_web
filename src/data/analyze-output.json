@@ -302,7 +302,7 @@
     }
   ],
   "sections": {
-    "coverage": 1,
+    "coverage": 2,
     "dependencies": 3,
     "diagnostics": 1,
     "preproc": 1,
