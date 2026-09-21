@@ -2,28 +2,25 @@
 interface Props {
   name: string
   caption: string
-  published: boolean
 }
 
-const { name, caption, published } = Astro.props
+// Every crate in the workspace is published, so the name is always a link and
+// there is no unpublished state left to draw. The dashed border that used to
+// mark one is gone with it -- reusing that stroke to mean something else would
+// leave a distinction on the page that nothing explains.
+const { name, caption } = Astro.props
 const cratesIoUrl = `https://crates.io/crates/${name}`
 ---
 
-<div class:list={["pipeline-node", { "pipeline-node--internal": !published }]}>
-  {
-    published ? (
-      <a
-        class="pipeline-node__name pipeline-node__link"
-        href={cratesIoUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`${name} on crates.io`}
-      >
-        {name}
-      </a>
-    ) : (
-      <span class="pipeline-node__name">{name}</span>
-    )
-  }
+<div class="pipeline-node">
+  <a
+    class="pipeline-node__name pipeline-node__link"
+    href={cratesIoUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={`${name} on crates.io`}
+  >
+    {name}
+  </a>
   <p class="pipeline-node__caption">{caption}</p>
 </div>

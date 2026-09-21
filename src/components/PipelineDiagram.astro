@@ -4,7 +4,6 @@ import PipelineNode from "@/components/PipelineNode.astro"
 type CrateNode = {
   name: string
   caption: string
-  published: boolean
 }
 
 // One definition per heading, consumed by both the canvas and the stacked
@@ -16,6 +15,7 @@ const headings = {
   sourceIn: "Source text in",
   analysisOut: "Analysis out",
   surfaces: "Surfaces",
+  surfacesDetail: "Depend on oxabl; the rest sit beneath it",
   foundation: "Foundation",
   foundationDetail: "Shared types / files / style / generation",
 } as const
@@ -24,45 +24,37 @@ const spine: CrateNode[] = [
   {
     name: "oxabl_lexer",
     caption: "Tokenizer for Progress ABL source code",
-    published: true,
   },
   {
     name: "oxabl_parser",
     caption: "Parser for Progress ABL source code",
-    published: true,
   },
   {
     name: "oxabl_preprocessor",
     caption:
       "Preprocessor for ABL source code: include expansion, &IF evaluation, and preprocessor variable tracking",
-    published: true,
   },
   {
     name: "oxabl_schema",
     caption: "Progress OpenEdge .df schema parser and model",
-    published: true,
   },
   {
     name: "oxabl_semantic",
     caption:
       "Semantic analysis for Progress ABL: symbol table, scope tree, resolution, and types",
-    published: true,
   },
   {
     name: "oxabl_index",
     caption:
       "Cross-file fact extraction and the batch workspace index for oxabl",
-    published: false,
   },
   {
     name: "oxabl_lint",
     caption: "Lint rules for Progress ABL built on the oxabl_semantic model",
-    published: true,
   },
   {
     name: "oxabl_analyze",
     caption: "JSON dump + analyze CLI wiring for the oxabl semantic model",
-    published: true,
   },
 ]
 
@@ -70,25 +62,21 @@ const surfaces: CrateNode[] = [
   {
     name: "oxabl",
     caption: "High-performance tooling suite for Progress ABL",
-    published: true,
   },
   {
     name: "oxabl_lsp",
     caption:
       "stdio LSP server surfacing oxabl parse/lint/preprocessor diagnostics live in an editor",
-    published: false,
   },
   {
     name: "oxabl_wasm",
     caption:
       "Thin WebAssembly client for the shared oxabl analysis and formatting pipelines",
-    published: false,
   },
   {
     name: "oxabl_daemon",
     caption:
       "Long-lived oxabl session core: one salsa instance per workspace root, serving several clients",
-    published: false,
   },
 ]
 
@@ -97,19 +85,16 @@ const sharedSurfaceLayer: CrateNode[] = [
     name: "oxabl_formatter",
     caption:
       "Layout-only formatting engine for Progress ABL, built on the oxabl fidelity substrate",
-    published: false,
   },
   {
     name: "oxabl_pipeline",
     caption:
       "Shared lint and format pipelines over one resolved oxabl configuration",
-    published: true,
   },
   {
     name: "oxabl_daemon_protocol",
     caption:
       "Wire types and contract version for the oxabl daemon's oxabl/* methods",
-    published: false,
   },
 ]
 
@@ -117,29 +102,24 @@ const foundation: CrateNode[] = [
   {
     name: "oxabl_ast",
     caption: "AST node definitions for the oxabl ABL parser",
-    published: true,
   },
   {
     name: "oxabl_common",
     caption: "Shared utilities for the oxabl ABL tooling suite",
-    published: true,
   },
   {
     name: "oxabl_workspace",
     caption:
       "Workspace configuration, file system abstraction, and file discovery for the oxabl ABL tooling suite",
-    published: true,
   },
   {
     name: "oxabl_style",
     caption:
       "ABL style guide — typed, configurable formatting and diagnostic rules for the oxabl toolchain",
-    published: false,
   },
   {
     name: "oxabl_codegen",
     caption: "Code generation tool for oxabl lexer keywords and atoms",
-    published: true,
   },
 ]
 ---
@@ -151,7 +131,8 @@ const foundation: CrateNode[] = [
   <p id="pipeline-description" class="sr-only">
     Eight ordered forward-pass crates form the spine. Four client surfaces
     consume the shared pipeline, with formatter and daemon protocol beside it.
-    Five foundation crates support the system.
+    Five foundation crates support the system. Every crate name links to its
+    crates.io page; oxabl is the one a consumer depends on directly.
   </p>
 
   <div class="hidden overflow-x-auto border border-rule-strong md:block">
@@ -194,6 +175,7 @@ const foundation: CrateNode[] = [
 
       <div class="pipeline-group-heading pipeline-group-heading--ruled">
         <span>{headings.surfaces}</span>
+        <span>{headings.surfacesDetail}</span>
       </div>
 
       <div class="pipeline-surface-row">
@@ -277,6 +259,7 @@ const foundation: CrateNode[] = [
 
       <div class="pipeline-mobile-heading pipeline-mobile-heading--ruled">
         <span>{headings.surfaces}</span>
+        <span>{headings.surfacesDetail}</span>
       </div>
 
       <div class="pipeline-mobile-group">

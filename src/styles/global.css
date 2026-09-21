@@ -378,10 +378,6 @@
   border: 1px solid currentColor;
 }
 
-.pipeline-node--internal {
-  border-style: dashed;
-}
-
 .pipeline-node__name {
   display: block;
   overflow-wrap: anywhere;

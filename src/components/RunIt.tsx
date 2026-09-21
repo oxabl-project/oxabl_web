@@ -68,7 +68,7 @@ export function RunIt() {
             Install
           </p>
           <code className="mt-6 block overflow-x-auto font-code text-code whitespace-nowrap text-ink">
-            single binary install coming soon
+            cargo install oxabl --locked
           </code>
         </div>
 
@@ -83,6 +83,9 @@ oxabl format src --check
 oxabl format src
 oxabl lsp`}</code>
             </pre>
+            <p className="mt-6 font-chrome text-chrome text-ink-muted uppercase">
+              oxabl lsp requires a unix socket
+            </p>
           </div>
           <div className="p-6">
             <p className="font-chrome text-chrome text-ink-muted uppercase">
