@@ -21,6 +21,7 @@
 @source "../components/Logo.astro";
 @source "../components/MobileMenu.astro";
 @source "../components/Navbar.astro";
+@source "../components/Announcement.astro";
 @source "../components/HexHero.tsx";
 @source "../components/TryOxabl.tsx";
 @source "../components/PipelineDiagram.astro";
