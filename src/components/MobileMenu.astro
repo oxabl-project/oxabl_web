@@ -11,10 +11,11 @@ interface Props {
 // trapped by an invisible panel. The width backstop is the script below.
 const { class: className = "" } = Astro.props
 
-// Same three destinations as the bar, in the same order. The bar's `·`
+// Same destinations as the bar, in the same order. The bar's `·`
 // separators are decoration for a single line; here the rows are separated by
 // the rules themselves, so there is nothing to carry over.
 const links = [
+  { href: "https://docs.oxabl.org", label: "docs", external: false },
   { href: "#playground", label: "playground", external: false },
   {
     href: "https://github.com/oxabl-project/oxabl",
@@ -71,7 +72,7 @@ const links = [
   {
     /* The control opens the panel from a script, so without one it is a dead
       button and the links behind it are unreachable. Hide it and render the
-      same three destinations as plain anchors. `is:inline` keeps Astro from
+      same destinations as plain anchors. `is:inline` keeps Astro from
       hoisting this rule out of the <noscript> that scopes it. The theme
       control is script-driven end to end and has no no-script form, so it is
       deliberately absent rather than rendered inert. */
