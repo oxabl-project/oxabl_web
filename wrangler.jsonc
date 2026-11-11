@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  // Static assets only: no script runs, Cloudflare serves the files in dist/.
+  "name": "oxabl-web",
+  "compatibility_date": "2026-11-11",
+  "assets": {
+    "directory": "./dist",
+    // Unknown paths get index.html, as the site has always served them.
+    "not_found_handling": "single-page-application"
+  }
+}

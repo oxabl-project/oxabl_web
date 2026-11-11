@@ -10,7 +10,6 @@
     "dev": "astro dev --host 0.0.0.0",
     "build": "astro build",
     "preview": "astro preview",
-    "start": "serve dist -s -l tcp://0.0.0.0:${PORT:-3000}",
     "astro": "astro",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx,astro}\"",
@@ -30,7 +29,6 @@
     "astro": "^7.2.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "serve": "^14.2.6",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
