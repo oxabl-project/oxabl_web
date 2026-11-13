@@ -1,7 +1,7 @@
 // Black-box check of what search engines and link previews read.
 //   node scripts/check-seo.mjs          the built site in dist/ (after `pnpm build`)
 //   node scripts/check-seo.mjs --live   what https://oxabl.org serves (after a deploy)
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
 
 const root = join(import.meta.dirname, "..")
@@ -21,6 +21,7 @@ async function get(path) {
     try {
       const res = await fetch(new URL(path, base), {
         redirect: "manual",
+        signal: AbortSignal.timeout(15_000),
         headers: { "user-agent": "oxabl-seo-check (+https://oxabl.org)" },
       })
       const bytes = Buffer.from(await res.arrayBuffer())
@@ -62,8 +63,10 @@ if (live) {
       card.bytes.equals(local("og.png"))
     if (current) break
     if (Date.now() > deadline) {
+      const seen = (r) =>
+        r ? `${r.status} ${r.type} ${r.bytes.length} bytes` : "no response"
       console.error(
-        "SEO check failed (live): the deploy is not serving this build after 180 s"
+        `SEO check failed (live): the deploy is not serving this build after 180 s (/: ${seen(home)}; /og.png: ${seen(card)})`
       )
       process.exit(1)
     }
@@ -71,10 +74,21 @@ if (live) {
   }
 }
 
+// Does a robots.txt path rule match "/" (Google semantics: * wildcard, trailing $)?
+const matchesRoot = (rule) =>
+  rule !== "" &&
+  new RegExp(
+    "^" +
+      rule
+        .replace(/[.+?^{}()|[\]\\]/g, "\\$&")
+        .replace(/\*/g, ".*")
+        .replace(/\$$/, "$")
+  ).test("/")
+
 const metaTags = (html) =>
   [...html.matchAll(/<meta\s[^>]*>/gi)].map((m) => m[0])
 const attr = (tag, name) =>
-  new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, "i")
+  new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`, "i")
     .exec(tag)
     ?.slice(1)
     .find((v) => v !== undefined) ?? null
@@ -97,7 +111,12 @@ if (home) {
     canonicals.length === 1 && attr(canonicals[0][0], "href") === `${site}/`,
     "home has exactly one canonical, https://oxabl.org/"
   )
-  check(/<title>[^<]{10,}<\/title>/.test(html), "home has a title")
+  check(
+    [...html.matchAll(/<title>([^<]*)<\/title>/g)].filter(
+      (m) => m[1].trim().length >= 10
+    ).length === 1 && html.split("<title>").length === 2,
+    "home has exactly one title"
+  )
   const descriptions = metaContent(html, "name", "description")
   check(
     descriptions.length === 1 && descriptions[0].length >= 50,
@@ -121,7 +140,7 @@ if (home) {
     ["name", "twitter:description"],
   ]) {
     check(
-      (metaContent(html, key, value)[0] ?? "").length > 0,
+      (metaContent(html, key, value)[0] ?? "").trim().length > 0,
       `${value} is set`
     )
   }
@@ -144,6 +163,10 @@ if (home) {
   for (const block of blocks) {
     try {
       const data = JSON.parse(block[1])
+      check(
+        data["@context"] === "https://schema.org",
+        "JSON-LD has the schema.org @context"
+      )
       for (const node of data["@graph"] ?? [data]) types.push(node["@type"])
     } catch {
       check(false, "every JSON-LD block parses")
@@ -168,6 +191,16 @@ if (og) {
     "og.png is a complete 1200x630 PNG"
   )
   if (live) check(og.type.startsWith("image/png"), "/og.png is image/png")
+  if (home)
+    for (const [name, at] of [
+      ["width", 16],
+      ["height", 20],
+    ])
+      check(
+        metaContent(home.text, "property", `og:image:${name}`)[0] ===
+          String(png.readUInt32BE(at)),
+        `og:image:${name} equals the card's ${name}`
+      )
 }
 
 const robots = await get("/robots.txt")
@@ -197,7 +230,7 @@ if (robots) {
       if (
         name === "disallow" &&
         agents.some((a) => searchAgents.includes(a)) &&
-        /^\/(\*+\$?)?$/.test(value)
+        matchesRoot(value)
       )
         check(false, "robots.txt does not disallow the whole site")
     }
@@ -217,10 +250,23 @@ check(
 check(!/<loc>[^<]*404/.test(map?.text ?? ""), "sitemap omits the 404")
 if (!live && map) {
   for (const [, loc] of map.text.matchAll(/<loc>([^<]*)<\/loc>/g)) {
-    const path = new URL(loc).pathname
+    check(loc.startsWith(`${site}/`), `sitemap page ${loc} is on ${site}`)
+    const file = join(
+      dist,
+      new URL(loc).pathname,
+      loc.endsWith("/") ? "index.html" : ""
+    )
     check(
-      existsSync(join(dist, path, path.endsWith("/") ? "index.html" : "")),
+      existsSync(file) && statSync(file).isFile(),
       `sitemap page ${loc} is built`
+    )
+  }
+}
+if (!live && index) {
+  for (const [, loc] of index.text.matchAll(/<loc>([^<]*)<\/loc>/g)) {
+    check(
+      loc.startsWith(`${site}/`),
+      `sitemap-index entry ${loc} is on ${site}`
     )
   }
 }
@@ -234,7 +280,12 @@ if (notFound) {
     metaContent(notFound.text, "name", "robots").some(blocksIndexing),
     "the 404 page has a noindex robots meta"
   )
-  check(!/rel="canonical"/.test(notFound.text), "the 404 page has no canonical")
+  check(
+    ![...notFound.text.matchAll(/<link\s[^>]*>/gi)].some((m) =>
+      /canonical/i.test(attr(m[0], "rel") ?? "")
+    ),
+    "the 404 page has no canonical"
+  )
   check(!/ld\+json/.test(notFound.text), "the 404 page has no JSON-LD")
 }
 
@@ -263,11 +314,22 @@ if (live) {
   } catch {
     check(false, "wrangler.jsonc parses (whole-line comments only)")
   }
-  if (wrangler)
+  if (wrangler) {
     check(
       wrangler.assets?.not_found_handling === "404-page",
       "wrangler.jsonc serves 404.html for unknown paths"
     )
+    check(
+      wrangler.assets?.directory === "./dist",
+      "wrangler.jsonc serves ./dist"
+    )
+    check(
+      [undefined, "auto-trailing-slash"].includes(
+        wrangler.assets?.html_handling
+      ),
+      "wrangler.jsonc keeps the default html_handling"
+    )
+  }
 }
 
 if (failures.length > 0) {

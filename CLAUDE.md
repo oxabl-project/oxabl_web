@@ -72,6 +72,9 @@ index under every URL).
   `/404` with status 200, so the page itself has to say so.
 - A new page needs a unique `title` and `description` props on the layout.
 - After a deploy, `pnpm seo:check --live` checks what oxabl.org really serves.
+  It waits for the edge to serve the bytes of `dist/`, so Cloudflare features
+  that rewrite HTML or images (Web Analytics injection, email obfuscation,
+  Polish) would make it fail every deploy.
 - Search Console: verify the _Domain_ property with a DNS TXT record in
   Cloudflare (covers `docs.` too), then submit the sitemap. A meta tag would go
   in the layout head; a file in `public/`.

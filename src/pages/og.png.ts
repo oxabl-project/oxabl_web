@@ -113,14 +113,6 @@ export const GET: APIRoute = async () => {
         ),
         weight: 500,
       },
-      {
-        name: "IBM Plex Mono",
-        data: font(
-          "@fontsource/ibm-plex-mono",
-          "ibm-plex-mono-latin-400-normal.woff"
-        ),
-        weight: 400,
-      },
     ],
   })
   const png = new Resvg(svg).render().asPng()
