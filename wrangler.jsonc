@@ -5,7 +5,8 @@
   "compatibility_date": "2026-11-11",
   "assets": {
     "directory": "./dist",
-    // Unknown paths get index.html, as the site has always served them.
-    "not_found_handling": "single-page-application"
+    // Unknown paths get dist/404.html with a 404 status, so crawlers do not
+    // index the home page under every URL.
+    "not_found_handling": "404-page"
   }
 }

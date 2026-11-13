@@ -45,13 +45,29 @@ hook is an inline-JS shim the glue imports by relative path.
 Every push to GitHub `master` deploys (`.github/workflows/deploy.yml`); a pull
 request only builds. The site is a Cloudflare Worker with static assets only
 (`wrangler.jsonc`): no script runs, Cloudflare serves `dist/`, and unknown paths
-get `index.html`.
+get `404.html` with a 404 status (not the home page, which search engines would
+index under every URL).
 
 - Worker: `oxabl-web`, custom domain `oxabl.org`
 - Preview: https://oxabl-web.evan-robertson77.workers.dev
 - By hand: `pnpm build && pnpm dlx wrangler@4 deploy`, with
   `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` set
 - The workflow reads both from the repository's Actions secrets.
+
+## SEO
+
+- `src/lib/seo.ts` holds the site URL, default title and description, and the
+  social image size. `src/layouts/main.astro` renders the canonical link, Open
+  Graph and Twitter tags and the JSON-LD from it; `site` in `astro.config.mjs`
+  must stay `https://oxabl.org`.
+- `public/robots.txt` and `@astrojs/sitemap` (`/sitemap-index.xml`) are served
+  from the apex domain. The docs site, `docs.oxabl.org`, has its own.
+- `/og.png` is generated at build time by `src/pages/og.png.ts` (satori and
+  resvg-js, the `.woff` fonts from `@fontsource/*`, `public/favicon.svg`). Edit
+  the tagline or layout there; colours are the `DESIGN.md` tokens as sRGB.
+- `pnpm seo:check` (CI runs it after `pnpm build`) fails when a tag, the image,
+  `robots.txt`, the sitemap or the 404 handling is missing from `dist/`.
+- A new page needs a unique `title` and `description` props on the layout.
 
 ## Regenerating the vendored keyword data
 

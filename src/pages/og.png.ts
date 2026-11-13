@@ -1,0 +1,179 @@
+import { readFileSync } from "node:fs"
+import { createRequire } from "node:module"
+import { join } from "node:path"
+import type { APIRoute } from "astro"
+import { Resvg } from "@resvg/resvg-js"
+import satori from "satori"
+import { OG_IMAGE_SIZE } from "@/lib/seo"
+
+// Satori reads static TTF/OTF/WOFF only, so the card takes the fontsource
+// `.woff` files rather than the variable `.woff2` files the page loads.
+const require = createRequire(import.meta.url)
+const font = (pkg: string, file: string) =>
+  readFileSync(require.resolve(`${pkg}/files/${file}`))
+
+// DESIGN.md tokens (global.css) as sRGB: satori cannot read oklch().
+const color = {
+  paper: "#fbfaf9",
+  ink: "#171613",
+  inkMuted: "#5f5d5a",
+  ruleStrong: "#a6a4a1",
+  screen: "#0a0f0b",
+  screenRule: "#2e352f",
+  screenInk: "#e5e9e6",
+  screenMuted: "#8f9490",
+  ok: "#67d283",
+}
+
+// public/favicon.svg: the wordmark's Michroma `o`.
+const mark = readFileSync(join(process.cwd(), "public/favicon.svg"), "utf8")
+  .replace(/<!--[\s\S]*?-->/g, "")
+  .replace('fill="#3f9142"', `fill="${color.ok}"`)
+const markSrc = `data:image/svg+xml;base64,${Buffer.from(mark).toString("base64")}`
+
+const h = (
+  type: string,
+  style: Record<string, string | number>,
+  children?: unknown
+) => ({ type, props: { style: { display: "flex", ...style }, children } })
+
+const card = h(
+  "div",
+  {
+    width: "100%",
+    height: "100%",
+    background: color.paper,
+  },
+  h(
+    "div",
+    {
+      margin: 48,
+      width: OG_IMAGE_SIZE.width - 96,
+      height: OG_IMAGE_SIZE.height - 96,
+      border: `1px solid ${color.ruleStrong}`,
+    },
+    [
+      h(
+        "div",
+        {
+          width: OG_IMAGE_SIZE.width - 96 - 340,
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: 48,
+        },
+        [
+          h(
+            "div",
+            {
+              fontFamily: "Michroma",
+              fontSize: 40,
+              color: color.ink,
+            },
+            "oxabl"
+          ),
+          h(
+            "div",
+            {
+              fontFamily: "IBM Plex Sans",
+              fontWeight: 500,
+              fontSize: 64,
+              lineHeight: "72px",
+              letterSpacing: "-0.02em",
+              color: color.ink,
+              maxWidth: 600,
+            },
+            "ABL developers deserve modern toolchains."
+          ),
+          h(
+            "div",
+            {
+              fontFamily: "Martian Mono",
+              fontSize: 16,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: color.inkMuted,
+            },
+            "Unofficial · Progress ABL"
+          ),
+        ]
+      ),
+      h(
+        "div",
+        {
+          width: 340,
+          flexShrink: 0,
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: color.screen,
+          borderLeft: `1px solid ${color.screenRule}`,
+          padding: 48,
+        },
+        [
+          h(
+            "div",
+            { flex: 1, alignItems: "center" },
+            {
+              type: "img",
+              props: { src: markSrc, width: 220, height: 220 },
+            }
+          ),
+          h(
+            "div",
+            {
+              fontFamily: "IBM Plex Mono",
+              fontSize: 20,
+              color: color.screenInk,
+              borderTop: `1px solid ${color.screenRule}`,
+              paddingTop: 24,
+              width: "100%",
+              justifyContent: "center",
+            },
+            "cargo install oxabl --locked"
+          ),
+        ]
+      ),
+    ]
+  )
+)
+
+export const GET: APIRoute = async () => {
+  const svg = await satori(card as never, {
+    ...OG_IMAGE_SIZE,
+    fonts: [
+      {
+        name: "Michroma",
+        data: font("@fontsource/michroma", "michroma-latin-400-normal.woff"),
+        weight: 400,
+      },
+      {
+        name: "IBM Plex Sans",
+        data: font(
+          "@fontsource/ibm-plex-sans",
+          "ibm-plex-sans-latin-500-normal.woff"
+        ),
+        weight: 500,
+      },
+      {
+        name: "IBM Plex Mono",
+        data: font(
+          "@fontsource/ibm-plex-mono",
+          "ibm-plex-mono-latin-400-normal.woff"
+        ),
+        weight: 400,
+      },
+      {
+        name: "Martian Mono",
+        data: font(
+          "@fontsource/martian-mono",
+          "martian-mono-latin-400-normal.woff"
+        ),
+        weight: 400,
+      },
+    ],
+  })
+  const png = new Resvg(svg).render().asPng()
+  return new Response(new Uint8Array(png), {
+    headers: { "Content-Type": "image/png" },
+  })
+}

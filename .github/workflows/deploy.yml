@@ -27,6 +27,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - run: pnpm seo:check
       # Static assets only (wrangler.jsonc): Cloudflare serves dist/ as oxabl.org.
       - name: Deploy to Cloudflare
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

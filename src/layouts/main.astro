@@ -1,15 +1,53 @@
 ---
 import "@/styles/global.css"
+import {
+  DESCRIPTION,
+  DOCS,
+  OG_IMAGE_ALT,
+  OG_IMAGE_PATH,
+  OG_IMAGE_SIZE,
+  REPO,
+  SITE,
+  SITE_NAME,
+  TITLE,
+} from "@/lib/seo"
 
 interface Props {
   title?: string
   description?: string
 }
 
-const {
-  title = "oxabl — high-performance tooling for ABL",
-  description = "Blazingly fast developer tools for Progress ABL, written in Rust. Lexer, parser, semantic analysis, lint. Unofficial and unaffiliated.",
-} = Astro.props
+const { title = TITLE, description = DESCRIPTION } = Astro.props
+
+const canonical = new URL(Astro.url.pathname, SITE).href
+const image = new URL(OG_IMAGE_PATH, SITE).href
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE}/#website`,
+      name: SITE_NAME,
+      url: `${SITE}/`,
+      description,
+      inLanguage: "en",
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${SITE}/#software`,
+      name: SITE_NAME,
+      url: `${SITE}/`,
+      description,
+      applicationCategory: "DeveloperApplication",
+      isAccessibleForFree: true,
+      license: "https://opensource.org/licenses/MIT",
+      codeRepository: REPO,
+      programmingLanguage: "Rust",
+      softwareHelp: { "@type": "WebSite", url: DOCS },
+    },
+  ],
+}
 ---
 
 <html lang="en">
@@ -29,9 +67,27 @@ const {
       media="(prefers-color-scheme: light)"
       data-theme-color="light"
     />
+    <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="en" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:alt" content={OG_IMAGE_ALT} />
+    <meta property="og:image:width" content={String(OG_IMAGE_SIZE.width)} />
+    <meta property="og:image:height" content={String(OG_IMAGE_SIZE.height)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={OG_IMAGE_ALT} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(structuredData)}
+    />
     <!-- .ico first: Safari never loads an SVG favicon and needs the raster. -->
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
