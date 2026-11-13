@@ -16,7 +16,6 @@ const font = (pkg: string, file: string) =>
 const color = {
   paper: "#fbfaf9",
   ink: "#171613",
-  inkMuted: "#5f5d5a",
   ruleStrong: "#a6a4a1",
   screen: "#0a0f0b",
 }
@@ -77,17 +76,6 @@ const card = h(
             },
             "ABL developers deserve modern toolchains."
           ),
-          h(
-            "div",
-            {
-              fontFamily: "Martian Mono",
-              fontSize: 20,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              color: color.inkMuted,
-            },
-            "Unofficial · Progress ABL"
-          ),
         ]
       ),
       h(
@@ -130,14 +118,6 @@ export const GET: APIRoute = async () => {
         data: font(
           "@fontsource/ibm-plex-mono",
           "ibm-plex-mono-latin-400-normal.woff"
-        ),
-        weight: 400,
-      },
-      {
-        name: "Martian Mono",
-        data: font(
-          "@fontsource/martian-mono",
-          "martian-mono-latin-400-normal.woff"
         ),
         weight: 400,
       },

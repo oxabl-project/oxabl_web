@@ -2,6 +2,7 @@
 import "@/styles/global.css"
 import {
   DESCRIPTION,
+  CRATE,
   DOCS,
   OG_IMAGE_ALT,
   OG_IMAGE_PATH,
@@ -47,6 +48,8 @@ const structuredData = {
       url: `${SITE}/`,
       description,
       applicationCategory: "DeveloperApplication",
+      operatingSystem: "Windows, macOS, Linux",
+      sameAs: [REPO, CRATE],
       isAccessibleForFree: true,
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       license: "https://opensource.org/licenses/MIT",
@@ -99,10 +102,15 @@ const structuredData = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={image} />
     <meta name="twitter:image:alt" content={OG_IMAGE_ALT} />
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify(structuredData)}
-    />
+    {
+      !noindex && (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify(structuredData)}
+        />
+      )
+    }
     <!-- .ico first: Safari never loads an SVG favicon and needs the raster. -->
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
