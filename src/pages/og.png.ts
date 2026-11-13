@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs"
 import { createRequire } from "node:module"
-import { join } from "node:path"
 import type { APIRoute } from "astro"
 import { Resvg } from "@resvg/resvg-js"
 import satori from "satori"
+import favicon from "../../public/favicon.svg?raw"
 import { OG_IMAGE_SIZE } from "@/lib/seo"
 
 // Satori reads static TTF/OTF/WOFF only, so the card takes the fontsource
@@ -19,17 +19,10 @@ const color = {
   inkMuted: "#5f5d5a",
   ruleStrong: "#a6a4a1",
   screen: "#0a0f0b",
-  screenRule: "#2e352f",
-  screenInk: "#e5e9e6",
-  screenMuted: "#8f9490",
-  ok: "#67d283",
 }
 
-// public/favicon.svg: the wordmark's Michroma `o`.
-const mark = readFileSync(join(process.cwd(), "public/favicon.svg"), "utf8")
-  .replace(/<!--[\s\S]*?-->/g, "")
-  .replace('fill="#3f9142"', `fill="${color.ok}"`)
-const markSrc = `data:image/svg+xml;base64,${Buffer.from(mark).toString("base64")}`
+// public/favicon.svg, in the icon's own green (DESIGN.md, "The icon").
+const markSrc = `data:image/svg+xml;base64,${Buffer.from(favicon).toString("base64")}`
 
 const h = (
   type: string,
@@ -66,7 +59,7 @@ const card = h(
             "div",
             {
               fontFamily: "Michroma",
-              fontSize: 40,
+              fontSize: 48,
               color: color.ink,
             },
             "oxabl"
@@ -88,7 +81,7 @@ const card = h(
             "div",
             {
               fontFamily: "Martian Mono",
-              fontSize: 16,
+              fontSize: 20,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
               color: color.inkMuted,
@@ -102,36 +95,14 @@ const card = h(
         {
           width: 340,
           flexShrink: 0,
-          flexDirection: "column",
-          justifyContent: "space-between",
           alignItems: "center",
+          justifyContent: "center",
           background: color.screen,
-          borderLeft: `1px solid ${color.screenRule}`,
-          padding: 48,
         },
-        [
-          h(
-            "div",
-            { flex: 1, alignItems: "center" },
-            {
-              type: "img",
-              props: { src: markSrc, width: 220, height: 220 },
-            }
-          ),
-          h(
-            "div",
-            {
-              fontFamily: "IBM Plex Mono",
-              fontSize: 20,
-              color: color.screenInk,
-              borderTop: `1px solid ${color.screenRule}`,
-              paddingTop: 24,
-              width: "100%",
-              justifyContent: "center",
-            },
-            "cargo install oxabl --locked"
-          ),
-        ]
+        {
+          type: "img",
+          props: { src: markSrc, width: 260, height: 260 },
+        }
       ),
     ]
   )

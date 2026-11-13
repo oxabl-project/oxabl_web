@@ -1,6 +1,6 @@
 # oxabl_web — agent notes
 
-Marketing site for oxabl (Astro 6 static build). The playground runs the oxabl
+Marketing site for oxabl (Astro 7 static build). The playground runs the oxabl
 engine as a WASM artifact checked into `src/wasm/`.
 
 ## Read `DESIGN.md` before changing anything visual
@@ -28,7 +28,7 @@ change:
      (`=0.2.126` in `crates/oxabl_wasm/Cargo.toml`). A mismatch fails at bindgen
      time.
 2. From the oxabl checkout (on the target commit):
-   `./scripts/build-wasm.sh ~/personal/oxabl_web/src/wasm`
+   `./scripts/build-wasm.sh ~/oxabl_web/src/wasm`
    The script builds `--release`, runs `wasm-bindgen`, and asserts the browser
    recovery machinery is intact (`__wbg_reset_state` exported, no
    exception-handling / `WebAssembly.Tag` injected). Do **not** pass `--verify`
@@ -67,7 +67,14 @@ index under every URL).
   the tagline or layout there; colours are the `DESIGN.md` tokens as sRGB.
 - `pnpm seo:check` (CI runs it after `pnpm build`) fails when a tag, the image,
   `robots.txt`, the sitemap or the 404 handling is missing from `dist/`.
+- A page that must stay out of the index passes `noindex` to the layout (it
+  drops the canonical and the JSON-LD); `404.astro` does. Cloudflare serves
+  `/404` with status 200, so the page itself has to say so.
 - A new page needs a unique `title` and `description` props on the layout.
+- After a deploy, `pnpm seo:check --live` checks what oxabl.org really serves.
+- Search Console: verify the _Domain_ property with a DNS TXT record in
+  Cloudflare (covers `docs.` too), then submit the sitemap. A meta tag would go
+  in the layout head; a file in `public/`.
 
 ## Regenerating the vendored keyword data
 

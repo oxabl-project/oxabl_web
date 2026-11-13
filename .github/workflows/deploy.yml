@@ -38,3 +38,6 @@ jobs:
           # The action's default, wrangler 3, cannot deploy static assets without a script.
           wranglerVersion: "4.160.1"
           command: deploy
+      - name: Check what oxabl.org serves
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: node scripts/check-seo.mjs --live
