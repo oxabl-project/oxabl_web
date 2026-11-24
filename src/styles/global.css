@@ -17,12 +17,16 @@
 }
 
 @source "../pages/index.astro";
+@source "../pages/404.astro";
 @source "../layouts/main.astro";
 @source "../components/Logo.astro";
 @source "../components/MobileMenu.astro";
 @source "../components/Navbar.astro";
 @source "../components/Announcement.astro";
 @source "../components/HexHero.tsx";
+@source "../components/InstallCommand.astro";
+@source "../components/InstallGrid.astro";
+@source "../components/MobileCollapse.astro";
 @source "../components/TryOxabl.tsx";
 @source "../components/PipelineDiagram.astro";
 @source "../components/PipelineNode.astro";
@@ -291,6 +295,35 @@
   grid-column: 2;
 }
 
+/* A step of several crates at the same point in the pass: two columns of
+   nodes under one chrome caption, inside the spine's middle column. */
+.pipeline-spine-set {
+  display: grid;
+  grid-column: 2;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.pipeline-spine-set__heading {
+  grid-column: 1 / -1;
+  color: var(--ink-muted);
+  font-family: "Martian Mono Chrome", monospace;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pipeline-build-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.pipeline-build-row > .pipeline-node {
+  margin-inline: 12px;
+}
+
 .pipeline-sequence {
   grid-column: 1;
   align-self: center;
@@ -414,7 +447,7 @@
    because `md:hidden` on its wrapper is what scopes it — so none of these
    rules carries a media query and none of them touches a `.pipeline-canvas`
    descendant. The branching the canvas draws with SVG is deliberately absent
-   here; the `01`–`08` sequence numbers and a 24px connector rule carry the
+   here; the `01`–`10` sequence numbers and a 24px connector rule carry the
    order instead. */
 .pipeline-mobile {
   color: var(--ink);
@@ -438,8 +471,9 @@
   padding: 24px;
 }
 
-.pipeline-mobile-heading--ruled {
-  border-top: 1px solid var(--ink);
+/* The group's summary already ends on a 24px pad. */
+.mobile-collapse .pipeline-mobile-heading {
+  padding-top: 0;
 }
 
 .pipeline-mobile-stack {
@@ -471,11 +505,66 @@
   text-align: right;
 }
 
+.pipeline-mobile-set {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .pipeline-mobile-group {
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 0 24px 24px;
+}
+
+/* MobileCollapse: closed by default below `md`, always open from `md` up.
+   The state word is chrome, not a chevron: the site's pictograms are fixed. */
+.mobile-collapse__summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px 24px;
+  padding: 24px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.mobile-collapse__subtitle {
+  grid-column: 1 / -1;
+}
+
+.mobile-collapse__summary::-webkit-details-marker {
+  display: none;
+}
+
+.mobile-collapse__state::after {
+  content: "Show";
+}
+
+.mobile-collapse[open] .mobile-collapse__state::after {
+  content: "Hide";
+}
+
+.mobile-collapse__label {
+  display: none;
+}
+
+@supports selector(::details-content) {
+  @media (min-width: 48rem) {
+    .mobile-collapse::details-content {
+      content-visibility: visible;
+      display: contents;
+    }
+
+    .mobile-collapse__summary {
+      display: none;
+    }
+
+    .mobile-collapse__label {
+      display: block;
+      margin-bottom: 24px;
+    }
+  }
 }
 
 /* The menu panel reuses the bar's theme control unmodified, so its cells arrive

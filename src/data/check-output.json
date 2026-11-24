@@ -1,0 +1,36 @@
+{
+  "version": 3,
+  "files_checked": 1,
+  "lint_enabled": true,
+  "diagnostics": [
+    {
+      "path": "src/undefined_symbol.p",
+      "code": "LINT0001",
+      "severity": "error",
+      "source": "lint",
+      "message": "undefined symbol `ghost`",
+      "span": {
+        "start": 49,
+        "end": 54
+      },
+      "start": {
+        "byte": 49,
+        "line": 3,
+        "column": 11
+      },
+      "end": {
+        "byte": 54,
+        "line": 3,
+        "column": 16
+      }
+    }
+  ],
+  "format_enabled": true,
+  "format": {
+    "drifted": [],
+    "drifted_count": 0
+  },
+  "preproc": [],
+  "unjudged_symbols": 0,
+  "failures": []
+}

@@ -1,10 +1,15 @@
 ---
+import MobileCollapse from "@/components/MobileCollapse.astro"
 import PipelineNode from "@/components/PipelineNode.astro"
 
 type CrateNode = {
   name: string
   caption: string
 }
+
+// A spine step is one crate, or a set of crates that sit side by side at the
+// same point in the pass.
+type SpineStep = CrateNode | CrateNode[]
 
 // One definition per heading, consumed by both the canvas and the stacked
 // rendering below `md`. The two are deliberately separate DOM subtrees, so a
@@ -14,13 +19,39 @@ const headings = {
   spine: "Spine",
   sourceIn: "Source text in",
   analysisOut: "Analysis out",
+  analyses: "Strict analyses / what the strict lint groups read",
   surfaces: "Surfaces",
   surfacesDetail: "Depend on oxabl; the rest sit beneath it",
+  build: "Build",
+  buildDetail: "Beneath oxabl build: graph, plan, workers and cache",
   foundation: "Foundation",
   foundationDetail: "Shared types / files / style / generation",
 } as const
 
-const spine: CrateNode[] = [
+const analyses: CrateNode[] = [
+  {
+    name: "oxabl_scope",
+    caption:
+      "Buffer scopes, transaction blocks and lock modes per unit, as the OpenEdge compiler assigns them, for Progress ABL",
+  },
+  {
+    name: "oxabl_effects",
+    caption:
+      "Database effects per unit, likely index per record read, and transitive summaries over the call graph, for Progress ABL",
+  },
+  {
+    name: "oxabl_handles",
+    caption:
+      "Lifetimes of dynamic objects (handles, persistent procedures, MEMPTRs) per unit, for Progress ABL",
+  },
+  {
+    name: "oxabl_nulls",
+    caption:
+      "Unknown values and records a failed FIND may leave missing, per unit, for Progress ABL",
+  },
+]
+
+const spine: SpineStep[] = [
   {
     name: "oxabl_lexer",
     caption: "Tokenizer for Progress ABL source code",
@@ -48,6 +79,12 @@ const spine: CrateNode[] = [
     caption:
       "Cross-file fact extraction and the batch workspace index for oxabl",
   },
+  {
+    name: "oxabl_flow",
+    caption:
+      "Control-flow graphs with ABL block semantics, plus a dataflow framework, for Progress ABL",
+  },
+  analyses,
   {
     name: "oxabl_lint",
     caption: "Lint rules for Progress ABL built on the oxabl_semantic model",
@@ -98,6 +135,19 @@ const sharedSurfaceLayer: CrateNode[] = [
   },
 ]
 
+const build: CrateNode[] = [
+  {
+    name: "oxabl_build",
+    caption:
+      "The oxabl build tool: graph store, incremental refresh, planner, AVM worker pool and worker protocol",
+  },
+  {
+    name: "oxabl_build_remote",
+    caption:
+      "The remote cache of oxabl build: an ArtifactCache over the oxabl-cache client",
+  },
+]
+
 const foundation: CrateNode[] = [
   {
     name: "oxabl_ast",
@@ -122,6 +172,26 @@ const foundation: CrateNode[] = [
     caption: "Code generation tool for oxabl lexer keywords and atoms",
   },
 ]
+
+const crateCount =
+  spine.flat().length +
+  surfaces.length +
+  sharedSurfaceLayer.length +
+  build.length +
+  foundation.length
+const sequence = (index: number) => String(index + 1).padStart(2, "0")
+const count = (n: number) => `${n} crate${n === 1 ? "" : "s"}`
+
+// What a closed group says it holds, below `md`.
+const groupSummaries = {
+  spine: `Source text in, analysis out, in ${spine.length} ordered steps: lex, parse, preprocess, schema, semantics, index, control flow, strict analyses, lint, analyze.`,
+  surfaces:
+    "What you run: the CLI, the language server, this page's playground and the session daemon, over shared lint, format and protocol crates.",
+  build:
+    "Incremental builds: dependency graph, plan, the OpenEdge worker pool and the remote compile cache.",
+  foundation:
+    "Shared AST, utilities, workspace configuration, style rules and keyword generation.",
+}
 ---
 
 <figure
@@ -129,10 +199,15 @@ const foundation: CrateNode[] = [
   aria-describedby="pipeline-description"
 >
   <p id="pipeline-description" class="sr-only">
-    Eight ordered forward-pass crates form the spine. Four client surfaces
-    consume the shared pipeline, with formatter and daemon protocol beside it.
-    Five foundation crates support the system. Every crate name links to its
-    crates.io page; oxabl is the one a consumer depends on directly.
+    {spine.length} ordered steps form the spine, from source text to analysis; step
+    {sequence(spine.indexOf(analyses))} is the {analyses.length} strict analyses the
+    strict lint groups run on. {surfaces.length} client surfaces consume the shared
+    pipeline, with {sharedSurfaceLayer.length} shared crates beneath them. {
+      build.length
+    } crates make up the build tool, and
+    {foundation.length} foundation crates support the system. All
+    {crateCount} crate names link to their crates.io pages; oxabl is the one a consumer
+    depends on directly.
   </p>
 
   <div class="hidden overflow-x-auto border border-rule-strong md:block">
@@ -159,10 +234,19 @@ const foundation: CrateNode[] = [
                 </svg>
               )}
               <div class="pipeline-spine-row">
-                <span class="pipeline-sequence">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <PipelineNode {...crate} />
+                <span class="pipeline-sequence">{sequence(index)}</span>
+                {Array.isArray(crate) ? (
+                  <div class="pipeline-spine-set">
+                    <span class="pipeline-spine-set__heading">
+                      {headings.analyses}
+                    </span>
+                    {crate.map((member) => (
+                      <PipelineNode {...member} />
+                    ))}
+                  </div>
+                ) : (
+                  <PipelineNode {...crate} />
+                )}
               </div>
             </>
           ))
@@ -216,6 +300,15 @@ const foundation: CrateNode[] = [
       </div>
 
       <div class="pipeline-group-heading pipeline-group-heading--ruled">
+        <span>{headings.build}</span>
+        <span>{headings.buildDetail}</span>
+      </div>
+
+      <div class="pipeline-build-row">
+        {build.map((crate) => <PipelineNode {...crate} />)}
+      </div>
+
+      <div class="pipeline-group-heading pipeline-group-heading--ruled">
         <span>{headings.foundation}</span>
         <span>{headings.foundationDetail}</span>
       </div>
@@ -226,12 +319,12 @@ const foundation: CrateNode[] = [
     </div>
   </div>
 
-  <div class="px-6 md:hidden">
-    <div
-      class="pipeline-mobile mx-auto w-full max-w-[420px] border border-rule-strong"
+  <div class="pipeline-mobile border border-rule-strong md:hidden">
+    <MobileCollapse
+      label={`${headings.spine} / ${count(spine.flat().length)}`}
+      summary={groupSummaries.spine}
     >
       <div class="pipeline-mobile-heading">
-        <span>{headings.spine}</span>
         <span>{headings.sourceIn}</span>
       </div>
 
@@ -244,9 +337,18 @@ const foundation: CrateNode[] = [
               )}
               <div class="pipeline-mobile-step">
                 <span class="pipeline-mobile-sequence">
-                  {String(index + 1).padStart(2, "0")}
+                  {sequence(index)}
+                  {Array.isArray(crate) && ` / ${headings.analyses}`}
                 </span>
-                <PipelineNode {...crate} />
+                {Array.isArray(crate) ? (
+                  <div class="pipeline-mobile-set">
+                    {crate.map((member) => (
+                      <PipelineNode {...member} />
+                    ))}
+                  </div>
+                ) : (
+                  <PipelineNode {...crate} />
+                )}
               </div>
             </>
           ))
@@ -256,25 +358,46 @@ const foundation: CrateNode[] = [
       <div class="pipeline-mobile-out">
         <span>{headings.analysisOut}</span>
       </div>
+    </MobileCollapse>
 
-      <div class="pipeline-mobile-heading pipeline-mobile-heading--ruled">
-        <span>{headings.surfaces}</span>
+    <MobileCollapse
+      class="border-t border-rule-strong"
+      label={`${headings.surfaces} / ${count(surfaces.length + sharedSurfaceLayer.length)}`}
+      summary={groupSummaries.surfaces}
+    >
+      <div class="pipeline-mobile-heading">
         <span>{headings.surfacesDetail}</span>
       </div>
-
       <div class="pipeline-mobile-group">
         {surfaces.map((crate) => <PipelineNode {...crate} />)}
         {sharedSurfaceLayer.map((crate) => <PipelineNode {...crate} />)}
       </div>
+    </MobileCollapse>
 
-      <div class="pipeline-mobile-heading pipeline-mobile-heading--ruled">
-        <span>{headings.foundation}</span>
+    <MobileCollapse
+      class="border-t border-rule-strong"
+      label={`${headings.build} / ${count(build.length)}`}
+      summary={groupSummaries.build}
+    >
+      <div class="pipeline-mobile-heading">
+        <span>{headings.buildDetail}</span>
+      </div>
+      <div class="pipeline-mobile-group">
+        {build.map((crate) => <PipelineNode {...crate} />)}
+      </div>
+    </MobileCollapse>
+
+    <MobileCollapse
+      class="border-t border-rule-strong"
+      label={`${headings.foundation} / ${count(foundation.length)}`}
+      summary={groupSummaries.foundation}
+    >
+      <div class="pipeline-mobile-heading">
         <span>{headings.foundationDetail}</span>
       </div>
-
       <div class="pipeline-mobile-group">
         {foundation.map((crate) => <PipelineNode {...crate} />)}
       </div>
-    </div>
+    </MobileCollapse>
   </div>
 </figure>

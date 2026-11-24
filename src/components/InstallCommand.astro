@@ -1,0 +1,31 @@
+---
+import { INSTALL_SCRIPT } from "@/lib/install"
+
+interface Props {
+  class?: string
+}
+
+const { class: className } = Astro.props
+// Narrow columns break the URL after a slash, not mid-word or at a hyphen.
+const parts = INSTALL_SCRIPT.split("/")
+---
+
+<code
+  class:list={["block font-code text-code wrap-anywhere text-ink", className]}
+  >{
+    parts.map((part, index) => (
+      <>
+        {part.includes(" ") ? (
+          part
+        ) : (
+          <span class="whitespace-nowrap">{part}</span>
+        )}
+        {index < parts.length - 1 && (
+          <>
+            /<wbr />
+          </>
+        )}
+      </>
+    ))
+  }</code
+>

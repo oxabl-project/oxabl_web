@@ -1,0 +1,44 @@
+---
+// A block that starts closed below `md` and is always open from `md` up. The
+// summary names what is inside in one line, so a closed block still says what
+// it holds. Without `::details-content` support the summary stays as a working
+// toggle at every width rather than hiding content it can no longer open.
+interface Props {
+  label: string
+  summary: string
+  // Also render the label inside the body for the desktop layout, where the
+  // summary is hidden.
+  desktopLabel?: boolean
+  class?: string
+  bodyClass?: string
+}
+
+const {
+  label,
+  summary,
+  desktopLabel = false,
+  class: className,
+  bodyClass,
+} = Astro.props
+---
+
+<details class:list={["mobile-collapse", className]}>
+  <summary class="mobile-collapse__summary">
+    <span class="font-chrome text-chrome text-ink-muted uppercase">{label}</span
+    >
+    <span
+      class="mobile-collapse__state font-chrome text-chrome text-ink-muted uppercase"
+      aria-hidden="true"></span>
+    <span class="mobile-collapse__subtitle text-body text-ink">{summary}</span>
+  </summary>
+  <div class={bodyClass}>
+    {
+      desktopLabel && (
+        <p class="mobile-collapse__label font-chrome text-chrome text-ink-muted uppercase">
+          {label}
+        </p>
+      )
+    }
+    <slot />
+  </div>
+</details>

@@ -1,9 +1,9 @@
 {
-  "total": 562,
+  "total": 619,
   "reserved": 461,
-  "withAbbreviations": 88,
-  "withTypeInfo": 318,
-  "callableFunctions": 54,
+  "withAbbreviations": 89,
+  "withTypeInfo": 378,
+  "callableFunctions": 55,
   "provenance": {
     "reservedKeywords": "resources/abl_reserved_keywords.txt",
     "keywordIndex": "resources/abl_keyword_index.json",

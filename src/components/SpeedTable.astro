@@ -1,14 +1,10 @@
 ---
-// One definition per column, consumed by both the desktop table and the mobile
-// stack. The two renderings are deliberately separate DOM subtrees, so a label
-// retyped in one and not the other would drift silently -- there is no build
-// error for a heading that disagrees with itself. `face` carries the type
-// treatment each column has always had.
+// One table at every width; below `md` it scrolls sideways rather than
+// restacking. `face` carries the type treatment each column has always had.
 type Column = {
   key: "lines" | "bytes" | "time" | "benchmark" | "measures"
   label: string
   face: string
-  wrapAnywhere?: boolean
 }
 
 const columns: Column[] = [
@@ -19,10 +15,6 @@ const columns: Column[] = [
     key: "benchmark",
     label: "Benchmark id",
     face: "font-code text-code text-ink",
-    // Only the stacked rendering needs this. The desktop table is 1024px wide
-    // and the id has always fit; the 420px mobile column is where an unbroken
-    // `daemon_cycle/cold_open` would otherwise push the box past the viewport.
-    wrapAnywhere: true,
   },
   { key: "measures", label: "Measures", face: "text-body text-ink-muted" },
 ]
@@ -32,7 +24,7 @@ const rows = [
     fixture: "resources/bench_preprocessor_pipeline.abl",
     lines: "50",
     bytes: "1,538",
-    time: "0.05249 ms",
+    time: "0.07421 ms",
     benchmark: "parser/pipeline_with_includes",
     measures: "preprocess + lex + parse",
   },
@@ -40,7 +32,7 @@ const rows = [
     fixture: "resources/bench_keywords.abl",
     lines: "632",
     bytes: "17,303",
-    time: "0.23587 ms",
+    time: "0.30074 ms",
     benchmark: "parser/full_program",
     measures: "lex + parse, full program",
   },
@@ -48,7 +40,7 @@ const rows = [
     fixture: "crates/oxabl_schema/fixtures/sp2k.df",
     lines: "2,654",
     bytes: "58,198",
-    time: "0.32278 ms",
+    time: "0.42480 ms",
     benchmark: "schema/load_files:sp2k",
     measures: ".df schema load",
   },
@@ -56,7 +48,7 @@ const rows = [
     fixture: "resources/lsp_bench.p",
     lines: "3,385",
     bytes: "129,286",
-    time: "2.9132 ms",
+    time: "3.0362 ms",
     benchmark: "daemon_cycle/cold_open",
     measures: "fresh DB, full diagnostics",
   },
@@ -64,7 +56,7 @@ const rows = [
     fixture: "generator replay: 90× sp2k with renamed tables",
     lines: "not recorded",
     bytes: "5,251,930",
-    time: "5.5024 ms",
+    time: "7.0020 ms",
     benchmark: "schema/load_files:5mb_merged",
     measures: "schema parse at scale",
   },
@@ -82,7 +74,10 @@ const rows = [
     <span>generated row: derived by replaying the benchmark generator</span>
   </figcaption>
 
-  <div class="hidden overflow-x-auto border border-rule-strong md:block">
+  <p class="mb-6 font-chrome text-chrome text-ink-muted uppercase md:hidden">
+    Scroll the table sideways
+  </p>
+  <div class="overflow-x-auto overscroll-x-contain border border-rule-strong">
     <table class="w-full min-w-[1024px] border-collapse text-left">
       <thead>
         <tr
@@ -123,37 +118,11 @@ const rows = [
     </table>
   </div>
 
-  <div class="px-6 md:hidden">
-    <div class="mx-auto w-full max-w-[420px] border border-rule-strong">
-      {
-        rows.map((row) => (
-          <div class="border-b border-rule px-4 py-6 last:border-b-0">
-            <p class="font-code text-code wrap-anywhere text-ink">
-              {row.fixture}
-            </p>
-            <dl class="mt-6 space-y-6">
-              {columns.map(({ key, label, face, wrapAnywhere }) => (
-                <div>
-                  <dt class="font-chrome text-chrome text-ink-muted uppercase">
-                    {label}
-                  </dt>
-                  <dd class={wrapAnywhere ? `${face} wrap-anywhere` : face}>
-                    {row[key]}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        ))
-      }
-    </div>
-  </div>
-
   <p class="mt-6 font-chrome text-chrome text-ink-muted uppercase">
-    Measured 2026-08-14 · <a
-      href="https://github.com/oxabl-project/oxabl/commit/9a668c90427d9ddd4caa7ce1df52f6a8003adfd6"
-      >oxabl 9a668c9</a
-    > · Intel Core i7-11700 · 8 cores / 16 threads · 32 GiB RAM · Fedora Linux · Rust
-    1.97.1
+    Measured 2026-11-24 · <a
+      href="https://github.com/oxabl-project/oxabl/commit/09959e1a656378b123a7b712b0c9ad42166f1421"
+      >oxabl 5.9.0 (09959e1)</a
+    > · Intel Core i5-10400F · 6 cores / 12 threads · 16 GiB RAM · Arch Linux (Omarchy)
+    · Rust 1.99.1 · criterion median
   </p>
 </figure>

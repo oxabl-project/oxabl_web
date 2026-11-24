@@ -114,6 +114,24 @@ Check that the vendored data still exactly matches a read-only oxabl workspace:
 pnpm keywords:check -- /home/evanr/personal/oxabl
 ```
 
+## Tailwind sources
+
+`src/styles/global.css` imports Tailwind's utilities with `source(none)` and
+lists every file that uses classes with an `@source` line. A new component
+without one renders with its classes silently missing (dev and build alike).
+`pnpm sources:check` (CI runs it before the build) fails on such a file.
+
+## The check JSON example
+
+The consumer block in `src/components/RunIt.tsx` shows `oxabl check src --json`
+run in `examples/check` (the fixture is oxabl's
+`crates/oxabl_analyze/tests/fixtures/undefined_symbol.p`). Its output is vendored
+as `src/data/check-output.json`, and the four consumer tabs are transcripts of
+real runs against that file. After a CLI change, rerun it from `examples/check`
+with the released binary, diff it against the vendored file, and rerun every
+consumer whose input changed. The `oxabl.toml` shown beside the CLI lines must
+parse: check it with `oxabl build --print-config` in a copy of that directory.
+
 ## Benchmark figures
 
 Benchmark numbers shown on the site must come from the criterion benches in
@@ -124,3 +142,18 @@ fixture. Report bytes and milliseconds for performance, and retain line counts
 for publishable committed fixtures because working ABL developers lead with
 lines. Never reference any private codebase — not its name, size, file count,
 or pass rate.
+
+The table in `src/components/SpeedTable.astro` uses three benches; run them at a
+release tag (a fresh clone, not a working checkout) on an idle machine:
+
+```
+cargo bench -p oxabl_parser --bench parser_bench -- --noplot
+cargo bench -p oxabl_schema --bench schema_bench -- --noplot
+cargo bench -p oxabl_daemon --bench daemon_cycle_bench -- --noplot
+```
+
+Build first (`--no-run`) and wait for the load average to settle before
+measuring: the compile leaves it high. Show the criterion median in ms, and
+update the footer line (date, tag commit, CPU, cores/threads, RAM, OS, Rust).
+The `5mb_merged` byte count is the corpus `schema_bench.rs` generates from
+`sp2k.df`; recompute it if that generator or the fixture changes.

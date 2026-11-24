@@ -1,0 +1,131 @@
+---
+import InstallCommand from "@/components/InstallCommand.astro"
+import MobileCollapse from "@/components/MobileCollapse.astro"
+import { CARGO_INSTALL, CLI_VERSION, RELEASES } from "@/lib/install"
+
+const inlineCode = "font-code text-code whitespace-nowrap text-ink"
+---
+
+<div
+  class="grid border border-rule-strong lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
+>
+  <div class="min-w-0 border-b border-rule lg:border-r lg:border-b-0">
+    <div class="border-b border-rule p-6 md:px-12">
+      <p class="font-chrome text-chrome text-ink-muted uppercase">
+        Install / Linux x86_64 · Windows via WSL
+      </p>
+      <InstallCommand class="mt-6" />
+      <p class="mt-6 text-body text-ink-muted">
+        Installs the release binary in <code class={inlineCode}
+          >~/.local/bin</code
+        > and keeps it current in the background. <code class={inlineCode}
+          >oxabl self-update</code
+        > updates it now.
+      </p>
+    </div>
+    <MobileCollapse
+      class="border-b border-rule"
+      bodyClass="px-6 pb-6 md:px-12 md:pt-6"
+      label="VS Code"
+      summary="The editor extension: installs the CLI and builds as you save."
+      desktopLabel
+    >
+      <p class="text-body text-ink-muted">
+        Install the VSIX from the <a
+          class="text-ink underline decoration-rule-strong underline-offset-4 hover:decoration-ink"
+          href={RELEASES}>GitHub releases</a
+        >. It offers to install the CLI, keeps both up to date, and runs <code
+          class={inlineCode}>oxabl build</code
+        > as you save. On Windows, install it in a WSL window.
+      </p>
+    </MobileCollapse>
+    <MobileCollapse
+      bodyClass="px-6 pb-6 md:px-12 md:pt-6"
+      label="Other systems / from source"
+      summary="Build it with cargo where there is no release binary."
+      desktopLabel
+    >
+      <code
+        class="block overflow-x-auto font-code text-code whitespace-nowrap text-ink"
+        >{CARGO_INSTALL}</code
+      >
+      <p class="mt-6 text-body text-ink-muted">
+        This build does not update itself. Add <code class={inlineCode}
+          >--features remote-cache</code
+        > for the shared build cache.
+      </p>
+    </MobileCollapse>
+  </div>
+
+  <div class="grid min-w-0 sm:grid-cols-2">
+    <MobileCollapse
+      class="min-w-0 border-b border-rule sm:border-r"
+      bodyClass="px-6 pb-6 md:pt-6"
+      label="CLI / daily use"
+      summary="Check, format, explain, build, schema and the language server."
+      desktopLabel
+    >
+      <pre
+        class="overflow-x-auto font-code text-code text-ink"><code>{`oxabl check .
+oxabl format src
+oxabl explain src/post.p
+oxabl build --plan
+oxabl build
+oxabl schema > oxabl.schema.json
+oxabl lsp`}</code></pre>
+      <p class="mt-6 font-chrome text-chrome text-ink-muted uppercase">
+        oxabl build needs OpenEdge workers
+      </p>
+      <p class="mt-3 font-chrome text-chrome text-ink-muted uppercase">
+        oxabl lsp requires a unix socket
+      </p>
+    </MobileCollapse>
+    <MobileCollapse
+      class="min-w-0 border-b border-rule"
+      bodyClass="px-6 pb-6 md:pt-6"
+      label="oxabl.toml / project root"
+      summary="Include paths, schema, strict lint groups and build workers."
+      desktopLabel
+    >
+      <pre
+        class="overflow-x-auto font-code text-code text-ink"><code>{`[workspace]
+name = "my-app"
+
+[workspace.sources]
+include_paths = [".", "src", "$DLC/src"]
+
+[workspace.schema]
+files = ["schema"]
+
+[workspace.lint]
+# core rules are always on;
+# "strict" turns on all six groups
+enable = ["strict.locks", "strict.nulls"]
+
+[build]
+rcode = "beside-source"
+
+[build.workers]
+command = ["_progres", "-b", "-q",
+  "-pf", "build.pf", "-p", "{program}"]`}</code></pre>
+    </MobileCollapse>
+    <MobileCollapse
+      class="min-w-0 sm:col-span-2"
+      bodyClass="px-6 pb-6 md:pt-6"
+      label="CI / GitHub Actions"
+      summary="Install the pinned release, verify its checksum, run oxabl check."
+      desktopLabel
+    >
+      <pre
+        class="overflow-x-auto font-code text-code text-ink"><code>{`- name: Install oxabl
+  run: |
+    base=https://github.com/oxabl-project/oxabl/releases/download/oxabl-v${CLI_VERSION}
+    curl -fsSL -O "$base/oxabl-x86_64-unknown-linux-musl"
+    curl -fsSL -O "$base/oxabl-x86_64-unknown-linux-musl.sha256"
+    sha256sum -c oxabl-x86_64-unknown-linux-musl.sha256
+    install -m 0755 oxabl-x86_64-unknown-linux-musl /usr/local/bin/oxabl
+- name: Check ABL
+  run: oxabl check .`}</code></pre>
+    </MobileCollapse>
+  </div>
+</div>

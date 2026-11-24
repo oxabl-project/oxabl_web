@@ -15,6 +15,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,astro}\"",
     "typecheck": "astro check",
     "seo:check": "node scripts/check-seo.mjs",
+    "sources:check": "node scripts/check-tailwind-sources.mjs",
     "keywords:generate": "node scripts/generate-keyword-data.mjs",
     "keywords:check": "node scripts/generate-keyword-data.mjs --check"
   },
