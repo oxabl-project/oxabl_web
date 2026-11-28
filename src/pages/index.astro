@@ -8,7 +8,7 @@ import Announcement from "@/components/Announcement.astro"
 import Navbar from "@/components/Navbar.astro"
 import PipelineDiagram from "@/components/PipelineDiagram.astro"
 import { RunIt } from "@/components/RunIt"
-import SpeedTable from "@/components/SpeedTable.astro"
+import SpeedCharts from "@/components/SpeedCharts.astro"
 import Surfaces from "@/components/Surfaces.astro"
 import { TryOxabl } from "@/components/TryOxabl"
 import keywordCounts from "@/data/keyword-counts.json"
@@ -139,18 +139,6 @@ import Layout from "@/layouts/main.astro"
     </section>
 
     <section
-      aria-labelledby="pipeline-title"
-      class="border-t border-rule px-4 sm:px-6"
-    >
-      <div class="mx-auto w-full max-w-7xl py-[72px]">
-        <h2 id="pipeline-title" class="mb-6 text-heading font-medium">
-          How it works
-        </h2>
-        <PipelineDiagram />
-      </div>
-    </section>
-
-    <section
       id="speed"
       aria-labelledby="speed-title"
       class="border-t border-rule px-4 sm:px-6"
@@ -159,7 +147,19 @@ import Layout from "@/layouts/main.astro"
         <h2 id="speed-title" class="mb-6 text-heading font-medium">
           Benchmarks
         </h2>
-        <SpeedTable />
+        <SpeedCharts />
+      </div>
+    </section>
+
+    <section
+      aria-labelledby="pipeline-title"
+      class="border-t border-rule px-4 sm:px-6"
+    >
+      <div class="mx-auto w-full max-w-7xl py-[72px]">
+        <h2 id="pipeline-title" class="mb-6 text-heading font-medium">
+          How it works
+        </h2>
+        <PipelineDiagram />
       </div>
     </section>
 

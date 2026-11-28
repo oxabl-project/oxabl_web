@@ -31,7 +31,7 @@
 @source "../components/PipelineDiagram.astro";
 @source "../components/PipelineNode.astro";
 @source "../components/RunIt.tsx";
-@source "../components/SpeedTable.astro";
+@source "../components/SpeedCharts.astro";
 @source "../components/Surfaces.astro";
 @source "../components/ThemeControl.astro";
 

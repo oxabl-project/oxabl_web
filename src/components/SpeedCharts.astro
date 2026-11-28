@@ -1,0 +1,443 @@
+---
+// The speed block (DESIGN.md, "The speed block"): one ruled bar chart for each
+// thing a developer measures. Every figure is a measured result; `bench` names
+// the benchmark in the oxabl repository that produced it. Lower is better.
+type Bar = {
+  label: string
+  bench: string
+  value: number
+  display: string
+  note?: string
+  // Shown as a tag beside the label, because a 1-thread and a 16-thread run
+  // share one chart and must not be read as the same kind of run.
+  threads?: number
+}
+
+// A group has its own scale and unit. Groups split one chart only where one
+// scale would hide the smaller figures; bars inside a group always share one.
+type Group = {
+  heading?: string
+  unit: string
+  bars: Bar[]
+}
+
+type Chart = {
+  id: string
+  title: string
+  caption: string
+  reference?: { value: number; label: string }
+  groups: Group[]
+}
+
+const failedNone = "0 of 10,386 files failed"
+
+const charts: Chart[] = [
+  {
+    id: "editor",
+    title: "In-editor performance",
+    caption:
+      "A screen refreshes every 16.7 ms at 60 Hz. Each answer arrives before the next refresh.",
+    reference: { value: 16.7, label: "16.7 ms · one frame at 60 Hz" },
+    groups: [
+      {
+        unit: "ms",
+        bars: [
+          {
+            label: "Autocomplete inside an expression, in a 10,000-line file",
+            bench: "completion/request_stale/expression",
+            value: 0.21,
+            display: "0.21 ms",
+          },
+          {
+            label: "Check a 3,385-line file again after a keystroke",
+            bench: "daemon_cycle/warm_single_edit_cycle",
+            value: 1.5,
+            display: "1.5 ms",
+          },
+          {
+            label: "Go to definition",
+            bench: "navigation/definitions",
+            value: 2.7,
+            display: "2.7 ms",
+          },
+          {
+            label: "Autocomplete a RUN target in a folder of 20,000 programs",
+            bench: "completion/fresh/run_large",
+            value: 6.6,
+            display: "6.6 ms",
+          },
+          {
+            label:
+              "Refresh errors, highlighting, hints, outline and links after an edit",
+            bench: "daemon_cycle/features_on_one_revision",
+            value: 7.9,
+            display: "7.9 ms",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "references",
+    title: "Find references",
+    caption:
+      "Every reference of a class and its 70 methods, across 2,000 programs that use it.",
+    reference: {
+      value: 100,
+      label: "100 ms · a response stops feeling instant",
+    },
+    groups: [
+      {
+        unit: "ms",
+        bars: [
+          {
+            label: "Find the references of a class and all 70 of its methods",
+            bench: "references/search_every_lens_of_a_class",
+            value: 38,
+            display: "38 ms",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "format-lint",
+    title: "Format & Lint Speed",
+    caption:
+      "From the command line, on one program and on a 10,386-file workspace.",
+    groups: [
+      {
+        heading: "One 3,385-line program with two include files",
+        unit: "ms",
+        bars: [
+          {
+            label: "Format",
+            bench: "format/file_end_to_end",
+            value: 1.7,
+            display: "1.7 ms",
+          },
+          {
+            label: "Lint",
+            bench: "check/file",
+            value: 3.1,
+            display: "3.1 ms",
+          },
+        ],
+      },
+      {
+        heading: "10,386 files, 4.07 million lines, 16 threads",
+        unit: "s",
+        bars: [
+          {
+            label: "Check the formatting of every file",
+            bench: "scripts/bench/cli.sh format-ws",
+            value: 0.42,
+            display: "0.42 s",
+            threads: 16,
+          },
+          {
+            label: "Lint every file",
+            bench: "scripts/bench/cli.sh check-ws",
+            value: 6.2,
+            display: "6.2 s",
+            threads: 16,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "proparse",
+    title: "Proparse vs. oxabl",
+    caption:
+      "Preprocess, lex and parse all 10,386 files into a syntax tree. Proparse times are warm JVM passes.",
+    groups: [
+      {
+        unit: "s",
+        bars: [
+          {
+            label: "oxabl",
+            bench: "compare.sh --threads 1",
+            value: 13.6,
+            display: "13.6 s",
+            note: failedNone,
+            threads: 1,
+          },
+          {
+            label: "Proparse (Consultingwerk 5.1.0)",
+            bench: "compare.sh --threads 1",
+            value: 165.5,
+            display: "166 s",
+            note: `${failedNone} · one thread only: its settings are process-wide`,
+            threads: 1,
+          },
+          {
+            label: "Proparse (Riverside 3.11.1)",
+            bench: "compare.sh --threads 1",
+            value: 260.2,
+            display: "260 s",
+            note: failedNone,
+            threads: 1,
+          },
+          {
+            label: "oxabl",
+            bench: "compare.sh --threads 16",
+            value: 2.2,
+            display: "2.2 s",
+            note: failedNone,
+            threads: 16,
+          },
+          {
+            label: "Proparse (Riverside 3.11.1)",
+            bench: "compare.sh --threads 16",
+            value: 85.5,
+            display: "86 s",
+            note: failedNone,
+            threads: 16,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "memory",
+    title: "Memory",
+    caption:
+      "Peak resident memory of the process, as the operating system counts it.",
+    groups: [
+      {
+        heading: "oxabl in daily use",
+        unit: "MB",
+        bars: [
+          {
+            label: "Lint one 3,385-line file from the command line",
+            bench: "scripts/bench/cli.sh check-lsp",
+            value: 15,
+            display: "15 MB",
+          },
+          {
+            label:
+              "Language server and its background daemon, after 5,000 edits",
+            bench: "scripts/soak/session.py",
+            value: 39,
+            display: "39 MB",
+          },
+          {
+            label: "Lint the whole 10,386-file workspace",
+            bench: "scripts/bench/cli.sh check-ws",
+            value: 419,
+            display: "419 MB",
+            threads: 16,
+          },
+        ],
+      },
+      {
+        heading:
+          "Parse of all 10,386 files · the JVM runs with its default heap",
+        unit: "MB",
+        bars: [
+          {
+            label: "oxabl",
+            bench: "compare.sh --threads 1",
+            value: 39,
+            display: "39 MB",
+            threads: 1,
+          },
+          {
+            label: "Proparse (Consultingwerk 5.1.0)",
+            bench: "compare.sh --threads 1",
+            value: 864,
+            display: "864 MB",
+            threads: 1,
+          },
+          {
+            label: "Proparse (Riverside 3.11.1)",
+            bench: "compare.sh --threads 1",
+            value: 1864,
+            display: "1,864 MB",
+            threads: 1,
+          },
+          {
+            label: "oxabl",
+            bench: "compare.sh --threads 16",
+            value: 304,
+            display: "304 MB",
+            threads: 16,
+          },
+          {
+            label: "Proparse (Riverside 3.11.1)",
+            bench: "compare.sh --threads 16",
+            value: 8580,
+            display: "8,580 MB",
+            threads: 16,
+          },
+        ],
+      },
+    ],
+  },
+]
+
+// The scale of a group starts at zero and ends a little past its largest
+// figure or the chart's reference line, so neither touches the edge.
+function scaleOf(group: Group, reference?: Chart["reference"]): number {
+  const top = Math.max(
+    ...group.bars.map((bar) => bar.value),
+    reference?.value ?? 0
+  )
+  return top * 1.08
+}
+
+function percent(value: number, scale: number): string {
+  return `${((value / scale) * 100).toFixed(2)}%`
+}
+
+// A reference line in the right half of a chart takes its label on its left,
+// so the label stays inside the chart.
+function labelLeft(value: number, scale: number): boolean {
+  return value / scale > 0.5
+}
+
+// The label sits in flow beside the line, so a long label wraps on a phone
+// instead of leaving the chart.
+function labelPad(value: number, scale: number): string {
+  const share = (value / scale) * 100
+  return labelLeft(value, scale)
+    ? `padding-right: calc(${(100 - share).toFixed(2)}% + 0.75rem)`
+    : `padding-left: calc(${share.toFixed(2)}% + 0.75rem)`
+}
+
+function threadTag(threads: number): string {
+  return threads === 1 ? "1 thread" : `${threads} threads`
+}
+
+// The columns of every row. The reference label and the reference line use
+// them too, so the line lands at the same x as the bars in every row.
+const columns =
+  "grid gap-3 px-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-6"
+const rowGrid = `${columns} md:items-center`
+---
+
+<div class="space-y-[72px]">
+  {
+    charts.map((chart) => (
+      <figure aria-labelledby={`speed-${chart.id}`}>
+        <h3 id={`speed-${chart.id}`} class="text-heading font-medium">
+          {chart.title}
+        </h3>
+        <p class="mt-2 text-body text-ink-muted">{chart.caption}</p>
+        <div class="mt-6 border border-rule-strong">
+          {chart.groups.map((group) => {
+            const scale = scaleOf(group, chart.reference)
+            const reference = chart.reference
+            return (
+              <div class="border-b border-rule-strong last:border-b-0">
+                <div class="flex flex-wrap justify-between gap-x-6 gap-y-1 border-b border-rule px-4 py-3 font-chrome text-chrome text-ink-muted uppercase">
+                  <span>{group.heading ?? "Lower is better"}</span>
+                  <span class="shrink-0">
+                    {group.heading
+                      ? `Lower is better · ${group.unit}`
+                      : group.unit}
+                  </span>
+                </div>
+                <div class="relative">
+                  {reference && (
+                    <div
+                      class={`${columns} pointer-events-none absolute inset-0 hidden md:grid`}
+                      aria-hidden="true"
+                    >
+                      <div />
+                      <div class="flex gap-4">
+                        <div class="relative flex-1">
+                          <div
+                            class="absolute inset-y-0 w-0.5 bg-ink"
+                            style={`left: ${percent(reference.value, scale)}`}
+                          />
+                        </div>
+                        <div class="w-24 shrink-0" />
+                      </div>
+                    </div>
+                  )}
+                  {reference && (
+                    <div class={`${rowGrid} pt-4`} aria-hidden="true">
+                      <div class="hidden md:block" />
+                      <div class="flex items-center gap-4">
+                        <div class="relative flex-1 pb-4">
+                          <div
+                            class="absolute top-0 -bottom-4 w-0.5 bg-ink md:hidden"
+                            style={`left: ${percent(reference.value, scale)}`}
+                          />
+                          <p
+                            class={`font-chrome text-chrome text-ink uppercase ${labelLeft(reference.value, scale) ? "text-right" : ""}`}
+                            style={labelPad(reference.value, scale)}
+                          >
+                            {reference.label}
+                          </p>
+                        </div>
+                        <div class="w-24 shrink-0" />
+                      </div>
+                    </div>
+                  )}
+                  <ul>
+                    {group.bars.map((bar) => (
+                      <li
+                        class={`${rowGrid} border-b border-rule py-6 last:border-b-0`}
+                      >
+                        <div>
+                          <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-body text-ink">
+                            <span>{bar.label}</span>
+                            {bar.threads && (
+                              <span class="border border-ink px-2 py-0.5 font-chrome text-chrome text-ink uppercase">
+                                {threadTag(bar.threads)}
+                              </span>
+                            )}
+                          </p>
+                          <p class="font-code text-code wrap-anywhere text-ink-muted">
+                            {bar.bench}
+                          </p>
+                          {bar.note && (
+                            <p class="font-code text-code text-ink-muted">
+                              {bar.note}
+                            </p>
+                          )}
+                        </div>
+                        <div class="flex items-center gap-4">
+                          <div class="relative h-6 flex-1">
+                            <div
+                              class="absolute inset-y-0 left-0 border border-rule-strong"
+                              style={`width: ${percent(bar.value, scale)}`}
+                            />
+                            {reference && (
+                              <div
+                                class="absolute -inset-y-3 w-0.5 bg-ink md:hidden"
+                                style={`left: ${percent(reference.value, scale)}`}
+                                aria-hidden="true"
+                              />
+                            )}
+                          </div>
+                          <p class="w-24 shrink-0 text-right font-code text-code text-ink">
+                            {bar.display}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {reference && (
+                  <p class="sr-only">Reference line: {reference.label}</p>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </figure>
+    ))
+  }
+
+  <p class="font-chrome text-chrome text-ink-muted uppercase">
+    Measured 2026-11-27 · <a
+      href="https://github.com/oxabl-project/oxabl/commit/9370c9450673352675179d5759a561c1db122808"
+      >oxabl 9370c94</a
+    > · Intel Core i7-11700 · 8 cores / 16 threads · 32 GiB RAM · Linux · Rust 1.100.0
+    · every input is synthetic or committed in the oxabl repository
+  </p>
+</div>
