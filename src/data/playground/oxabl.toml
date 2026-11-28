@@ -1,0 +1,15 @@
+[workspace]
+name = "sports2000-fulfillment"
+
+[workspace.sources]
+directories = ["src"]
+include_paths = ["src", "inc"]
+
+[workspace.schema]
+files = ["schema/sp2k.df"]
+
+[workspace.lint]
+enable = ["strict.locks", "strict.transactions", "strict.access"]
+
+[workspace.style]
+indent_size = 4

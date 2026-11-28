@@ -196,10 +196,12 @@ Features and pipeline were previously the same six things told twice, in two vis
 
 Block 2 is a full-width `screen`-material project workbench running `oxabl_wasm` inside a dedicated Web Worker over a multi-file virtual Sports2000 project.
 
+**It loads on a click, never by itself.** The editor and the engine are about 1.7 MB, so the page never downloads them on load, on scroll into view, or by prefetch. Until the click, block 2 is a static `screen` panel with the same chrome bar, one button, `Load demo playground`, and one `code` line that says what the click loads and how much. A visitor who never clicks pays nothing for the playground. `pnpm playground:check` fails if any of these files is requested before the click.
+
 - **Chrome bar:** top bar in `chrome` type (`Playground / sports2000 project` · `oxabl_wasm · web worker`), followed by an action/status bar carrying the live severity dot, summary readout, and square-bordered chrome controls: `Format`, `Hints` (`On`/`Off`), and `Reset`.
 - **Three-pane desktop layout:** divided by 1px `--screen-rule` lines, with no shadows and no border radius — including CSS overrides that strip `border-radius` and `box-shadow` from Monaco's `.monaco-hover` and `.suggest-widget` overlays.
   - **Left rail (`~200px`):** plain-text virtual file list (`oxabl.toml`, `src/order-fulfillment.p`, `src/credit-check.p`, `inc/order-totals.i`, `schema/sp2k.df`) with diagnostic counts per file and **no file icons**, honoring the closed pictogram list.
-  - **Center:** Monaco editor (`min-h-[528px]`, 22 × 24px grid units), lazy-loaded on viewport intersection with an instant mount and no entrance animation (law 4). Minimap is always off.
+  - **Center:** Monaco editor (`min-h-[528px]`, 22 × 24px grid units), loaded by the button and mounted at once, with no entrance animation (law 4). Minimap is always off.
   - **Right/bottom pane:** live Problems list (clickable rows jumping to `file:line:col`) and the crash/timeout recovery panel when the worker fails.
 - **Below `md`:** the left rail collapses to a horizontal wrapped file-tab strip above the editor, and the Problems list stacks below the editor.
 - **Named pictogram exception:** Monaco's built-in completion suggest-widget kind icons (rendered monochrome in `--screen-ink-muted`) are accepted as internal editor UI rather than site chrome. The site's own file tree and toolbar carry zero pictograms.
