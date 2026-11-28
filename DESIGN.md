@@ -47,7 +47,7 @@ Five sizes, and only five. The old site set every heading at `text-3xl sm:text-4
 | `chrome`  | 12 / 16, `0.14em`, uppercase | Martian Mono | Labels and readouts.                |
 | `code`    | 14 / 24                      | Plex Mono    | All emitted output.                 |
 
-Nothing in between. If a size feels needed, the hierarchy is wrong. The one exception is the social card, which sets its thesis at 64/72 (see _The icon_).
+Nothing in between. If a size feels needed, the hierarchy is wrong. There are two narrow named exceptions: the social card sets its thesis at `64 / 72` (see _The icon_), and Monaco's inline inlay hints in the playground may render at `12 / 16` in `IBM Plex Mono` (`400`) inside `14 / 24` code lines so inline compiler annotations stay visually subordinate to the source code without breaking line height.
 
 The 24px baseline applies to vertical spacing and layout, not the internal metrics of type. The named role line-heights—60px, 32px, 28px, 16px, and 24px—are deliberate exceptions and must remain as specified.
 
@@ -132,6 +132,8 @@ These appear in diagnostics and check summaries. Never in chrome, never as a but
 
 `--ok` is the payoff of the entire site. It is the only green, and it fires when the reader's code passes.
 
+On a `screen` surface, lower-severity diagnostics (`info` and `hint`) reuse existing screen tokens rather than introducing new accent colours: `info` uses `--syn-keyword` (the existing screen indigo) and `hint` uses `--screen-ink-muted`. `--ok`, `--error`, and `--warn` remain untouched.
+
 On dark paper the signal colours converge with their screen counterparts, and `--error` and `--warn` land on exactly the same values. That is a consequence of the definition rather than a shortcut: these values are chosen to sit legibly on a dark ground, and under the dark theme both grounds are dark. The tokens stay separate because the _reason_ to use one or the other is the material, not the colour, and paper will move again if the palette is ever retuned.
 
 **Known gap, light theme.** `--ok` measures 3.28:1 and `--warn` 3.57:1 against light paper — both clear AA for large text but not for body-sized text. Every other paper token clears AA in both themes. This predates the dark palette work and is recorded here rather than quietly fixed, because moving `--ok` is a change to the payoff colour of the site and deserves its own decision.
@@ -170,7 +172,7 @@ Seven blocks. No two share a shape — that is what gives the page rhythm under 
 | --- | -------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------- |
 | —   | **Announcement** | One line above the bar, only while there is news; see **The announcement**                                        | paper                            |
 | 1   | **Masthead**   | One bordered instrument panel: text and dominant shader cells from `md` up, one paper cell below                  | paper + screen; paper below `md` |
-| 2   | **Playground** | Full-width interactive. Not a titled section — it _is_ the second screen                                          | screen                           |
+| 2   | **Playground** | Full-width interactive project workbench. Not a titled section — it _is_ the second screen; see **The playground**  | screen                           |
 | 3   | **Vocabulary** | One enormous keyword count, beneath it the real keyword list as a dense monospace field                           | paper                            |
 | 4   | **What it is** | Centered wordmark-face heading, a full-width lead line, one ruled band of three icons                             | paper                            |
 | 5   | **Speed**      | Ruled bar charts, one per thing a developer measures, each bar a measured figure; see **The speed block**        | paper                            |
@@ -189,6 +191,20 @@ The speed block comes before the pipeline: a reader first wants to know whether 
 The thesis sentence is **"ABL developers deserve modern toolchains."** It leads the masthead. It was previously buried two-thirds down the page under a green eyebrow label while the hero opened with a feature list.
 
 Features and pipeline were previously the same six things told twice, in two visual treatments, across ~350 lines. The crates _are_ the features; block 4 absorbs both.
+
+### The playground
+
+Block 2 is a full-width `screen`-material project workbench running `oxabl_wasm` inside a dedicated Web Worker over a multi-file virtual Sports2000 project.
+
+**It loads on a click, never by itself.** The editor and the engine are about 1.7 MB, so the page never downloads them on load, on scroll into view, or by prefetch. Until the click, block 2 is a static `screen` panel with the same chrome bar, one button, `Load demo playground`, and one `code` line that says what the click loads and how much. A visitor who never clicks pays nothing for the playground. `pnpm playground:check` fails if any of these files is requested before the click.
+
+- **Chrome bar:** top bar in `chrome` type (`Playground / sports2000 project` · `oxabl_wasm · web worker`), followed by an action/status bar carrying the live severity dot, summary readout, and square-bordered chrome controls: `Format`, `Hints` (`On`/`Off`), and `Reset`.
+- **Three-pane desktop layout:** divided by 1px `--screen-rule` lines, with no shadows and no border radius — including CSS overrides that strip `border-radius` and `box-shadow` from Monaco's `.monaco-hover` and `.suggest-widget` overlays.
+  - **Left rail (`~200px`):** plain-text virtual file list (`oxabl.toml`, `src/order-fulfillment.p`, `src/credit-check.p`, `inc/order-totals.i`, `schema/sp2k.df`) with diagnostic counts per file and **no file icons**, honoring the closed pictogram list.
+  - **Center:** Monaco editor (`min-h-[528px]`, 22 × 24px grid units), loaded by the button and mounted at once, with no entrance animation (law 4). Minimap is always off.
+  - **Right/bottom pane:** live Problems list (clickable rows jumping to `file:line:col`) and the crash/timeout recovery panel when the worker fails.
+- **Below `md`:** the left rail collapses to a horizontal wrapped file-tab strip above the editor, and the Problems list stacks below the editor.
+- **Named pictogram exception:** Monaco's built-in completion suggest-widget kind icons (rendered monochrome in `--screen-ink-muted`) are accepted as internal editor UI rather than site chrome. The site's own file tree and toolbar carry zero pictograms.
 
 ### The what-it-is block
 
@@ -286,7 +302,9 @@ It is printed, not a screen (law 3): it is read, then followed, and nothing on i
 
 ## Content dependencies
 
-**Keyword counts and the keyword list** come from the oxabl workspace at `~/oxabl`, not from this repo. Vendor a generated JSON into `src/data/` the same way the WASM artifact is vendored, and read it at build time. Record the regeneration command in `CLAUDE.md`.
+**Keyword counts and the keyword list** come from the oxabl workspace at `~/work/oxabl`, not from this repo. Vendor a generated JSON into `src/data/` the same way the WASM artifact is vendored, and read it at build time. Record the regeneration command in `CLAUDE.md`.
+
+**Sports2000 schema fixture (`src/data/playground/sp2k.df`)** is a verbatim vendored copy of `oxabl`'s `crates/oxabl_schema/fixtures/sp2k.df` (public Riverside Software Sports2000 fixture). Record the copy and check commands in `CLAUDE.md`.
 
 **Benchmark figures** must come from ABL that can be published — synthetic or public sample code, generated at whatever scale makes the point honestly. Performance results are described in bytes and milliseconds; line counts are also permitted for publishable fixtures committed in the oxabl workspace because the primary ABL audience leads with lines. Do not reference any private corpus, its provenance, its size, its file count, or its pass rate; scrub the mention, not just the data.
 

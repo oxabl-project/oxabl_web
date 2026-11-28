@@ -1,4 +1,4 @@
-import { __oxabl_stash_panic } from './snippets/oxabl_wasm-c3eca395c8b340b7/inline0.js';
+import { __oxabl_stash_panic } from './snippets/oxabl_wasm-d7dc608291e577cc/inline0.js';
 
 
 export function __wbg_reset_state () {
@@ -13,11 +13,27 @@ export function __wbg_reset_state () {
 }
 
 /**
- * Analyze one in-memory ABL file through the same parse → semantic → lint
- * collector used by the CLI and LSP.
+ * Analyze one in-memory ABL file through the shared [`LintPipeline`] the CLI and
+ * the language server also drive.
  *
- * The browser MVP has no project filesystem, include path, or schema upload,
- * so preprocessing and schema-backed rules are disabled rather than emulated.
+ * Configuration is [`PipelineConfig::default`] over an empty in-memory file
+ * system, with preprocessing off: the browser MVP has no project filesystem,
+ * include path, or schema upload, so those capabilities are absent rather than
+ * emulated here.
+ *
+ * # The exported entry point takes source only
+ *
+ * It delegates to `analyze_over` (private, so this is a plain mention rather
+ * than a doc link into the browser's public surface), which accepts a
+ * configuration and a
+ * filesystem, because *nothing about the analysis itself* is file-less — the
+ * browser resolves cross-file names over whatever filesystem it is given, the
+ * same way every other client does. What is absent is a JS-visible way to
+ * **supply** files, and that is a scope boundary in this signature rather than a
+ * different resolver underneath it. Widening the wire shape to carry a virtual
+ * project is a separate piece of work; until then this is the honest surface,
+ * and the parity suite reaches the seam directly rather than asserting the
+ * browser is a special case (R7, R19).
  * @param {string} source
  * @returns {string}
  */
@@ -40,8 +56,22 @@ export function analyze_source(source) {
 }
 
 /**
- * Format one ABL file through Oxabl's shared layout-only formatter using the
- * same safe default style as the LSP when no `oxabl.toml` is present.
+ * Format one ABL file through the shared [`FormatPipeline`], using the same safe
+ * default style as the language server when no `oxabl.toml` is present.
+ *
+ * The style comes out of [`PipelineConfig::default`], the same value
+ * [`analyze_source`] configures itself from, rather than being fetched from
+ * `StyleGuide` directly. Reaching for the style guide's own default here would
+ * agree only *coincidentally*: two entry points of one client would be deriving
+ * their configuration from two places, and a change to what a default
+ * `PipelineConfig` means would move analysis and leave formatting behind. One
+ * derivation, so there is nothing to drift.
+ *
+ * The wire shape has a single `error` field, so a refusal's bail-versus-panic
+ * distinction — which [`FormatOutcome`] keeps structural — collapses to its
+ * reason text *here*, at the transport boundary, not in the pipeline. On either
+ * leave-it-alone arm the original bytes come back untouched with
+ * `changed: false`; no arm ever returns partially formatted source.
  * @param {string} source
  * @returns {string}
  */
@@ -60,6 +90,249 @@ export function format_source(source) {
     } finally {
         __wbg_call_guard();
         wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Analyze one file of the open virtual project through [`LintPipeline`].
+ * @param {string} path
+ * @returns {string}
+ */
+export function project_analyze(path) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_analyze(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Compute code completion items at `byte_offset` in one project file.
+ * @param {string} path
+ * @param {number} byte_offset
+ * @param {string | null} [trigger]
+ * @returns {string}
+ */
+export function project_complete(path, byte_offset, trigger) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        var ptr1 = isLikeNone(trigger) ? 0 : passStringToWasm0(trigger, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len1 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_complete(ptr0, len0, byte_offset, ptr1, len1);
+        deferred3_0 = ret[0];
+        deferred3_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
+ * Resolve go-to-definition targets at `byte_offset` in one project file.
+ * @param {string} path
+ * @param {number} byte_offset
+ * @returns {string}
+ */
+export function project_definitions(path, byte_offset) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_definitions(ptr0, len0, byte_offset);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Format one ABL file of the open virtual project using its configured style.
+ * @param {string} path
+ * @returns {string}
+ */
+export function project_format(path) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_format(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Compute hover Markdown and span at `byte_offset` in one project file.
+ * @param {string} path
+ * @param {number} byte_offset
+ * @returns {string}
+ */
+export function project_hover(path, byte_offset) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_hover(ptr0, len0, byte_offset);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Compute database and optional parameter inlay hints for one project file.
+ * @param {string} path
+ * @param {string} kinds_json
+ * @returns {string}
+ */
+export function project_inlay_hints(path, kinds_json) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(kinds_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_inlay_hints(ptr0, len0, ptr1, len1);
+        deferred3_0 = ret[0];
+        deferred3_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
+ * Open a virtual in-memory project (`files`, optional `config`, optional
+ * `schemas`), resolving `oxabl.toml` and loading `.df` schemas from memory.
+ * @param {string} json
+ * @returns {string}
+ */
+export function project_open(json) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_open(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Remove one file from the open virtual project.
+ * @param {string} path
+ * @returns {string}
+ */
+export function project_remove_file(path) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_remove_file(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Resolve Markdown documentation for a completion item's `resolve_data`.
+ * @param {string} data_json
+ * @returns {string}
+ */
+export function project_resolve_completion(data_json) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(data_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_resolve_completion(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Insert or replace one file in the open virtual project.
+ * @param {string} path
+ * @param {string} text
+ * @returns {string}
+ */
+export function project_update_file(path, text) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        let ret;
+        __wbg_call_guard();
+        ret = wasm.project_update_file(ptr0, len0, ptr1, len1);
+        deferred3_0 = ret[0];
+        deferred3_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        __wbg_call_guard();
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
     }
 }
 
@@ -103,7 +376,7 @@ export function version() {
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
-        __wbg___oxabl_stash_panic_9e4e178196e42d87: function(arg0, arg1) {
+        __wbg___oxabl_stash_panic_4a6f75a470de1b58: function(arg0, arg1) {
             __oxabl_stash_panic(getStringFromWasm0(arg0, arg1));
         },
         __wbindgen_init_externref_table: function() {
@@ -142,6 +415,10 @@ function getUint8ArrayMemory0() {
         cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
     }
     return cachedUint8ArrayMemory0;
+}
+
+function isLikeNone(x) {
+    return x === undefined || x === null;
 }
 
 function passStringToWasm0(arg, malloc, realloc) {

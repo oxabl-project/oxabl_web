@@ -28,6 +28,7 @@
 @source "../components/InstallGrid.astro";
 @source "../components/MobileCollapse.astro";
 @source "../components/TryOxabl.tsx";
+@source "../components/Playground.tsx";
 @source "../components/PipelineDiagram.astro";
 @source "../components/PipelineNode.astro";
 @source "../components/RunIt.tsx";
@@ -215,6 +216,33 @@
 .screen-material ::-moz-selection {
   background: var(--screen-ink);
   color: var(--screen);
+}
+
+/* Playground: Monaco's overlays follow the screen rules in DESIGN.md (square
+   corners, 1px rules, no shadow) and set their text in the code role. These
+   are unlayered and more specific than Monaco's own selectors. */
+.screen-material .monaco-hover,
+.screen-material .suggest-widget,
+.screen-material .editor-widget,
+.screen-material .find-widget {
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+.screen-material .monaco-hover .hover-contents,
+.screen-material .suggest-widget .monaco-list .monaco-list-row,
+.screen-material .suggest-widget .details {
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+/* Inlay hints stay subordinate to the source: a flat tag, no radius. */
+.screen-material .monaco-editor .view-line [class*="dyn-rule"] {
+  border-radius: 0;
 }
 
 /* Static fallback for the framed shader screen. */
